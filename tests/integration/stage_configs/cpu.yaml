@@ -1,0 +1,32 @@
+# End-to-end test config for S0-S2, CPU path (tests/integration/run_stages.sh).
+# Inputs: tests/fixtures/stage_inputs (make_stage_inputs.py), listed in
+# samples.csv here. Relative paths, including the sample paths in samples.csv,
+# resolve against this directory. gpu.yaml must stay identical apart from
+# `device` and `project`, so the two runs can be compared.
+project: stage_test_cpu
+run_dir: /tmp/cellwarden-stage-test/cpu      # always overridden with --run-dir by the harness
+seed: 42
+samples: samples.csv                     # sample paths in it are relative to this folder
+qc_policy: qc_policy.yaml
+object_format: rds
+resources:
+  threads: 2
+  max_memory_gb: 4
+  gpu_mem_cap_gb: 2
+  nice: 10
+doublets:
+  method: scrublet
+qc:
+  review_action: keep
+normalization: lognorm
+n_hvg: 500                               # the fixture has only 808 genes
+# This script compares the Seurat and exchange (rapids/scanpy) paths; scfast is covered by run_full.sh.
+engine: seurat
+device: cpu
+integration:
+  method: none
+  batch_key: sample_id
+pcs: auto
+n_neighbors: 20
+clustering:
+  resolution: 0.5

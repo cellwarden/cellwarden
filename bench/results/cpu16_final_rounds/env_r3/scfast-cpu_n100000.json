@@ -1,0 +1,41 @@
+{
+  "node": "modal",
+  "platform": "Linux-4.19.0-gvisor-x86_64-with-glibc2.39",
+  "python": "3.12.1",
+  "cpu_model": "unknown (AuthenticAMD family 25 model 17)",
+  "logical_cpus": 32,
+  "mem_total_bytes": 726299611136,
+  "loadavg": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "threads_env": {
+    "OMP_NUM_THREADS": "16",
+    "OPENBLAS_NUM_THREADS": "16",
+    "MKL_NUM_THREADS": "16",
+    "NUMBA_NUM_THREADS": "16",
+    "VECLIB_MAXIMUM_THREADS": "16",
+    "RAYON_NUM_THREADS": "16"
+  },
+  "gpus": [],
+  "commit": "unknown",
+  "packages": {
+    "scfast": "0.1.0"
+  },
+  "time_utc": "2026-10-18T04:47:21Z",
+  "config": {
+    "engine": "scfast-cpu",
+    "data": "/data/prep/brain/n100000",
+    "out": "/data/results/brain/scfast-cpu_n100000",
+    "reps": 2,
+    "threads": 16,
+    "n_hvg": 2000,
+    "n_pcs": 30,
+    "dims": 10,
+    "k": 20,
+    "resolution": 0.5,
+    "seed": 0,
+    "skip_umap": false
+  }
+}

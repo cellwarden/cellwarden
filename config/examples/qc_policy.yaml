@@ -1,0 +1,47 @@
+# QC policy for S1c, the rules-based QC engine (docs/stages-spec.md, 3.4).
+#
+# Rules are applied in this order; each cell ends up keep, exclude or review,
+# with reason codes saying why (S1/qc_decisions.tsv.gz):
+#   1. hard limits         -> exclude  (LOW_GENES, LOW_UMIS, HIGH_MT)
+#   2. adaptive bounds     -> exclude  (ADAPT_LOW_GENES, ADAPT_HIGH_UMIS, ...)
+#   3. doublet calls       -> exclude  (DOUBLET)
+#   4. protected populations: a cell excluded ONLY by adaptive bounds that
+#      carries enough marker signal -> review (PROTECTED_POP:<name>)
+#   5. review triggers: large losses turn adaptive exclusions into review
+#      (SAMPLE_LOSS, CLUSTER_LOSS)
+#   6. everything else     -> keep
+# The QC agent (build step 3) works inside these limits; it can never cross a
+# hard limit. The policy's hash is stored with every decision.
+
+# Never crossed. Typical values for 10x 3' PBMC data; lower min_genes /
+# min_umis for low-depth chemistries or nuclei, raise max_mito_pct for
+# metabolically active tissue (e.g. kidney, heart).
+hard_limits:
+  min_genes: 200
+  max_mito_pct: 25
+  min_umis: 400
+
+# Per sample: median +/- n_mads x MAD on the log scale for genes and UMIs,
+# upper bound only for mito %. Adaptive bounds never loosen a hard limit.
+adaptive:
+  n_mads: 3
+  metrics: [log_genes, log_umis, mito_pct]
+  min_cells_for_mad: 100        # samples with fewer cells use hard limits only
+
+doublets:
+  exclude_called: true          # exclude cells called as doublets in S1b
+
+# Small or low-RNA cell types that adaptive bounds tend to remove wholesale.
+# min_fraction is the fraction of a cell's UMIs in the markers (0.01 = 1 %).
+protected_populations:
+  - name: Platelet
+    markers: [PPBP, PF4, GNG11]
+    min_fraction: 0.01
+  - name: Erythrocyte
+    markers: [HBB, HBA1, HBA2]
+    min_fraction: 0.05
+
+# Losses that should be looked at by a person (or the QC agent), not applied.
+review_triggers:
+  max_cells_removed_per_sample_pct: 30
+  max_cluster_removed_pct: 50   # a whole pre-cluster vanishing -> review, not delete

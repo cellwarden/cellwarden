@@ -1,0 +1,41 @@
+{
+  "node": "vm",
+  "platform": "R version 4.3.3 (2024-02-29)",
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+  "logical_cpus": 2,
+  "loadavg": [1.2, 1.07, 1.4],
+  "threads_env": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMBA_NUM_THREADS": "2",
+    "VECLIB_MAXIMUM_THREADS": "2",
+    "RAYON_NUM_THREADS": "2"
+  },
+  "gpus": [],
+  "commit": "8819692",
+  "blas": "/usr/lib/x86_64-linux-gnu/blas/libblas.so.3.12.0",
+  "lapack": "/usr/lib/x86_64-linux-gnu/lapack/liblapack.so.3.12.0",
+  "leiden_backend": "leidenalg via reticulate (/tmp/claude-0/-home-claude/b9be49d5-ca1a-5809-906a-b053e4aac41c/scratchpad/venv311/bin/python)",
+  "packages": {
+    "Seurat": "5.0.1",
+    "SeuratObject": "5.0.1",
+    "leidenbase": "0.1.27",
+    "uwot": "0.1.16",
+    "Matrix": "1.6.5"
+  },
+  "time_utc": "2026-10-17T15:31:39Z",
+  "config": {
+    "data": "/home/claude/singlecell/bench/results/synth_2k5k/data/n2000",
+    "out": "/home/claude/singlecell/bench/results/synth_2k5k",
+    "reps": 3,
+    "threads": 2,
+    "n_hvg": 2000,
+    "n_pcs": 30,
+    "dims": 10,
+    "k": 20,
+    "resolution": 0.5,
+    "seed": 0,
+    "skip_umap": false
+  }
+}

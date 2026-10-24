@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cellwarden"
+version = "0.3.0"
+description = "CellWarden: a single-cell RNA-seq pipeline (Seurat, Rust, RAPIDS) whose decisions are guarded by rules, LLM review agents and you"
+requires-python = ">=3.10"
+dependencies = [
+    "anndata>=0.10",
+    "scanpy>=1.10",
+    "h5py",
+    "numpy",
+    "scipy",
+    "pandas",
+    "igraph",
+    "leidenalg",
+    "pyyaml",
+    "scikit-learn",
+    "scikit-image",
+    "jinja2",
+    "celltypist",
+    # Rust engine; prebuilt abi3 wheels (CUDA + cuGraph loaded at run time on Linux x86_64) from
+    # the GitHub Release of https://github.com/cellwarden/cellwarden (built by .github/workflows/release.yml).
+    "scfast",
+    "umap-learn",
+    # terminal progress display and the cellwarden run -i prompts (both fall back to plain text without it)
+    "rich>=13",
+]
+
+[project.scripts]
+cellwarden = "cellwarden.runner:main"
+# the former name, kept for one release
+scpipe = "cellwarden.runner:main"
+
+[project.optional-dependencies]
+harmony = ["harmonypy"]
+# Prebuilt CUDA 12 wheels from https://pypi.nvidia.com (pip --extra-index-url); no nvcc needed.
+gpu = ["rapids-singlecell-cu12", "cupy-cuda12x", "cuvs-cu12", "libcugraph-cu12"]
+test = ["pytest"]
+report = ["matplotlib"]
+llm = ["requests"]
+all = ["cellwarden[harmony,report,llm,gpu]"]
+# Building scfast from source instead of the prebuilt wheel (docs/INSTALL.md):
+#   maturin develop --release -m rust/scfast-py/Cargo.toml
+dev = ["maturin>=1.9.4,<2", "pytest"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["cellwarden*", "scpipe"]

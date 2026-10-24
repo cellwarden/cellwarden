@@ -1,0 +1,24 @@
+{
+  "input": "/Users/mukeshagrawal/seurat-workspace/filtered_gene_bc_matrices/hg19",
+  "cells_in": 2700,
+  "genes_in": 32738,
+  "cells_qc": 2638,
+  "genes_qc": 13714,
+  "qc": {
+    "min_cells": 3,
+    "min_genes": 200,
+    "max_genes": 2500,
+    "max_mt": 5.0,
+    "mt_prefix": "MT-"
+  },
+  "seed": 0,
+  "sizes": [
+    {
+      "cells": 2638,
+      "genes": 13714,
+      "nnz": 2238732,
+      "path": "bench/results/pbmc3k/data/n2638/matrix.h5"
+    }
+  ],
+  "labels": false
+}

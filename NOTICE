@@ -1,0 +1,14 @@
+CellWarden
+Copyright 2026 Mukesh Agrawal, Ahmed Dawoud and David Williams
+
+This product was started at the "Reinvent the Wheel" AI hackathon (16-18 October 2026,
+https://luma.com/vdq0qw9u) and is licensed under the Apache License, Version 2.0 (LICENSE).
+Redistributions must keep this notice and the attribution in AUTHORS.
+
+Formerly named scpipe. The Rust engine is scfast.
+
+Third-party software and data used by CellWarden or bundled in its container image keep their
+own licences. Among them: Seurat and SeuratObject, harmony, presto, BPCells, DESeq2, limma,
+edgeR, MAST and scDblFinder (CRAN, Bioconductor and GitHub packages), the NVIDIA RAPIDS base
+image (NVIDIA's terms), CellTypist and its models, scanpy and anndata. The 10x Genomics PBMC 3k
+example data is used under CC BY 4.0, with attribution in examples/.

@@ -1,0 +1,41 @@
+{
+  "node": "modal",
+  "platform": "R version 4.6.1 (2026-06-24)",
+  "cpu_model": "unknown",
+  "logical_cpus": 32,
+  "loadavg": [0, 0, 0],
+  "threads_env": {
+    "OMP_NUM_THREADS": "16",
+    "OPENBLAS_NUM_THREADS": "16",
+    "MKL_NUM_THREADS": "16",
+    "NUMBA_NUM_THREADS": "16",
+    "VECLIB_MAXIMUM_THREADS": "16",
+    "RAYON_NUM_THREADS": "16"
+  },
+  "gpus": [],
+  "commit": "unknown",
+  "blas": "/usr/lib/x86_64-linux-gnu/openblas-pthread/libblas.so.3",
+  "lapack": "/usr/lib/x86_64-linux-gnu/openblas-pthread/libopenblasp-r0.3.26.so",
+  "leiden_backend": "leidenbase",
+  "packages": {
+    "Seurat": "5.6.0",
+    "SeuratObject": "5.4.0",
+    "leidenbase": "0.1.37",
+    "uwot": "0.2.5",
+    "Matrix": "1.7.6"
+  },
+  "time_utc": "2026-10-17T22:28:37Z",
+  "config": {
+    "data": "/data/prep/brain/n500000",
+    "out": "/data/results/brain/seurat_n500000",
+    "reps": 1,
+    "threads": 16,
+    "n_hvg": 2000,
+    "n_pcs": 30,
+    "dims": 10,
+    "k": 20,
+    "resolution": 0.5,
+    "seed": 0,
+    "skip_umap": false
+  }
+}

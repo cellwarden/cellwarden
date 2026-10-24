@@ -1,0 +1,28 @@
+{% extends "base.html.j2" %}
+{% block title %}{{ gate.gate }} {{ gate.title }} — {{ run.run_id }}{% endblock %}
+{% block body %}
+<header class="top"><h1>Gate {{ gate.gate }}: {{ gate.title }}
+  <span class="pill {{ 'warn' if gate.pending else 'done' }}">{% if gate.pending %}waiting for a human{% else %}decided by {{ gate.decided_by or '?' }}{% endif %}</span></h1>
+  <span class="muted">run {{ run.run_id }}{% if run.project %} · {{ run.project }}{% endif %}</span></header>
+<main>
+<section id="gate">
+{% set g = gate %}{% set full = true %}
+{% include "_gate_card.html.j2" %}
+</section>
+<section id="howto">
+<h2>Approving or editing this decision</h2>
+<p>If the run stopped here, review the decision above, optionally edit a copy of <code>decision.json</code>, then:</p>
+<pre>cellwarden approve --run-dir {{ run.run_dir }} --stage {{ gate.slug or gate.gate }} [--from-file edited.json] [--by YOUR_NAME]
+cellwarden resume  --run-dir {{ run.run_dir }}</pre>
+<p class="muted">Rules decide, agents advise, reviewers check, humans approve, everything is logged (docs/agents-spec.md).</p>
+</section>
+<section id="llm"><h2>LLM cost so far</h2>
+{% if llm %}<p>GBP {{ "%.4f" | format(llm.total_gbp) }} over {{ llm.n_calls }} call(s){% if llm.per_run_limit %}; per-run limit GBP {{ llm.per_run_limit }}{% endif %}{% if llm.total_limit %}; total budget GBP {{ llm.total_limit }}{% endif %}.</p>
+{% else %}<p class="muted">no LLM calls were made for this run.</p>{% endif %}
+</section>
+{% for title, html in extra_sections %}
+<section><h2>{{ title }}</h2>{{ html|safe }}</section>
+{% endfor %}
+<footer>Generated {{ generated_utc }} by CellWarden.</footer>
+</main>
+{% endblock %}

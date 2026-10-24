@@ -1,0 +1,6 @@
+^src/rust/target$
+^src/rust/vendor$
+^src/\.cargo$
+^\.gitignore$
+^.*\.Rcheck$
+^scfastR_.*\.tar\.gz$

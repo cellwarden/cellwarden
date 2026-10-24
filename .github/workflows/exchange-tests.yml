@@ -1,0 +1,103 @@
+name: exchange-tests
+
+# Seurat <-> AnnData exchange format (docs/exchange-spec.md):
+# R unit tests, Python unit tests and the cross-language round-trip.
+
+on:
+  push:
+    paths:
+      - "R/**"
+      - "python/**"
+      - "tests/**"
+      - "docs/exchange-spec.md"
+      - ".github/workflows/exchange-tests.yml"
+  pull_request:
+    paths:
+      - "R/**"
+      - "python/**"
+      - "tests/**"
+      - "docs/exchange-spec.md"
+      - ".github/workflows/exchange-tests.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: exchange-tests-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  exchange:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OMP_NUM_THREADS: "2"
+      PYTHONPATH: ${{ github.workspace }}/python
+    steps:
+      - uses: actions/checkout@v4
+
+      # R: Posit Public Package Manager serves pre-built Ubuntu binaries, so
+      # Seurat installs in a few minutes instead of compiling for ~30.
+      - uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: "release"
+          use-public-rspm: true
+
+      # pak resolves system requirements (libhdf5-dev for hdf5r, etc.) via apt.
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          packages: |
+            any::Seurat
+            any::SeuratObject
+            any::hdf5r
+            any::testthat
+            any::jsonlite
+            any::digest
+            any::Matrix
+            any::sessioninfo
+          cache-version: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: python/pyproject.toml
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install anndata scanpy h5py pytest igraph leidenalg harmonypy scipy numpy pandas pyyaml
+
+      - name: Versions
+        run: |
+          Rscript -e 'sessioninfo::package_info(c("Seurat","SeuratObject","hdf5r","Matrix"), dependencies = FALSE)'
+          python -c 'import importlib.metadata as m; print({p: m.version(p) for p in ["anndata","scanpy","h5py","numpy","scipy","pandas","igraph","leidenalg","harmonypy"]})'
+
+      - name: Fixture files match expected.json
+        run: python tests/fixtures/make_fixture.py --verify
+
+      # numpy does not guarantee identical random streams across releases, so a
+      # byte-for-byte regeneration is informative only; the committed files rule.
+      - name: Fixture generator still reproduces the committed files (advisory)
+        continue-on-error: true
+        run: python tests/fixtures/make_fixture.py --check
+
+      - name: R unit tests
+        run: Rscript -e 'res <- testthat::test_dir("tests/R", reporter = "summary", stop_on_failure = TRUE)'
+
+      - name: Python unit tests
+        run: python -m pytest -q tests/python
+
+      - name: Cross-language round-trip
+        run: |
+          mkdir -p "$RUNNER_TEMP/roundtrip"
+          PYTHON=python bash tests/integration/run_roundtrip.sh "$RUNNER_TEMP/roundtrip"
+
+      - name: Upload round-trip workdir on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: roundtrip-workdir
+          path: ${{ runner.temp }}/roundtrip
+          retention-days: 7

@@ -1,0 +1,349 @@
+{
+ "data": {
+  "target": {
+   "id": "ENSG00000156738",
+   "approvedSymbol": "MS4A1",
+   "approvedName": "membrane spanning 4-domains A1",
+   "biotype": "protein_coding",
+   "tractability": [
+    {
+     "modality": "SM",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Structure with Ligand",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "High-Quality Ligand",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "High-Quality Pocket",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Med-Quality Pocket",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Druggable Family",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Approved Drug",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "Advanced Clinical",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "Phase 1 Clinical",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt loc high conf",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "GO CC high conf",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt loc med conf",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt SigP or TMHMM",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "GO CC med conf",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Human Protein Atlas loc",
+     "value": true
+    },
+    {
+     "modality": "PR",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Literature",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "UniProt Ubiquitination",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Database Ubiquitination",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Half-life Data",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Small Molecule Binder",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Phase 1 Clinical",
+     "value": false
+    }
+   ],
+   "knownDrugs": {
+    "count": 9,
+    "rows": [
+     {
+      "drug": {
+       "id": "CHEMBL1201576",
+       "name": "RITUXIMAB"
+      },
+      "phase": 4,
+      "status": "Completed",
+      "mechanismOfAction": "B-lymphocyte antigen CD20 inhibitor",
+      "disease": {
+       "id": "EFO_0005952",
+       "name": "non-Hodgkins lymphoma"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL1201576",
+       "name": "RITUXIMAB"
+      },
+      "phase": 4,
+      "status": "Completed",
+      "mechanismOfAction": "B-lymphocyte antigen CD20 inhibitor",
+      "disease": {
+       "id": "EFO_0000685",
+       "name": "rheumatoid arthritis"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL1201576",
+       "name": "RITUXIMAB"
+      },
+      "phase": 3,
+      "status": "Completed",
+      "mechanismOfAction": "B-lymphocyte antigen CD20 inhibitor",
+      "disease": {
+       "id": "EFO_0002690",
+       "name": "systemic lupus erythematosus"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL2108192",
+       "name": "OCRELIZUMAB"
+      },
+      "phase": 4,
+      "status": "Completed",
+      "mechanismOfAction": "B-lymphocyte antigen CD20 inhibitor",
+      "disease": {
+       "id": "EFO_0003885",
+       "name": "multiple sclerosis"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL1201836",
+       "name": "OFATUMUMAB"
+      },
+      "phase": 4,
+      "status": "Completed",
+      "mechanismOfAction": "B-lymphocyte antigen CD20 inhibitor",
+      "disease": {
+       "id": "EFO_0000095",
+       "name": "chronic lymphocytic leukemia"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL1743048",
+       "name": "OBINUTUZUMAB"
+      },
+      "phase": 4,
+      "status": "Completed",
+      "mechanismOfAction": "B-lymphocyte antigen CD20 inhibitor",
+      "disease": {
+       "id": "EFO_0000574",
+       "name": "follicular lymphoma"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL1743048",
+       "name": "OBINUTUZUMAB"
+      },
+      "phase": 3,
+      "status": "Recruiting",
+      "mechanismOfAction": "B-lymphocyte antigen CD20 inhibitor",
+      "disease": {
+       "id": "EFO_0005697",
+       "name": "lupus nephritis"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL2109638",
+       "name": "UBLITUXIMAB"
+      },
+      "phase": 4,
+      "status": "Completed",
+      "mechanismOfAction": "B-lymphocyte antigen CD20 inhibitor",
+      "disease": {
+       "id": "EFO_0003885",
+       "name": "multiple sclerosis"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL4297806",
+       "name": "MOSUNETUZUMAB"
+      },
+      "phase": 4,
+      "status": "Completed",
+      "mechanismOfAction": "B-lymphocyte antigen CD20 modulator",
+      "disease": {
+       "id": "EFO_0000574",
+       "name": "follicular lymphoma"
+      }
+     }
+    ]
+   },
+   "associatedDiseases": {
+    "count": 1203,
+    "rows": [
+     {
+      "score": 0.871,
+      "disease": {
+       "id": "EFO_0005952",
+       "name": "non-Hodgkins lymphoma"
+      }
+     },
+     {
+      "score": 0.858,
+      "disease": {
+       "id": "EFO_0000574",
+       "name": "follicular lymphoma"
+      }
+     },
+     {
+      "score": 0.842,
+      "disease": {
+       "id": "EFO_0000095",
+       "name": "chronic lymphocytic leukemia"
+      }
+     },
+     {
+      "score": 0.811,
+      "disease": {
+       "id": "EFO_0003885",
+       "name": "multiple sclerosis"
+      }
+     },
+     {
+      "score": 0.776,
+      "disease": {
+       "id": "EFO_0000685",
+       "name": "rheumatoid arthritis"
+      }
+     },
+     {
+      "score": 0.769,
+      "disease": {
+       "id": "EFO_0000403",
+       "name": "diffuse large B-cell lymphoma"
+      }
+     },
+     {
+      "score": 0.702,
+      "disease": {
+       "id": "EFO_0002690",
+       "name": "systemic lupus erythematosus"
+      }
+     },
+     {
+      "score": 0.611,
+      "disease": {
+       "id": "EFO_0005697",
+       "name": "lupus nephritis"
+      }
+     },
+     {
+      "score": 0.577,
+      "disease": {
+       "id": "MONDO_0005136",
+       "name": "pemphigus vulgaris"
+      }
+     },
+     {
+      "score": 0.545,
+      "disease": {
+       "id": "EFO_0004991",
+       "name": "granulomatosis with polyangiitis"
+      }
+     }
+    ]
+   }
+  }
+ }
+}

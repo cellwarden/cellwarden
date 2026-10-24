@@ -1,0 +1,483 @@
+# Human cell-type marker reference for the code-only consensus annotation
+# (docs/agents-spec.md section 5; python/cellwarden/annotation/consensus.py).
+#
+# One entry per fine label:
+#   label_fine        the fine label written to annotation_consensus.tsv
+#   label_broad       the broad label (several fine labels share one)
+#   cl_id             Cell Ontology ID of the fine label
+#   generic           true for the broad group's umbrella entry (used when
+#                     fine labels inside the same broad group tie)
+#   markers           canonical positive marker genes (symbols)
+#   celltypist_labels CellTypist labels (Immune_All_Low / High and the tissue
+#                     models) that vote for this entry; matched case-insensitively
+#   tissue            where the type is usually found (hint only)
+#
+# Signature sets in R/stages/data/signatures.yaml vote for an entry through
+# their `cell_type`, which must equal a label_fine here.
+version: 1
+cell_types:
+  # ---------------------------------------------------------------- T cells
+  - label_fine: T cell
+    label_broad: T cell
+    cl_id: CL:0000084
+    generic: true
+    tissue: [blood, immune]
+    markers: [CD3D, CD3E, CD3G, CD2, TRAC, IL7R, LTB, CD247, LCK]
+    celltypist_labels: [T cells, Cycling T cells, Double-positive thymocytes, Double-negative thymocytes]
+  - label_fine: CD4 T cell
+    label_broad: T cell
+    cl_id: CL:0000624
+    tissue: [blood, immune]
+    markers: [CD4, IL7R, CCR7, LTB, MAL, TCF7, LEF1, SELL, CD40LG, CD3D, CD3E]
+    celltypist_labels: [Tcm/Naive helper T cells, Tem/Effector helper T cells, Tem/Temra helper T cells, Follicular helper T cells, Type 1 helper T cells, Type 17 helper T cells, Helper T cells, CD4+ T cells]
+  - label_fine: CD8 T cell
+    label_broad: T cell
+    cl_id: CL:0000625
+    tissue: [blood, immune]
+    markers: [CD8A, CD8B, GZMK, GZMH, CCL5, GZMA, CST7, NKG7, KLRG1, CD3D, CD3E]
+    celltypist_labels: [Tcm/Naive cytotoxic T cells, Tem/Trm cytotoxic T cells, Tem/Temra cytotoxic T cells, Trm cytotoxic T cells, Cytotoxic T cells, CD8+ T cells]
+  - label_fine: regulatory T cell
+    label_broad: T cell
+    cl_id: CL:0000815
+    tissue: [blood, immune]
+    markers: [FOXP3, IL2RA, CTLA4, IKZF2, TIGIT, RTKN2, CD4, CD3D]
+    celltypist_labels: [Regulatory T cells]
+  - label_fine: gamma-delta T cell
+    label_broad: T cell
+    cl_id: CL:0000798
+    tissue: [blood, immune, gut]
+    markers: [TRDC, TRGC1, TRGC2, TRDV2, TRGV9, KLRC1, CD3D, CD3E]
+    celltypist_labels: [gamma-delta T cells, CRTAM+ gamma-delta T cells]
+  - label_fine: MAIT cell
+    label_broad: T cell
+    cl_id: CL:0000940
+    tissue: [blood, immune, liver]
+    markers: [SLC4A10, KLRB1, TRAV1-2, IL7R, CCR6, NCR3, CD3D, ZBTB16]
+    celltypist_labels: [MAIT cells]
+  - label_fine: innate lymphoid cell
+    label_broad: innate lymphoid cell
+    cl_id: CL:0001065
+    generic: true
+    tissue: [immune, gut, lung]
+    markers: [IL7R, KIT, IL1R1, KLRB1, RORC, TNFRSF18, GATA3, AREG]
+    celltypist_labels: [ILC, ILC2, ILC3, ILC precursor]
+  # --------------------------------------------------------------- NK cells
+  - label_fine: NK cell
+    label_broad: NK cell
+    cl_id: CL:0000623
+    generic: true
+    tissue: [blood, immune]
+    markers: [NKG7, GNLY, KLRD1, KLRF1, NCAM1, FCGR3A, PRF1, GZMB, TYROBP, FCER1G, CTSW, SPON2]
+    celltypist_labels: [NK cells, CD16+ NK cells, CD16- NK cells, Transitional NK, Cycling NK cells]
+  # ---------------------------------------------------------------- B cells
+  - label_fine: B cell
+    label_broad: B cell
+    cl_id: CL:0000236
+    generic: true
+    tissue: [blood, immune]
+    markers: [MS4A1, CD79A, CD79B, CD19, BANK1, CD22, PAX5, HLA-DQA1, CD74, IGHM]
+    celltypist_labels: [B cells, Transitional B cells, Germinal center B cells, Cycling B cells, Large pre-B cells, Small pre-B cells, Pro-B cells]
+  - label_fine: naive B cell
+    label_broad: B cell
+    cl_id: CL:0000788
+    tissue: [blood, immune]
+    markers: [TCL1A, IGHD, FCER2, IL4R, MS4A1, CD79A, YBX3, VPREB3]
+    celltypist_labels: [Naive B cells]
+  - label_fine: memory B cell
+    label_broad: B cell
+    cl_id: CL:0000787
+    tissue: [blood, immune]
+    markers: [CD27, TNFRSF13B, AIM2, MS4A1, CD79A, ITGB1, CRIP1, IGHG1]
+    celltypist_labels: [Memory B cells, Age-associated B cells]
+  - label_fine: plasma cell
+    label_broad: plasma cell
+    cl_id: CL:0000786
+    generic: true
+    tissue: [blood, immune, gut]
+    markers: [MZB1, JCHAIN, XBP1, SDC1, IGHG1, IGKC, IGHA1, PRDM1, TNFRSF17, DERL3]
+    celltypist_labels: [Plasma cells]
+  - label_fine: plasmablast
+    label_broad: plasma cell
+    cl_id: CL:0000980
+    tissue: [blood, immune]
+    markers: [MKI67, TOP2A, MZB1, JCHAIN, XBP1, PRDM1, TNFRSF17, STMN1]
+    celltypist_labels: [Plasmablasts]
+  # ---------------------------------------------------------- mononuclear phagocytes
+  - label_fine: monocyte
+    label_broad: monocyte
+    cl_id: CL:0000576
+    generic: true
+    tissue: [blood, immune]
+    markers: [LYZ, CST3, FCN1, S100A8, S100A9, TYROBP, LST1, AIF1, CD14, FCGR3A]
+    celltypist_labels: [Monocytes, Monocyte precursor, Cycling monocytes]
+  - label_fine: CD14 monocyte
+    label_broad: monocyte
+    cl_id: CL:0000860
+    tissue: [blood, immune]
+    markers: [CD14, LYZ, S100A8, S100A9, S100A12, FCN1, VCAN, CST3, LST1, TYROBP, MNDA, CSF3R]
+    celltypist_labels: [Classical monocytes, CD14+ monocytes]
+  - label_fine: CD16 monocyte
+    label_broad: monocyte
+    cl_id: CL:0000875
+    tissue: [blood, immune]
+    markers: [FCGR3A, MS4A7, LST1, LILRB2, CDKN1C, IFITM3, RHOC, CSF1R, HES4, TCF7L2, AIF1]
+    celltypist_labels: [Non-classical monocytes, Intermediate monocytes, CD16+ monocytes]
+  - label_fine: macrophage
+    label_broad: macrophage
+    cl_id: CL:0000235
+    generic: true
+    tissue: [immune, lung, liver, gut]
+    markers: [CD68, CD163, MRC1, C1QA, C1QB, C1QC, APOE, MSR1, MARCO, VSIG4, FCGR1A]
+    celltypist_labels: [Macrophages, Intermediate macrophages, Erythrophagocytic macrophages, Intestinal macrophages]
+  - label_fine: alveolar macrophage
+    label_broad: macrophage
+    cl_id: CL:0000583
+    tissue: [lung]
+    markers: [MARCO, FABP4, PPARG, MCEMP1, INHBA, CD68, MSR1, SPP1, APOC1, C1QA]
+    celltypist_labels: [Alveolar macrophages]
+  - label_fine: Kupffer cell
+    label_broad: macrophage
+    cl_id: CL:0000091
+    tissue: [liver]
+    markers: [CD5L, MARCO, VSIG4, TIMD4, CD163, C1QA, C1QB, HMOX1, SLC40A1, CD68]
+    celltypist_labels: [Kupffer cells]
+  - label_fine: microglial cell
+    label_broad: macrophage
+    cl_id: CL:0000129
+    tissue: [neural]
+    markers: [P2RY12, TMEM119, CX3CR1, CSF1R, C1QA, C1QB, AIF1, HEXB, SALL1, GPR34]
+    celltypist_labels: [Microglia]
+  - label_fine: conventional dendritic cell
+    label_broad: dendritic cell
+    cl_id: CL:0000990
+    generic: true
+    tissue: [blood, immune]
+    markers: [CD1C, FCER1A, CLEC10A, CLEC9A, XCR1, FLT3, HLA-DQA1, HLA-DPB1, ITGAX, IDO1]
+    celltypist_labels: [DC, DC1, DC2, DC3, Migratory DCs, Transitional DC, Cycling DCs]
+  - label_fine: plasmacytoid dendritic cell
+    label_broad: dendritic cell
+    cl_id: CL:0000784
+    tissue: [blood, immune]
+    markers: [LILRA4, IL3RA, CLEC4C, IRF7, TCF4, JCHAIN, PLD4, ITM2C, SERPINF1, PTCRA]
+    celltypist_labels: [pDC, pDC precursors]
+  # ------------------------------------------------------------ granulocytes
+  - label_fine: granulocyte
+    label_broad: granulocyte
+    cl_id: CL:0000094
+    generic: true
+    tissue: [blood, immune]
+    markers: [S100A8, S100A9, CSF3R, FCGR3B, CXCR2, CLC, MNDA, G0S2]
+    celltypist_labels: [Granulocytes, Promyelocytes, Myelocytes]
+  - label_fine: neutrophil
+    label_broad: granulocyte
+    cl_id: CL:0000775
+    tissue: [blood, immune]
+    markers: [FCGR3B, CSF3R, CXCR2, S100A8, S100A9, NAMPT, MNDA, G0S2, FPR1, CMTM2]
+    celltypist_labels: [Neutrophils, Neutrophil-myeloid progenitor]
+  - label_fine: eosinophil
+    label_broad: granulocyte
+    cl_id: CL:0000771
+    tissue: [blood, immune]
+    markers: [CLC, IL5RA, CCR3, SIGLEC8, EPX, PRG2, RNASE2, GATA1]
+    celltypist_labels: [Eosinophils]
+  - label_fine: basophil
+    label_broad: granulocyte
+    cl_id: CL:0000767
+    tissue: [blood, immune]
+    markers: [GATA2, HDC, MS4A2, CPA3, ENPP3, CLC, IL3RA, CCR3]
+    celltypist_labels: [Basophils]
+  - label_fine: mast cell
+    label_broad: mast cell
+    cl_id: CL:0000097
+    generic: true
+    tissue: [immune, lung, gut, skin]
+    markers: [TPSAB1, TPSB2, CPA3, KIT, MS4A2, HDC, GATA2, HPGDS, SLC18A2]
+    celltypist_labels: [Mast cells]
+  # ------------------------------------------------------ erythroid / megakaryocytic
+  - label_fine: platelet
+    label_broad: platelet
+    cl_id: CL:0000233
+    generic: true
+    tissue: [blood]
+    markers: [PPBP, PF4, GNG11, TUBB1, GP9, ITGA2B, CLU, SPARC, TREML1, CAVIN2, NRGN]
+    celltypist_labels: [Megakaryocytes/platelets, Platelets]
+  - label_fine: megakaryocyte
+    label_broad: platelet
+    cl_id: CL:0000556
+    tissue: [blood, immune]
+    markers: [ITGA2B, GP9, PF4, PPBP, VWF, GP1BA, MYL9, PLEK, TUBB1]
+    celltypist_labels: [Megakaryocyte precursor, Megakaryocytes]
+  - label_fine: erythrocyte
+    label_broad: erythrocyte
+    cl_id: CL:0000232
+    generic: true
+    tissue: [blood]
+    markers: [HBB, HBA1, HBA2, HBD, ALAS2, SLC4A1, GYPA, CA1, AHSP, HBM]
+    celltypist_labels: [Erythrocytes, Mid erythroid, Late erythroid, Early erythroid]
+  - label_fine: erythroblast
+    label_broad: erythrocyte
+    cl_id: CL:0000765
+    tissue: [blood, immune]
+    markers: [GATA1, KLF1, TFRC, HBB, HBA1, AHSP, CA1, GYPA, MKI67]
+    celltypist_labels: [Erythroblasts, Early erythroid]
+  - label_fine: hematopoietic stem cell
+    label_broad: hematopoietic stem cell
+    cl_id: CL:0000037
+    generic: true
+    tissue: [blood, immune]
+    markers: [CD34, SPINK2, PROM1, KIT, SOX4, MEIS1, HOPX, CRHBP, AVP, MLLT3]
+    celltypist_labels: [HSC/MPP, MEMP, CMP, GMP, ELP, Early lymphoid/T lymphoid, Pre-pro-B cells]
+  # ------------------------------------------------------------- epithelial
+  - label_fine: epithelial cell
+    label_broad: epithelial cell
+    cl_id: CL:0000066
+    generic: true
+    tissue: [epithelial]
+    markers: [EPCAM, KRT8, KRT18, KRT19, CDH1, CLDN4, CLDN7, KRT7, ELF3, TACSTD2]
+    celltypist_labels: [Epithelial cells]
+  - label_fine: keratinocyte
+    label_broad: epithelial cell
+    cl_id: CL:0000312
+    tissue: [epithelial, skin]
+    markers: [KRT5, KRT14, KRT1, KRT10, DSP, SFN, KRT15, DMKN, PERP]
+    celltypist_labels: [Keratinocytes]
+  - label_fine: basal epithelial cell
+    label_broad: epithelial cell
+    cl_id: CL:0000646
+    tissue: [epithelial, lung]
+    markers: [KRT5, KRT15, TP63, KRT17, DLK2, NGFR, BCAM, S100A2]
+    celltypist_labels: [Basal cells, Basal]
+  - label_fine: ciliated epithelial cell
+    label_broad: epithelial cell
+    cl_id: CL:0000064
+    tissue: [epithelial, lung]
+    markers: [FOXJ1, CAPS, PIFO, TPPP3, RSPH1, DNAH5, CCDC17, TUBB4B, C9orf24]
+    celltypist_labels: [Ciliated, Multiciliated cells, Ciliated cells]
+  - label_fine: club cell
+    label_broad: epithelial cell
+    cl_id: CL:0000158
+    tissue: [lung]
+    markers: [SCGB1A1, SCGB3A1, SCGB3A2, BPIFB1, CYP2F1, MUC5B, WFDC2]
+    celltypist_labels: [Club, Secretory, Club cells]
+  - label_fine: type II pneumocyte
+    label_broad: epithelial cell
+    cl_id: CL:0002063
+    tissue: [lung]
+    markers: [SFTPC, SFTPB, SFTPA1, SFTPA2, NAPSA, LAMP3, ABCA3, SLC34A2, PGC]
+    celltypist_labels: [AT2, Type II pneumocytes, Alveolar type 2]
+  - label_fine: type I pneumocyte
+    label_broad: epithelial cell
+    cl_id: CL:0002062
+    tissue: [lung]
+    markers: [AGER, PDPN, CAV1, CLIC5, RTKN2, EMP2, HOPX, AQP4]
+    celltypist_labels: [AT1, Type I pneumocytes, Alveolar type 1]
+  - label_fine: hepatocyte
+    label_broad: hepatocyte
+    cl_id: CL:0000182
+    generic: true
+    tissue: [liver]
+    markers: [ALB, APOA1, APOA2, APOB, APOC3, TTR, TF, SERPINA1, FGB, FGA, HP, CYP3A4, CYP2E1]
+    celltypist_labels: [Hepatocytes, Hepatocyte]
+  - label_fine: cholangiocyte
+    label_broad: epithelial cell
+    cl_id: CL:1000488
+    tissue: [liver]
+    markers: [KRT7, KRT19, SOX9, EPCAM, CFTR, ANXA4, SPP1, FXYD2, TFF2]
+    celltypist_labels: [Cholangiocytes]
+  - label_fine: enterocyte
+    label_broad: epithelial cell
+    cl_id: CL:0000584
+    tissue: [gut]
+    markers: [FABP1, FABP2, APOA4, ALPI, SI, RBP2, CDX2, VIL1, KRT20, CA2]
+    celltypist_labels: [Enterocytes, Colonocytes, Mature enterocytes]
+  - label_fine: goblet cell
+    label_broad: epithelial cell
+    cl_id: CL:0000160
+    tissue: [gut, lung]
+    markers: [MUC2, TFF3, CLCA1, FCGBP, SPINK4, ZG16, ITLN1, REG4, MUC5AC]
+    celltypist_labels: [Goblet cells, Goblet]
+  - label_fine: Paneth cell
+    label_broad: epithelial cell
+    cl_id: CL:0000510
+    tissue: [gut]
+    markers: [DEFA5, DEFA6, LYZ, REG3A, PRSS2, PLA2G2A, ITLN2]
+    celltypist_labels: [Paneth cells]
+  - label_fine: enteroendocrine cell
+    label_broad: epithelial cell
+    cl_id: CL:0000164
+    tissue: [gut]
+    markers: [CHGA, CHGB, NEUROD1, PCSK1N, SCG2, TPH1, GCG, PYY, SST]
+    celltypist_labels: [Enteroendocrine cells]
+  - label_fine: tuft cell
+    label_broad: epithelial cell
+    cl_id: CL:0002204
+    tissue: [gut, lung]
+    markers: [POU2F3, TRPM5, AVIL, LRMP, SH2D6, HCK, PTGS1, GNG13]
+    celltypist_labels: [Tuft cells, Tuft]
+  - label_fine: intestinal stem cell
+    label_broad: epithelial cell
+    cl_id: CL:0002250
+    tissue: [gut]
+    markers: [LGR5, OLFM4, ASCL2, SMOC2, RGMB, AXIN2, SOX9, EPHB2]
+    celltypist_labels: [Stem cells, Intestinal stem cells, TA cells]
+  - label_fine: proximal tubule epithelial cell
+    label_broad: epithelial cell
+    cl_id: CL:0002306
+    tissue: [kidney]
+    markers: [LRP2, CUBN, SLC34A1, SLC13A3, ALDOB, GPX3, PDZK1, SLC22A6, SLC5A12]
+    celltypist_labels: [Proximal tubule, PT, Proximal tubular cells]
+  - label_fine: loop of Henle epithelial cell
+    label_broad: epithelial cell
+    cl_id: CL:1001106
+    tissue: [kidney]
+    markers: [SLC12A1, UMOD, CLDN16, KCNJ1, CASR, EGF, CLDN10]
+    celltypist_labels: [Thick ascending limb, TAL, Loop of Henle]
+  - label_fine: distal convoluted tubule epithelial cell
+    label_broad: epithelial cell
+    cl_id: CL:1000849
+    tissue: [kidney]
+    markers: [SLC12A3, CALB1, TRPM6, WNK1, PVALB, KLHL3, TRPV5]
+    celltypist_labels: [Distal convoluted tubule, DCT]
+  - label_fine: collecting duct principal cell
+    label_broad: epithelial cell
+    cl_id: CL:1001431
+    tissue: [kidney]
+    markers: [AQP2, AQP3, SCNN1G, SCNN1B, FXYD4, HSD11B2, GATA3, AVPR2]
+    celltypist_labels: [Principal cells, Collecting duct principal cell]
+  - label_fine: collecting duct intercalated cell
+    label_broad: epithelial cell
+    cl_id: CL:0005010
+    tissue: [kidney]
+    markers: [ATP6V1G3, ATP6V0D2, SLC4A1, SLC26A4, FOXI1, KIT, CA12, INSRR]
+    celltypist_labels: [Intercalated cells, Type A intercalated cell, Type B intercalated cell]
+  - label_fine: podocyte
+    label_broad: epithelial cell
+    cl_id: CL:0000653
+    tissue: [kidney]
+    markers: [NPHS1, NPHS2, PODXL, PTPRO, WT1, SYNPO, CLIC5, PLA2R1]
+    celltypist_labels: [Podocytes]
+  # -------------------------------------------------------------- stromal
+  - label_fine: fibroblast
+    label_broad: fibroblast
+    cl_id: CL:0000057
+    generic: true
+    tissue: [stromal]
+    markers: [COL1A1, COL1A2, COL3A1, DCN, LUM, PDGFRA, FBLN1, C1S, C1R, MMP2, SFRP2]
+    celltypist_labels: [Fibroblasts, Fibroblast]
+  - label_fine: myofibroblast
+    label_broad: fibroblast
+    cl_id: CL:0000186
+    tissue: [stromal]
+    markers: [ACTA2, TAGLN, COL1A1, POSTN, CTHRC1, COL11A1, FAP, MYL9]
+    celltypist_labels: [Myofibroblasts]
+  - label_fine: hepatic stellate cell
+    label_broad: fibroblast
+    cl_id: CL:0000632
+    tissue: [liver]
+    markers: [RBP1, LRAT, PDGFRB, DCN, COLEC11, RELN, HGF, ACTA2, IGFBP3]
+    celltypist_labels: [Hepatic stellate cells, Stellate cells]
+  - label_fine: smooth muscle cell
+    label_broad: smooth muscle cell
+    cl_id: CL:0000192
+    generic: true
+    tissue: [stromal]
+    markers: [ACTA2, MYH11, TAGLN, CNN1, DES, MYL9, TPM2, LMOD1]
+    celltypist_labels: [Smooth muscle cells, Smooth muscle]
+  - label_fine: pericyte
+    label_broad: smooth muscle cell
+    cl_id: CL:0000669
+    tissue: [stromal]
+    markers: [RGS5, PDGFRB, KCNJ8, ABCC9, NOTCH3, CSPG4, HIGD1B, COX4I2]
+    celltypist_labels: [Pericytes]
+  - label_fine: endothelial cell
+    label_broad: endothelial cell
+    cl_id: CL:0000115
+    generic: true
+    tissue: [stromal]
+    markers: [PECAM1, VWF, CDH5, CLDN5, KDR, FLT1, PLVAP, ESAM, ENG, EMCN, RAMP2]
+    celltypist_labels: [Endothelial cells, Endothelial, Vascular endothelial cells]
+  - label_fine: lymphatic endothelial cell
+    label_broad: endothelial cell
+    cl_id: CL:0002138
+    tissue: [stromal]
+    markers: [PROX1, LYVE1, PDPN, CCL21, FLT4, MMRN1, TFF3, PECAM1]
+    celltypist_labels: [Lymphatic endothelial cells, Lymphatic EC]
+  - label_fine: adipocyte
+    label_broad: adipocyte
+    cl_id: CL:0000136
+    generic: true
+    tissue: [stromal]
+    markers: [ADIPOQ, LEP, PLIN1, PLIN4, FABP4, LPL, CIDEA, PPARG, GPD1]
+    celltypist_labels: [Adipocytes]
+  - label_fine: mesothelial cell
+    label_broad: mesothelial cell
+    cl_id: CL:0000077
+    generic: true
+    tissue: [stromal, lung, gut]
+    markers: [MSLN, UPK3B, CALB2, WT1, KRT19, LRRN4, ITLN1, PRG4]
+    celltypist_labels: [Mesothelial cells, Mesothelium]
+  - label_fine: cardiomyocyte
+    label_broad: muscle cell
+    cl_id: CL:0000746
+    generic: true
+    tissue: [heart]
+    markers: [TNNT2, MYH6, MYH7, MYL2, MYL7, ACTC1, NPPA, RYR2, TTN, PLN]
+    celltypist_labels: [Cardiomyocytes, Ventricular cardiomyocyte, Atrial cardiomyocyte]
+  - label_fine: melanocyte
+    label_broad: melanocyte
+    cl_id: CL:0000148
+    generic: true
+    tissue: [skin]
+    markers: [PMEL, MLANA, TYR, DCT, TYRP1, MITF, KIT, SOX10]
+    celltypist_labels: [Melanocytes]
+  # ---------------------------------------------------------------- neural
+  - label_fine: neuron
+    label_broad: neuron
+    cl_id: CL:0000540
+    generic: true
+    tissue: [neural]
+    markers: [RBFOX3, SNAP25, SYT1, STMN2, MAP2, GAP43, NEFL, NEFM, SYP, TUBB3]
+    celltypist_labels: [Neurons, Neuron]
+  - label_fine: glutamatergic neuron
+    label_broad: neuron
+    cl_id: CL:0000679
+    tissue: [neural]
+    markers: [SLC17A7, SLC17A6, SATB2, NRGN, CAMK2A, GRIN2B, TBR1, SNAP25]
+    celltypist_labels: [Excitatory neurons, Glutamatergic neurons]
+  - label_fine: GABAergic neuron
+    label_broad: neuron
+    cl_id: CL:0000617
+    tissue: [neural]
+    markers: [GAD1, GAD2, SLC32A1, SLC6A1, PVALB, SST, VIP, LHX6, SNAP25]
+    celltypist_labels: [Inhibitory neurons, GABAergic neurons, Interneurons]
+  - label_fine: glial cell
+    label_broad: glial cell
+    cl_id: CL:0000125
+    generic: true
+    tissue: [neural]
+    markers: [GFAP, AQP4, S100B, SLC1A3, SLC1A2, OLIG1, OLIG2, MBP, PLP1, SOX10]
+    celltypist_labels: [Glia, Glial cells]
+  - label_fine: astrocyte
+    label_broad: glial cell
+    cl_id: CL:0000127
+    tissue: [neural]
+    markers: [GFAP, AQP4, SLC1A3, SLC1A2, ALDH1L1, ALDOC, GJA1, SOX9, S100B]
+    celltypist_labels: [Astrocytes]
+  - label_fine: oligodendrocyte
+    label_broad: glial cell
+    cl_id: CL:0000128
+    tissue: [neural]
+    markers: [MBP, PLP1, MOG, MAG, MOBP, OLIG1, OLIG2, CNP, CLDN11, ST18]
+    celltypist_labels: [Oligodendrocytes]
+  - label_fine: oligodendrocyte precursor cell
+    label_broad: glial cell
+    cl_id: CL:0002453
+    tissue: [neural]
+    markers: [PDGFRA, CSPG4, OLIG1, OLIG2, VCAN, PTPRZ1, SOX10, GPR17]
+    celltypist_labels: [OPC, Oligodendrocyte precursor cells]
+  - label_fine: Schwann cell
+    label_broad: glial cell
+    cl_id: CL:0002573
+    tissue: [neural, stromal]
+    markers: [S100B, MPZ, PMP22, SOX10, NGFR, CDH19, PLP1, GAP43]
+    celltypist_labels: [Schwann cells]

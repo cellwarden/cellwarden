@@ -1,0 +1,29 @@
+# Builds the Rust static library (src/rust, crate "scfastr") and links it into scfastR.so.
+#
+# The Rust build always uses its own target directory (src/rust/target by default), never the
+# shared workspace target in rust/target, so R CMD INSTALL does not contend for its lock.
+# Override with SCFASTR_TARGET_DIR=/abs/path (e.g. a cache directory in a container build).
+# cargo must be on PATH or in ~/.cargo/bin.
+# Optional cargo features of the scfastr crate (comma- or space-separated), e.g.
+# SCFASTR_CARGO_FEATURES=cugraph for GPU Leiden (Phase 7), SCFASTR_CARGO_FEATURES=cuda for
+# CUDA PCA / kNN (Phase 6), or SCFASTR_CARGO_FEATURES=cuda,cugraph for both.
+
+TARGET_DIR = $(if $(SCFASTR_TARGET_DIR),$(SCFASTR_TARGET_DIR),$(CURDIR)/rust/target)
+LIBDIR = $(TARGET_DIR)/release
+STATLIB = $(LIBDIR)/libscfastr.a
+CARGO_FEATURES = $(if $(SCFASTR_CARGO_FEATURES),--features "$(SCFASTR_CARGO_FEATURES)",)
+PKG_LIBS = -L$(LIBDIR) -lscfastr -lpthread -ldl -lm
+
+all: $(SHLIB)
+
+$(SHLIB): $(STATLIB)
+
+# Phony so cargo always runs: it is incremental, and it sees edits in rust/scfast-core
+# that make cannot.
+.PHONY: $(STATLIB)
+$(STATLIB):
+	export PATH="$(PATH):$(HOME)/.cargo/bin" && \
+	  cargo build --lib --release --manifest-path=./rust/Cargo.toml --target-dir "$(TARGET_DIR)" $(CARGO_FEATURES)
+
+clean:
+	rm -Rf $(SHLIB) $(STATLIB) $(OBJECTS)

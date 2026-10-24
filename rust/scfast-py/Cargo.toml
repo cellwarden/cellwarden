@@ -1,0 +1,33 @@
+[package]
+name = "scfast-py"
+description = "Python bindings for scfast (PyO3); built with maturin"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lib]
+# The native extension is `scfast._scfast`; the pure-Python package `scfast`
+# (python/scfast/__init__.py) wraps it. See pyproject.toml.
+name = "_scfast"
+crate-type = ["cdylib"]
+
+[dependencies]
+scfast-core.workspace = true
+rayon.workspace = true
+# abi3-py310: one wheel for every CPython >= 3.10. No "extension-module" feature: in PyO3
+# 0.30 it is deprecated in favour of PYO3_BUILD_EXTENSION_MODULE, which maturin >= 1.9.4
+# sets automatically (and leaving the feature off keeps `cargo check`/`cargo test` linking).
+pyo3 = { version = "0.30", features = ["abi3-py310"] }
+numpy = "0.30"
+# Chunk decompression for scfast.read_10x_h5 (whole-buffer inflate, no streaming needed).
+libdeflater = "1.26"
+
+[features]
+# GPU Leiden via cuGraph's C API (Phase 7), dlopen'ed at run time; the wheel still imports
+# without it. Build with `maturin build --features cugraph`.
+cugraph = ["scfast-core/cugraph"]
+# CUDA PCA / kNN (Phase 6): cudarc with dynamic loading, so the wheel imports without the
+# CUDA libraries and `device="auto"` falls back to the CPU. Build with
+# `maturin build --features cuda` (or `--features cuda,cugraph`).
+cuda = ["scfast-core/cuda"]

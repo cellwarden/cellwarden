@@ -1,0 +1,29 @@
+# Published list prices, USD per million tokens (input, output, cached input).
+# The ledger converts to GBP with llm.budget.usd_to_gbp (default 0.78).
+# A model name is matched exactly, then by longest prefix (so a dated
+# snapshot like claude-haiku-4-5-20251001 uses the claude-haiku-4-5 row).
+# An unknown model falls back to the `_default` row (deliberately expensive,
+# so an unpriced model never slips under the budget guard) and the ledger
+# entry says so. Edit this file when prices change; nothing else needs to.
+models:
+  claude-haiku-4-5:   {input: 1.00, output: 5.00, cached: 0.10}
+  claude-sonnet-4-5:  {input: 3.00, output: 15.00, cached: 0.30}
+  claude-opus-4-1:    {input: 15.00, output: 75.00, cached: 1.50}
+  gpt-4o-mini:        {input: 0.15, output: 0.60, cached: 0.075}
+  gpt-4o:             {input: 2.50, output: 10.00, cached: 1.25}
+  gpt-4.1-mini:       {input: 0.40, output: 1.60, cached: 0.10}
+  gpt-4.1-nano:       {input: 0.10, output: 0.40, cached: 0.025}
+  gpt-4.1:            {input: 2.00, output: 8.00, cached: 0.50}
+  # NVIDIA NIM hosted endpoints (build.nvidia.com) run on free credits for development; these rows
+  # are the typical per-token cost of the same open models on paid OpenAI-compatible hosts, so the
+  # budget guard stays meaningful. Self-hosted NIM: set your own figures (or 0).
+  meta/llama-3.3-70b-instruct:      {input: 0.60, output: 0.60, cached: 0.60}
+  # Estimates for current NIM models (no paid list price at the time of adding), sized like
+  # comparable open MoE models on paid hosts.
+  nvidia/nemotron-3-ultra-550b-a55b: {input: 0.90, output: 2.70, cached: 0.90}
+  nvidia/nemotron-3.5-lightning-30b-a3b: {input: 0.10, output: 0.40, cached: 0.10}
+  minimaxai/minimax-m3.1-flash:     {input: 0.30, output: 1.20, cached: 0.30}
+  meta/llama-3.1-405b-instruct:     {input: 3.00, output: 3.00, cached: 3.00}
+  nvidia/llama-3.3-nemotron-super-49b-v1: {input: 0.40, output: 0.40, cached: 0.40}
+  mock-model:         {input: 1.00, output: 5.00, cached: 0.10}
+  _default:           {input: 15.00, output: 75.00, cached: 1.50}

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CellWarden explorer — {{ run_id }}</title>
+<style>
+:root { --fg:#1d1f21; --muted:#6b6f76; --bg:#fff; --panel:#f6f7f9; --line:#dfe2e6; --accent:#0072B2; }
+* { box-sizing:border-box; }
+body { margin:0; font:14px/1.4 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif; color:var(--fg); background:var(--bg); display:flex; flex-direction:column; height:100vh; }
+header { padding:8px 16px; border-bottom:1px solid var(--line); display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
+header h1 { font-size:16px; margin:0; }
+header label { font-size:13px; color:var(--muted); }
+select, input { font:inherit; padding:3px 6px; border:1px solid var(--line); border-radius:4px; }
+button { font:inherit; padding:3px 10px; border:1px solid var(--line); border-radius:4px; background:var(--panel); cursor:pointer; }
+#wrap { display:flex; flex:1; min-height:0; }
+#canvas-box { flex:1; position:relative; min-width:0; }
+canvas { position:absolute; inset:0; width:100%; height:100%; cursor:crosshair; }
+#side { width:260px; border-left:1px solid var(--line); padding:10px 12px; overflow:auto; font-size:13px; }
+#legend { list-style:none; padding:0; margin:0; }
+#legend li { display:flex; align-items:center; gap:6px; padding:1px 0; cursor:pointer; }
+#legend li.off { opacity:.35; }
+.sw { width:11px; height:11px; border-radius:2px; flex:none; }
+#tip { position:absolute; pointer-events:none; background:rgba(30,30,30,.9); color:#fff; padding:4px 8px; border-radius:4px; font-size:12px; display:none; white-space:pre; z-index:3; }
+#bar { height:10px; background:linear-gradient(90deg,#440154,#3b528b,#21918c,#5ec962,#fde725); border-radius:3px; }
+.muted { color:var(--muted); } footer { font-size:11px; color:var(--muted); padding:4px 16px; border-top:1px solid var(--line); }
+</style>
+</head>
+<body>
+<header>
+  <h1>CellWarden explorer</h1>
+  <label>colour by <select id="colour"></select></label>
+  <label>gene <input id="gene" list="genes" placeholder="type a gene…" autocomplete="off" size="14"><datalist id="genes"></datalist></label>
+  <label>point size <input id="size" type="range" min="1" max="8" value="3" style="width:80px"></label>
+  <button id="reset">reset view</button>
+  <button id="png">save PNG</button>
+  <span class="muted" id="info"></span>
+</header>
+<div id="wrap">
+  <div id="canvas-box"><canvas id="c"></canvas><div id="tip"></div></div>
+  <aside id="side"><div id="legend-title" class="muted"></div><ul id="legend"></ul><div id="scale" style="display:none"><div id="bar"></div><div style="display:flex;justify-content:space-between"><span id="lo"></span><span id="hi"></span></div></div></aside>
+</div>
+<footer>run {{ run_id }} · {{ n }} of {{ n_total }} cells shown · {{ n_genes }} genes available for {{ expr_cells }} cells · generated {{ generated_utc }} · wheel = zoom, drag = pan, hover = cell, click legend = toggle</footer>
+<script id="data" type="application/json">{{ data_json | safe }}</script>
+<script>
+(function () {
+  var D = JSON.parse(document.getElementById('data').textContent);
+  var N = D.x.length, canvas = document.getElementById('c'), ctx = canvas.getContext('2d');
+  var sel = document.getElementById('colour'), geneIn = document.getElementById('gene'), list = document.getElementById('genes');
+  var legend = document.getElementById('legend'), legendTitle = document.getElementById('legend-title');
+  var scale = document.getElementById('scale'), tip = document.getElementById('tip'), info = document.getElementById('info');
+  var sizeIn = document.getElementById('size');
+  var geneNames = Object.keys(D.genes).sort();
+  geneNames.forEach(function (g) { var o = document.createElement('option'); o.value = g; list.appendChild(o); });
+  var catKeys = Object.keys(D.cats), numKeys = Object.keys(D.nums);
+  var pref = ['seurat_clusters', 'cell_type_broad', 'cell_type_fine', 'sample_id', 'condition'];
+  catKeys.sort(function (a, b) { var ia = pref.indexOf(a), ib = pref.indexOf(b); ia = ia < 0 ? 99 : ia; ib = ib < 0 ? 99 : ib; return ia - ib || a.localeCompare(b); });
+  catKeys.forEach(function (k) { var o = document.createElement('option'); o.value = 'cat:' + k; o.textContent = k; sel.appendChild(o); });
+  numKeys.forEach(function (k) { var o = document.createElement('option'); o.value = 'num:' + k; o.textContent = k; sel.appendChild(o); });
+  if (geneNames.length) { var o = document.createElement('option'); o.value = 'gene'; o.textContent = 'gene (type above)'; sel.appendChild(o); }
+  var view = { sx: 1, sy: 1, tx: 0, ty: 0, zoom: 1, px: 0, py: 0 }, W = 0, H = 0, dpr = window.devicePixelRatio || 1;
+  var xmin = Infinity, xmax = -Infinity, ymin = Infinity, ymax = -Infinity;
+  for (var i = 0; i < N; i++) { if (D.x[i] < xmin) xmin = D.x[i]; if (D.x[i] > xmax) xmax = D.x[i]; if (D.y[i] < ymin) ymin = D.y[i]; if (D.y[i] > ymax) ymax = D.y[i]; }
+  var colours = new Array(N), hidden = {}, mode = null, key = null, geneVec = null, order = null;
+  function viridis(t) { var a = [[68,1,84],[59,82,139],[33,145,140],[94,201,98],[253,231,37]]; t = Math.max(0, Math.min(1, t)) * 4; var i = Math.min(3, Math.floor(t)), f = t - i; var c = a[i].map(function (v, k) { return Math.round(v + (a[i + 1][k] - v) * f); }); return 'rgb(' + c.join(',') + ')'; }
+  function setColours() {
+    var v = sel.value; hidden = {}; order = null;
+    legend.innerHTML = ''; scale.style.display = 'none';
+    if (!v) { mode = null; key = null; legendTitle.textContent = 'no colour options in this export'; for (var i = 0; i < N; i++) colours[i] = D.na_colour; draw(); return; }
+    if (v.indexOf('cat:') === 0) {
+      mode = 'cat'; key = v.slice(4); var c = D.cats[key];
+      legendTitle.textContent = key + ' (' + c.levels.length + ')';
+      for (var i = 0; i < N; i++) colours[i] = D.palette[c.idx[i] % D.palette.length];
+      c.levels.forEach(function (lv, j) {
+        var li = document.createElement('li'); li.innerHTML = '<span class="sw" style="background:' + D.palette[j % D.palette.length] + '"></span>' + lv;
+        li.onclick = function () { hidden[j] = !hidden[j]; li.classList.toggle('off', !!hidden[j]); draw(); };
+        legend.appendChild(li);
+      });
+    } else {
+      var vals;
+      if (v === 'gene') {
+        mode = 'gene'; key = geneIn.value.trim(); var g = D.genes[key];
+        if (!g) { legendTitle.textContent = key ? 'gene "' + key + '" not in the exported subset' : 'type a gene name above'; for (var i = 0; i < N; i++) colours[i] = D.na_colour; draw(); return; }
+        vals = new Array(N); for (var i = 0; i < N; i++) vals[i] = null;
+        var expr = {}; for (var k = 0; k < g.i.length; k++) vals[g.i[k]] = g.v[k];
+        legendTitle.textContent = key + ' (log-normalised; grey = not in subset or zero)';
+      } else { mode = 'num'; key = v.slice(4); vals = D.nums[key]; legendTitle.textContent = key; }
+      var lo = Infinity, hi = -Infinity; for (var i = 0; i < N; i++) if (vals[i] != null) { if (vals[i] < lo) lo = vals[i]; if (vals[i] > hi) hi = vals[i]; }
+      if (!isFinite(lo)) { lo = 0; hi = 1; }
+      geneVec = vals;
+      for (var i = 0; i < N; i++) colours[i] = vals[i] == null ? D.na_colour : viridis(hi > lo ? (vals[i] - lo) / (hi - lo) : 0);
+      if (mode === 'gene') { for (var i = 0; i < N; i++) if (vals[i] === 0) colours[i] = '#e6e6e6'; }
+      // draw high values last so they are visible
+      order = []; for (var i = 0; i < N; i++) order.push(i); order.sort(function (a, b) { return (vals[a] == null ? -1 : vals[a]) - (vals[b] == null ? -1 : vals[b]); });
+      scale.style.display = 'block'; document.getElementById('lo').textContent = lo.toFixed(2); document.getElementById('hi').textContent = hi.toFixed(2);
+    }
+    draw();
+  }
+  function resize() { var b = canvas.parentNode.getBoundingClientRect(); W = b.width; H = b.height; canvas.width = W * dpr; canvas.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); fit(); draw(); }
+  function fit() { var pad = 20; view.sx = (W - 2 * pad) / ((xmax - xmin) || 1); view.sy = (H - 2 * pad) / ((ymax - ymin) || 1); var s = Math.min(view.sx, view.sy); view.sx = view.sy = s; view.tx = pad + ((W - 2 * pad) - s * (xmax - xmin)) / 2; view.ty = pad + ((H - 2 * pad) - s * (ymax - ymin)) / 2; view.zoom = 1; view.px = 0; view.py = 0; }
+  function X(i) { return (view.tx + (D.x[i] - xmin) * view.sx) * view.zoom + view.px; }
+  function Y(i) { return (H - (view.ty + (D.y[i] - ymin) * view.sy)) * view.zoom + view.py; }
+  var raf = null;
+  function draw() { if (raf) return; raf = requestAnimationFrame(function () { raf = null; _draw(); }); }
+  function _draw() {
+    ctx.clearRect(0, 0, W, H);
+    var r = +sizeIn.value * (N > 50000 ? 0.5 : 1), cat = mode === 'cat' ? D.cats[key].idx : null;
+    var idx = order || null;
+    for (var k = 0; k < N; k++) { var i = idx ? idx[k] : k; if (cat && hidden[cat[i]]) continue; ctx.fillStyle = colours[i]; ctx.fillRect(X(i) - r / 2, Y(i) - r / 2, r, r); }
+    info.textContent = N.toLocaleString() + ' cells';
+  }
+  // hover: nearest point within 6 px (brute force is fine up to 100k at mouse-move rate with throttling)
+  var lastMove = 0;
+  canvas.addEventListener('mousemove', function (e) {
+    var now = Date.now(); if (now - lastMove < 40) return; lastMove = now;
+    if (dragging) { view.px += e.clientX - dragX; view.py += e.clientY - dragY; dragX = e.clientX; dragY = e.clientY; draw(); return; }
+    var b = canvas.getBoundingClientRect(), mx = e.clientX - b.left, my = e.clientY - b.top, best = -1, bd = 36;
+    for (var i = 0; i < N; i++) { var dx = X(i) - mx, dy = Y(i) - my, d = dx * dx + dy * dy; if (d < bd) { bd = d; best = i; } }
+    if (best < 0) { tip.style.display = 'none'; return; }
+    var lines = [D.ids[best]];
+    catKeys.forEach(function (k) { lines.push(k + ': ' + D.cats[k].levels[D.cats[k].idx[best]]); });
+    numKeys.forEach(function (k) { if (D.nums[k][best] != null) lines.push(k + ': ' + D.nums[k][best]); });
+    if (mode === 'gene' && geneVec) lines.push(key + ': ' + (geneVec[best] == null ? 'n/a' : geneVec[best]));
+    tip.textContent = lines.join('\n'); tip.style.display = 'block'; tip.style.left = (mx + 12) + 'px'; tip.style.top = (my + 12) + 'px';
+  });
+  canvas.addEventListener('mouseleave', function () { tip.style.display = 'none'; });
+  var dragging = false, dragX = 0, dragY = 0;
+  canvas.addEventListener('mousedown', function (e) { dragging = true; dragX = e.clientX; dragY = e.clientY; tip.style.display = 'none'; });
+  window.addEventListener('mouseup', function () { dragging = false; });
+  canvas.addEventListener('wheel', function (e) {
+    e.preventDefault(); var b = canvas.getBoundingClientRect(), mx = e.clientX - b.left, my = e.clientY - b.top;
+    var f = e.deltaY < 0 ? 1.15 : 1 / 1.15; var nz = Math.max(0.2, Math.min(50, view.zoom * f)); f = nz / view.zoom;
+    view.px = mx - (mx - view.px) * f; view.py = my - (my - view.py) * f; view.zoom = nz; draw();
+  }, { passive: false });
+  document.getElementById('reset').onclick = function () { fit(); draw(); };
+  document.getElementById('png').onclick = function () { var a = document.createElement('a'); a.download = 'umap_' + (key || 'plot') + '.png'; a.href = canvas.toDataURL('image/png'); a.click(); };
+  sel.onchange = setColours; sizeIn.oninput = draw;
+  function pickGene() { if (geneNames.length && geneIn.value.trim()) { sel.value = 'gene'; } setColours(); }
+  geneIn.addEventListener('change', pickGene);
+  geneIn.addEventListener('keyup', function (e) { if (e.key === 'Enter') pickGene(); });
+  window.addEventListener('resize', resize);
+  resize(); setColours();
+})();
+</script>
+</body>
+</html>

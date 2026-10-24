@@ -1,0 +1,86 @@
+{
+  "added_genes": [
+    "PPBP",
+    "PF4",
+    "GNG11",
+    "HBB",
+    "HBA1",
+    "HBA2",
+    "HBP1",
+    "HBEGF"
+  ],
+  "donor_B_gene_order": "permuted",
+  "files": {
+    "donor_A/barcodes.tsv.gz": "4c2eced16b45c7472ddf770096f59ae0d2d9c767987dbb4303d632e263bc9d07",
+    "donor_A/features.tsv.gz": "c1be0995e801c5fae20f749c1d1313dfcf917bbbecf8dce8cfce0d380309c0c3",
+    "donor_A/matrix.mtx.gz": "a63a5cbdc4f22d75538f8db4e1030f4c5f6d2263eeb35f1740d47e7335974da6",
+    "donor_B.h5ad": "ed3f29dde46a3e61aab516611ff47e6e50fe86a20ba998d4d8d42e699a466295",
+    "samples.csv": "0c0a221427ef651ad55f6de4f5d76a2b86a25349aa22438cd3af43a38e43a086",
+    "truth.tsv": "c699884fb674d7631b9016ef7c10d1ad19cd0b1ad6893561e59bd3704a9f8e58"
+  },
+  "generator": "tests/fixtures/make_stage_inputs.py",
+  "genes_missing_from_donor_B": [
+    "TMEM209",
+    "LOC301",
+    "SLC25A430",
+    "TMEM481"
+  ],
+  "n_genes_union": 808,
+  "platelet_markers": [
+    "PPBP",
+    "PF4",
+    "GNG11"
+  ],
+  "samples": {
+    "donor_A": {
+      "format": "10x_mtx",
+      "injected": {
+        "doublet": 10,
+        "lowq": 12,
+        "none": 244,
+        "platelet": 12
+      },
+      "median_genes": {
+        "doublet": 222.0,
+        "lowq": 77.5,
+        "none": 174.0,
+        "platelet": 64.0
+      },
+      "median_umis": {
+        "doublet": 911.5,
+        "lowq": 203.0,
+        "none": 550.0,
+        "platelet": 144.5
+      },
+      "n_cells": 278,
+      "n_genes": 808,
+      "total_umis": 157206
+    },
+    "donor_B": {
+      "format": "h5ad",
+      "injected": {
+        "doublet": 10,
+        "lowq": 13,
+        "none": 256,
+        "platelet": 12
+      },
+      "median_genes": {
+        "doublet": 258.0,
+        "lowq": 88.0,
+        "none": 167.0,
+        "platelet": 61.0
+      },
+      "median_umis": {
+        "doublet": 1193.5,
+        "lowq": 288.0,
+        "none": 525.0,
+        "platelet": 133.0
+      },
+      "n_cells": 291,
+      "n_genes": 804,
+      "total_umis": 160823
+    }
+  },
+  "seed": 20261018,
+  "source": "tests/fixtures/pbmc_like"
+}

@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#BSUB -J {{ job_name }}
+#BSUB -o {{ log_path }}
+#BSUB -e {{ log_path }}
+#BSUB -W {{ time_hhmm }}
+{% if queue or partition %}#BSUB -q {{ queue or partition }}
+{% endif %}{% if account %}#BSUB -P {{ account }}
+{% endif %}{% if cpus %}#BSUB -n {{ cpus }}
+{% endif %}{% if mem_gb %}#BSUB -R "rusage[mem={{ mem_gb }}G]"
+{% endif %}{% if gpus %}#BSUB -gpu "num={{ gpus }}"
+{% endif %}{% for line in extra %}#BSUB {{ line }}
+{% endfor %}{% include "_body.sh.j2" %}

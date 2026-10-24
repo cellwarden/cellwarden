@@ -1,0 +1,5 @@
+sample_id,path,format,donor,condition,batch
+S1,data/S1/filtered_feature_bc_matrix.h5,,D1,control,B1
+S2,data/S2/filtered_feature_bc_matrix,10x_mtx,D2,control,B1
+S3,data/S3/S3_counts.h5ad,h5ad,D3,treated,B2
+S4,data/S4/S4_seurat.rds,seurat,D4,treated,B2

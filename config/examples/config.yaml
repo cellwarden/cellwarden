@@ -1,0 +1,149 @@
+# cellwarden run configuration: stages S0-S2 (docs/stages-spec.md, section 4).
+#
+#   cellwarden doctor --config config/examples/config.yaml     # preflight check
+#   cellwarden run    --config config/examples/config.yaml --detach
+#
+# Relative paths in this file are resolved against the directory that holds
+# it, so samples.csv and qc_policy.yaml below are the files next to it.
+# Settings are validated before anything runs, and every problem is reported
+# at once. The run directory gets a copy of this file, samples.csv and
+# qc_policy.yaml, plus config.resolved.yaml (defaults filled in, absolute
+# paths); stages read only that resolved copy.
+
+project: my_study
+
+# Where everything for this run is written: state.json, logs/, S0/, S1/, S2/.
+# Use scratch, not home or project storage. $USER is expanded.
+# Overridden by `cellwarden run --run-dir DIR`.
+run_dir: /scratch/$USER/cellwarden/my_study
+
+# One seed for every random step (doublet simulation, PCA, Leiden, UMAP).
+seed: 42
+
+samples: samples.csv            # sample sheet (sample_id, path, optional format, metadata)
+qc_policy: qc_policy.yaml       # QC rules for S1c
+
+# rds is always available. qs2 is faster and smaller, but needs the R qs2
+# package; readers accept either.
+object_format: rds              # rds | qs2
+
+# Resource caps, applied to every stage through environment variables
+# (OMP/BLAS/NUMBA threads, CELLWARDEN_THREADS, CELLWARDEN_MAX_MEMORY_GB,
+# CELLWARDEN_GPU_MEM_CAP_GB) and `nice`. The defaults below suit a shared login
+# node such as the Iridis X L4 node (docs/DESIGN.md section 2.1). On a
+# workstation of your own you can raise them and set nice: 0.
+resources:
+  threads: 8                    # CPU threads per stage
+  max_memory_gb: 64             # RAM cap
+  gpu_mem_cap_gb: 20            # GPU memory cap; leaves headroom on a shared 24 GB L4
+  nice: 10                      # 0-19; higher = lower priority, so interactive users come first
+
+# S1b doublet detection, per sample.
+doublets:
+  method: scrublet              # scrublet | scdblfinder (needs the R package) | none
+
+# How S2 treats cells that S1c (and the QC gate G1) marked `review`.
+# keep is the conservative choice: nothing is lost, and the
+# cells are easy to find and drop later (their reasons are in
+# S1/qc_decisions.tsv.gz).
+qc:
+  review_action: keep           # keep | exclude
+
+normalization: lognorm          # lognorm | sct (SCTransform v2, CPU path only)
+n_hvg: 2000                     # number of highly variable genes
+
+# Where scale/PCA/integration/neighbours/clustering/UMAP run.
+#   auto: GPU if one is free and the data fits under gpu_mem_cap_gb, else CPU
+#   cpu:  Seurat only
+#   gpu:  rapids-singlecell through the exchange format; fails if no GPU
+device: auto                    # auto | cpu | gpu
+
+# Which implementation runs normalisation-to-clustering (docs/scfast-integration.md).
+#   scfast: the in-process Rust engine (R package scfastR); no Seurat <-> AnnData
+#           exchange and no scrublet on this path. On a GPU plan see engine_gpu below.
+#   seurat: previous behaviour (Seurat on CPU; exchange + rapids/scanpy on GPU)
+#   auto:   scfast if scfastR is installed and the device plan is CPU (or, on a GPU
+#           plan, engine_gpu resolves to scfast), else seurat
+#           (`cellwarden doctor` shows what auto would pick here)
+engine: auto                    # auto | scfast | seurat
+
+# Which implementation runs on a GPU plan (device: gpu, or auto with a usable GPU).
+#   scfast: scfastR in process on CUDA (needs scfastR built with the cuda feature and a
+#           visible device; UMAP stays on the CPU); error otherwise
+#   rapids: rapids-singlecell through the exchange format (previous behaviour)
+#   auto:   scfast when scfastR reports cuda_available, else rapids
+#           (`cellwarden doctor` shows "scfastR cuda built" / "CUDA device visible")
+engine_gpu: auto                # auto | scfast | rapids
+
+integration:
+  method: none                  # none | harmony
+  batch_key: sample_id          # a samples.csv column (or sample_id)
+
+pcs: auto                       # auto (elbow rule, 10-50) or an integer
+n_neighbors: 20
+
+clustering:
+  resolution: 0.5               # Leiden resolution; changing it reruns only S2
+
+# ---------------------------------------------------------------------------
+# Site, gates, LLM, DGE, Open Targets, report (docs/USER_GUIDE.md section 2).
+# ---------------------------------------------------------------------------
+
+site: iridisx                   # a name in conf/sites/<name>.yaml, or a path; supplies defaults for
+                                # execution, resources, container, scheduler and scratch (this file wins per key)
+execution: direct               # direct | slurm | pbs | lsf | sge | split
+
+# Who gets the last word at each gate: auto (reviewer-approved agent proposal continues),
+# review (always stops for a human), escalate (always a human, no LLM calls).
+gates:
+  G1: auto                      # QC decisions
+  G2: review                    # tissue / disease context (speculative, so a human by default)
+  G3: auto                      # cluster annotation
+  G4: review                    # DGE interpretation
+
+# Omit this whole section for rules-only gates (every gate then waits for a human).
+llm:
+  default:
+    provider: anthropic         # anthropic | openai_compatible (vLLM, Ollama, ...) | mock (tests)
+    model: claude-haiku-4-5
+    api_key_env: ANTHROPIC_API_KEY   # the NAME of the environment variable; the key is never written anywhere
+    # base_url: http://localhost:11434/v1   # openai_compatible only
+  roles: {}                     # per-role overrides: qc_worker, context_worker, annotation_worker,
+                                # interpretation_worker, reviewer (e.g. a stronger model for the reviewer)
+  budget:
+    per_run_limit: 5            # GBP; a call that would cross a limit is not made
+    total_limit: 30             # GBP across all runs (ledger in ~/.cellwarden/ledger.json)
+    usd_to_gbp: 0.78
+  replay: false                 # true: reuse logged outputs for identical prompts (no calls, no cost)
+
+# Pseudobulk differential expression (S4). Conditions and covariates are samples.csv columns.
+dge:
+  method: findmarkers            # findmarkers (Seurat, compares cells) | pseudobulk (compares samples)
+  test: MAST                     # FindMarkers test: MAST, wilcox, wilcox_limma, LR, t, bimod, negbinom, poisson, DESeq2
+  pseudobulk_method: deseq2      # method pseudobulk: deseq2 | limma_voom
+  markers: auto                  # auto: with no contrasts, markers of each cell type vs the other cells; true: always too
+  interactive: false             # true: stop before S4 (cell types known) and ask for the comparisons in the terminal
+  group_by: cell_type_broad      # the groups tested separately (cell_type_fine, cluster, ...)
+  contrasts:                     # each side is one or more values of any cell metadata column
+    - {name: treated_vs_control, column: condition, numerator: treated, denominator: control, covariates: [batch]}
+  min_pct: 0.1                   # FindMarkers: genes expressed in at least this fraction of one side
+  logfc_threshold: 0.25          # FindMarkers: minimum |log2 FC| to test a gene
+  min_cells_per_side: 10         # FindMarkers: fewer cells on a side skips the group
+  max_cells_per_side: null       # FindMarkers: downsample each side to this many cells (speed)
+  sample_col: sample_id          # pseudobulk: the sample column (one pseudobulk per group x sample)
+  min_cells_per_sample: 20       # pseudobulk: smaller pseudobulk samples are dropped
+  min_replicates: 2              # pseudobulk: samples needed on each side
+  padj: 0.05
+  lfc: 0.5
+
+opentargets:
+  enabled: true
+  offline: false                # true: read the cache only, never the network
+  max_genes_per_direction: 50
+  cache_dir: refs/opentargets   # shared across runs; entries never expire
+
+report:
+  explorer_max_cells: 100000    # explorer.html subsamples above this
+  expr_genes: 200               # variable genes exported for colour-by-gene
+  expr_max_cells: 20000
+  top_markers: 10

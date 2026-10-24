@@ -1,0 +1,22 @@
+# Site file for running inside the cellwarden Docker image (containers/Dockerfile)
+# on a single node with an NVIDIA GPU: `docker run --gpus all ...`.
+site: docker
+execution: direct
+resources:
+  threads: 8
+  max_memory_gb: 64
+  gpu_mem_cap_gb: 20
+  nice: 0
+scratch: /scratch
+container:
+  runtime: docker
+  image: ghcr.io/cellwarden/cellwarden:latest
+  options: ["--gpus", "all"]
+scheduler:
+  partition: null
+  account: null
+  time: "24:00:00"
+  cpus: null
+  mem_gb: null
+  gpus: 0
+  extra: []

@@ -1,0 +1,124 @@
+# Built-in gene signatures for stage S3 (docs/agents-spec.md section 4).
+# Human gene symbols. Scored per cell with Seurat::AddModuleScore and
+# averaged per cluster into S3/signatures.tsv.gz. Each set has:
+#   genes:     5-15 canonical markers
+#   category:  state   (programme / activity: interferon, proliferation, ...)
+#              lineage (cell-type set; used as a consensus vote)
+#   cell_type: for lineage sets, the label_fine in
+#              python/cellwarden/annotation/markers_human.yaml it votes for
+# Override the file with `signatures: path/to/file.yaml` in config.yaml.
+sets:
+  # ---- states -------------------------------------------------------------
+  interferon:
+    category: state
+    genes: [ISG15, IFI6, IFI27, IFI44L, IFIT1, IFIT2, IFIT3, MX1, MX2, OAS1, OAS2, RSAD2, STAT1, IRF7, XAF1]
+  inflammation:
+    category: state
+    genes: [IL1B, IL6, TNF, CXCL8, CCL3, CCL4, NFKBIA, NFKB1, PTGS2, CXCL2, CXCL3, SOD2, ICAM1, TNFAIP3]
+  proliferation:
+    category: state
+    genes: [MKI67, TOP2A, PCNA, MCM2, MCM5, CENPF, TYMS, UBE2C, BIRC5, CCNB1, CDK1, STMN1, HMGB2, TUBA1B, NUSAP1]
+  hypoxia:
+    category: state
+    genes: [VEGFA, SLC2A1, LDHA, PGK1, CA9, BNIP3, ADM, NDRG1, ENO1, ALDOA, PDK1, EGLN3, P4HA1, ANKRD37]
+  stress:
+    category: state
+    genes: [FOS, FOSB, JUN, JUNB, EGR1, HSPA1A, HSPA1B, DNAJB1, HSPB1, IER2, ATF3, DUSP1]
+  # ---- blood and immune lineages ------------------------------------------
+  platelet:
+    category: lineage
+    cell_type: platelet
+    genes: [PPBP, PF4, GNG11, TUBB1, GP9, ITGA2B, CLU, SPARC, TREML1, CAVIN2, NRGN, RGS18]
+  erythrocyte:
+    category: lineage
+    cell_type: erythrocyte
+    genes: [HBB, HBA1, HBA2, HBD, ALAS2, SLC4A1, GYPA, CA1, AHSP, HBM]
+  T:
+    category: lineage
+    cell_type: T cell
+    genes: [CD3D, CD3E, CD3G, CD2, TRAC, TRBC1, TRBC2, IL7R, LTB, CD247, LCK, CD5, CD6]
+  CD4_T:
+    category: lineage
+    cell_type: CD4 T cell
+    genes: [CD4, IL7R, CCR7, LTB, MAL, TCF7, LEF1, SELL, CD40LG, AQP3]
+  CD8_T:
+    category: lineage
+    cell_type: CD8 T cell
+    genes: [CD8A, CD8B, GZMK, GZMH, CCL5, GZMA, CST7, NKG7, KLRG1, CD3D]
+  NK:
+    category: lineage
+    cell_type: NK cell
+    genes: [NKG7, GNLY, KLRD1, KLRF1, NCAM1, FCGR3A, PRF1, GZMB, TYROBP, FCER1G, CTSW, SPON2, KLRB1]
+  B:
+    category: lineage
+    cell_type: B cell
+    genes: [MS4A1, CD79A, CD79B, CD19, BANK1, CD22, TCL1A, VPREB3, PAX5, HLA-DQA1, IGHM, IGHD, CD74]
+  plasma:
+    category: lineage
+    cell_type: plasma cell
+    genes: [MZB1, JCHAIN, XBP1, SDC1, IGHG1, IGKC, IGHA1, PRDM1, TNFRSF17, DERL3, SSR4, IGLC2]
+  mono_CD14:
+    category: lineage
+    cell_type: CD14 monocyte
+    genes: [CD14, LYZ, S100A8, S100A9, S100A12, FCN1, VCAN, CST3, LST1, TYROBP, MNDA, CSF3R]
+  mono_CD16:
+    category: lineage
+    cell_type: CD16 monocyte
+    genes: [FCGR3A, MS4A7, LST1, LILRB2, CDKN1C, IFITM3, RHOC, CSF1R, HES4, TCF7L2, AIF1]
+  macrophage:
+    category: lineage
+    cell_type: macrophage
+    genes: [CD68, CD163, MRC1, C1QA, C1QB, C1QC, APOE, MSR1, MARCO, VSIG4, FCGR1A, SPP1]
+  cDC:
+    category: lineage
+    cell_type: conventional dendritic cell
+    genes: [CLEC9A, XCR1, CD1C, FCER1A, CLEC10A, FLT3, HLA-DQA1, HLA-DPB1, IDO1, CST3, ITGAX, LAMP3]
+  pDC:
+    category: lineage
+    cell_type: plasmacytoid dendritic cell
+    genes: [LILRA4, IL3RA, CLEC4C, IRF7, TCF4, GZMB, JCHAIN, PLD4, ITM2C, SERPINF1, PTCRA]
+  neutrophil:
+    category: lineage
+    cell_type: neutrophil
+    genes: [FCGR3B, CSF3R, S100A8, S100A9, CXCR2, NAMPT, MNDA, G0S2, IFITM2, SELL, FPR1, CMTM2]
+  mast:
+    category: lineage
+    cell_type: mast cell
+    genes: [TPSAB1, TPSB2, CPA3, KIT, MS4A2, HDC, GATA2, HPGDS, FCER1A, SLC18A2, VWA5A]
+  HSPC:
+    category: lineage
+    cell_type: hematopoietic stem cell
+    genes: [CD34, SPINK2, PROM1, KIT, SOX4, MEIS1, HOPX, CRHBP, AVP, MLLT3]
+  # ---- non-immune lineages ------------------------------------------------
+  epithelial:
+    category: lineage
+    cell_type: epithelial cell
+    genes: [EPCAM, KRT8, KRT18, KRT19, CDH1, CLDN4, CLDN7, KRT7, ELF3, TACSTD2, CD24]
+  endothelial:
+    category: lineage
+    cell_type: endothelial cell
+    genes: [PECAM1, VWF, CDH5, CLDN5, KDR, FLT1, PLVAP, ESAM, ENG, EMCN, RAMP2, TIE1]
+  fibroblast:
+    category: lineage
+    cell_type: fibroblast
+    genes: [COL1A1, COL1A2, COL3A1, DCN, LUM, PDGFRA, FBLN1, C1S, C1R, MMP2, SFRP2, THY1]
+  smooth_muscle:
+    category: lineage
+    cell_type: smooth muscle cell
+    genes: [ACTA2, MYH11, TAGLN, CNN1, DES, MYL9, TPM2, LMOD1, RGS5, PDGFRB]
+  hepatocyte:
+    category: lineage
+    cell_type: hepatocyte
+    genes: [ALB, APOA1, APOA2, APOB, APOC3, TTR, TF, SERPINA1, FGB, FGA, HP, CYP3A4, CYP2E1]
+  neuron:
+    category: lineage
+    cell_type: neuron
+    genes: [RBFOX3, SNAP25, SYT1, STMN2, MAP2, GAP43, NEFL, NEFM, SYP, TUBB3, SLC17A7, GAD1]
+  glia:
+    category: lineage
+    cell_type: glial cell
+    genes: [GFAP, AQP4, S100B, SLC1A3, SLC1A2, ALDH1L1, OLIG1, OLIG2, MBP, PLP1, MOG, SOX10, PDGFRA]
+  microglia:
+    category: lineage
+    cell_type: microglial cell
+    genes: [P2RY12, TMEM119, CX3CR1, CSF1R, C1QA, C1QB, AIF1, HEXB, SALL1, GPR34]

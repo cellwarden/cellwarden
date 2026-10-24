@@ -1,0 +1,26 @@
+{
+  "method": "deseq2",
+  "padj": 0.05,
+  "lfc": 0.5,
+  "group_by": "cell_type_broad",
+  "contrasts": {
+    "disease_vs_control": {
+      "numerator": "disease",
+      "denominator": "control",
+      "covariates": [],
+      "groups": {
+        "T cell": {"n_up": 42, "n_down": 18, "n_tested": 9800, "skipped_reason": null,
+                   "top_up": [{"gene": "IFI44L", "log2fc": 3.1, "padj": 1e-12}, {"gene": "ISG15", "log2fc": 2.9, "padj": 2e-11},
+                              {"gene": "IFIT3", "log2fc": 2.6, "padj": 5e-10}, {"gene": "MX1", "log2fc": 2.2, "padj": 1e-8},
+                              {"gene": "JAK1", "log2fc": 0.8, "padj": 0.01}],
+                   "top_down": [{"gene": "CCR7", "log2fc": -1.4, "padj": 3e-6}, {"gene": "SELL", "log2fc": -1.1, "padj": 1e-4},
+                                {"gene": "TCF7", "log2fc": -0.9, "padj": 2e-3}]},
+        "B cell": {"n_up": 10, "n_down": 4, "n_tested": 9100, "skipped_reason": null,
+                   "top_up": [{"gene": "ISG15", "log2fc": 2.4, "padj": 1e-7}, {"gene": "IFI6", "log2fc": 1.9, "padj": 3e-6}],
+                   "top_down": [{"gene": "FCER2", "log2fc": -1.2, "padj": 4e-4}]},
+        "monocyte": {"n_up": 0, "n_down": 0, "n_tested": 0, "skipped_reason": "fewer than 2 replicates in control",
+                     "top_up": [], "top_down": []}
+      }
+    }
+  }
+}

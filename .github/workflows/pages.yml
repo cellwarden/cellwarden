@@ -1,0 +1,37 @@
+name: pages
+
+# Publishes examples/ (the PBMC 3k reports, the gallery page) to GitHub Pages:
+#   https://<owner>.github.io/<repo>/  and  .../examples/pbmc3k/report.html
+on:
+  push:
+    branches: [main]
+    paths: ["examples/**", ".github/workflows/pages.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the site
+        run: |
+          mkdir -p site/examples
+          cp examples/index.html site/index.html
+          cp -r examples/pbmc3k site/examples/
+          rm -f site/examples/pbmc3k/get_data.sh
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: site }
+      - id: pages
+        uses: actions/deploy-pages@v4

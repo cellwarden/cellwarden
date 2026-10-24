@@ -1,0 +1,36 @@
+[package]
+name = "scfast-core"
+description = "Fast single-cell kernels (implicit-scaled PCA, kNN, SNN, Leiden) behind Seurat and Scanpy"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+faer.workspace = true
+rayon.workspace = true
+rand.workspace = true
+rand_chacha.workspace = true
+thiserror.workspace = true
+hnsw_rs.workspace = true
+single-clustering.workspace = true
+libloading = { workspace = true, optional = true }
+# Feature `cuda` (docs/scfast-integration.md Phase 6). `dynamic-loading`: libcuda and libnvrtc are
+# dlopen'ed at run time, so the crate builds and links on a machine without a
+# GPU or a CUDA toolkit, and `Device::auto()` falls back to CPU when they are absent.
+# `cuda-12040` selects the API surface of the CUDA 12.4 container image
+# (containers/Dockerfile); any 12.4+ driver can load it. Set CUDARC_CUDA_VERSION=12080 (etc.)
+# at build time if the bindings must track another toolkit.
+cudarc = { version = "0.19.10", optional = true, default-features = false, features = ["std", "driver", "nvrtc", "cusolver", "dynamic-loading", "cuda-12040"] }
+
+[features]
+default = []
+# CUDA PCA and kNN (src/cuda/, src/device.rs). Builds and tests without a GPU; at run time
+# `Device::auto()` picks CUDA only when the driver loads and a device is visible.
+cuda = ["dep:cudarc"]
+# GPU Leiden through cuGraph's C API, loaded at runtime with dlopen (src/cugraph.rs). Compiles
+# and tests without CUDA, cuGraph or a GPU; the library is only needed when a CUDA device is
+# requested.
+cugraph = ["dep:libloading"]
+
+[dev-dependencies]

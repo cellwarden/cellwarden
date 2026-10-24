@@ -1,0 +1,99 @@
+# cellwarden image built from source with Apptainer, for sites without Docker (e.g. Iridis X).
+# Same software as containers/Dockerfile, in one stage: the Rust toolchain is removed after
+# scfast and scfastR are built.
+#
+#   cd <repo root>
+#   APPTAINER_TMPDIR=/tmp/$USER-apptainer apptainer build --fakeroot cellwarden.sif containers/cellwarden-build.def
+# needs internet, ~1 h. Keep APPTAINER_TMPDIR on a local disk: on GPFS (Iridis /scratch, /iridisfs)
+# fakeroot builds hit noexec mounts and corrupt R lazy-load databases.
+#   apptainer exec --nv cellwarden.sif bash /opt/cellwarden/containers/smoke_test.sh
+#
+# Most users pull the published image instead (containers/cellwarden.def, docs/INSTALL.md section 0).
+Bootstrap: docker
+From: nvcr.io/nvidia/rapidsai/base:26.10-cuda12-py3.12
+
+%files
+    python /opt/cellwarden/python
+    R /opt/cellwarden/R
+    conf /opt/cellwarden/conf
+    config /opt/cellwarden/config
+    docs /opt/cellwarden/docs
+    tests /opt/cellwarden/tests
+    rust /src/rust
+    containers/install_r_packages.R /opt/cellwarden/containers/install_r_packages.R
+    containers/smoke_test.sh /opt/cellwarden/containers/smoke_test.sh
+
+%environment
+    export PATH=/opt/conda/bin:/usr/local/cuda/bin:$PATH
+    export LANG=en_GB.UTF-8 LC_ALL=en_GB.UTF-8 TZ=Etc/UTC
+    export CELLWARDEN_REPO_ROOT=/opt/cellwarden CELLWARDEN_IN_CONTAINER=1
+    export CELLWARDEN_CELLTYPIST_MODELS=/opt/cellwarden/models/celltypist
+    export OMP_NUM_THREADS=8 PYTHONNOUSERSITE=1
+    export MPLCONFIGDIR=/tmp/mpl NUMBA_CACHE_DIR=/tmp/numba CUPY_CACHE_DIR=/tmp/cupy
+
+%post
+    set -eu
+    export DEBIAN_FRONTEND=noninteractive
+    # R and its packages use the system toolchain and libraries, never conda's.
+    SYS_PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+    PATH=$SYS_PATH apt-get update
+    PATH=$SYS_PATH apt-get install -y --no-install-recommends \
+      ca-certificates curl gnupg locales tmux git build-essential gfortran cmake pkg-config \
+      libhdf5-dev libcurl4-openssl-dev libssl-dev libxml2-dev libglpk-dev libgsl-dev \
+      libpng-dev libjpeg-dev libtiff-dev libfontconfig1-dev libharfbuzz-dev libfribidi-dev \
+      libfreetype6-dev libcairo2-dev libxt-dev libgit2-dev libzstd-dev liblzma-dev libbz2-dev
+    sed -i 's/^# *en_GB.UTF-8/en_GB.UTF-8/' /etc/locale.gen && locale-gen
+    export LANG=en_GB.UTF-8 LC_ALL=en_GB.UTF-8
+
+    # Current R from CRAN for Ubuntu 24.04, R packages as binaries from the Posit Package Manager.
+    curl -fsSL https://cloud.r-project.org/bin/linux/ubuntu/marutter_pubkey.asc \
+      > /etc/apt/trusted.gpg.d/cran_ubuntu_key.asc
+    echo "deb https://cloud.r-project.org/bin/linux/ubuntu noble-cran40/" > /etc/apt/sources.list.d/cran.list
+    PATH=$SYS_PATH apt-get update
+    PATH=$SYS_PATH apt-get install -y --no-install-recommends r-base r-base-dev
+    echo 'options(repos = c(CRAN = "https://packagemanager.posit.co/cran/__linux__/noble/latest"), Ncpus = 4)' \
+      > /usr/lib/R/etc/Rprofile.site
+    echo 'options(HTTPUserAgent = sprintf("R/%s R (%s)", getRversion(), paste(getRversion(), R.version$platform, R.version$arch, R.version$os)))' \
+      >> /usr/lib/R/etc/Rprofile.site
+    PATH=$SYS_PATH Rscript /opt/cellwarden/containers/install_r_packages.R
+
+    # Rust engine: scfast (Python) and scfastR, with CUDA and cuGraph loaded at run time.
+    # Toolchain and build output under /tmp: some build hosts mount the image's working tree noexec.
+    export RUSTUP_HOME=/tmp/rustup CARGO_HOME=/tmp/cargo CARGO_TARGET_DIR=/tmp/cargo-target
+    curl -fsSL https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain stable
+    /opt/conda/bin/pip install --no-cache-dir "maturin>=1.9.4,<2"
+    cd /src/rust
+    PATH=/tmp/cargo/bin:/opt/conda/bin:$PATH maturin build --release --locked \
+      -m scfast-py/Cargo.toml --features cuda,cugraph -o /tmp/wheels
+    PATH=/tmp/cargo/bin:$SYS_PATH SCFASTR_CARGO_FEATURES=cuda,cugraph SCFASTR_TARGET_DIR=/tmp/scfastr-target \
+      R CMD INSTALL /src/rust/scfast-r
+    PATH=$SYS_PATH Rscript -e 'stopifnot(requireNamespace("scfastR", quietly = TRUE))'
+
+    # Python into the RAPIDS conda environment (rapids-singlecell without its [rapids] extra:
+    # the RAPIDS libraries are already here as conda packages).
+    cd /
+    /opt/conda/bin/pip install --no-cache-dir /tmp/wheels/scfast-*.whl \
+      "/opt/cellwarden/python[harmony,report,llm,test]" "rapids-singlecell-cu12==0.18.1"
+    /opt/conda/bin/pip uninstall -y maturin
+    export NUMBA_CACHE_DIR=/tmp/numba MPLCONFIGDIR=/tmp/mpl
+    /opt/conda/bin/python -c "import cellwarden, scfast, rapids_singlecell, cupy, harmonypy, celltypist; i = scfast.device_info(); assert i['cuda_built'], i"
+
+    # CellTypist's default model, so annotation works offline.
+    /opt/conda/bin/python -m cellwarden.stages.s3_celltypist --models-dir /opt/cellwarden/models/celltypist \
+      --download Immune_All_Low.pkl
+
+    rm -rf /src /tmp/rustup /tmp/cargo /tmp/cargo-target /tmp/wheels /tmp/scfastr-target /var/lib/apt/lists/* /root/.cache
+    chmod -R a+rX /opt/cellwarden
+
+%runscript
+    exec cellwarden "$@"
+
+%test
+    cellwarden --help >/dev/null
+    python -c "import scfast, cellwarden"
+    Rscript -e 'stopifnot(requireNamespace("scfastR", quietly = TRUE), requireNamespace("Seurat", quietly = TRUE))'
+
+%labels
+    org.opencontainers.image.title cellwarden
+    org.opencontainers.image.source https://github.com/cellwarden/cellwarden

@@ -1,0 +1,36 @@
+{
+  "input": "/data/raw/1M_neurons_filtered_gene_bc_matrices_h5.h5",
+  "cells_in": 1306127,
+  "genes_in": 27998,
+  "cells_qc": 1290549,
+  "genes_qc": 22788,
+  "qc": {
+    "min_cells": 3,
+    "min_genes": 200,
+    "max_genes": 6000.0,
+    "max_mt": 20.0,
+    "mt_prefix": "mt-"
+  },
+  "seed": 0,
+  "sizes": [
+    {
+      "cells": 100000,
+      "genes": 22788,
+      "nnz": 202742999,
+      "path": "/data/prep/brain/n100000/matrix.h5"
+    },
+    {
+      "cells": 500000,
+      "genes": 22788,
+      "nnz": 1012812471,
+      "path": "/data/prep/brain/n500000/matrix.h5"
+    },
+    {
+      "cells": 1290549,
+      "genes": 22788,
+      "nnz": 2614416747,
+      "path": "/data/prep/brain/n1290549/matrix.h5"
+    }
+  ],
+  "labels": false
+}

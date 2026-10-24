@@ -1,0 +1,40 @@
+{# One gate: used by report.html (summary card) and gate.html (full page). `g` is the gate dict from build._gate #}
+<div class="gate-card" id="gate-{{ g.gate }}">
+<h3>{{ g.gate }} — {{ g.title }}
+  {% if not g.present %}<span class="pill">not run</span>
+  {% else %}
+    {% if g.mode %}<span class="pill {{ g.mode }}">{{ g.mode }}</span>{% endif %}
+    {% if g.verdict %}<span class="pill {{ g.verdict }}">reviewer: {{ g.verdict }}</span>{% endif %}
+    {% if g.fallback %}<span class="pill warn">fallback: rules baseline</span>{% endif %}
+    {% if g.pending %}<span class="pill warn">waiting for a human</span>{% endif %}
+  {% endif %}
+</h3>
+{% if not g.present %}
+<p class="notrun">No files in <code>{{ g.dir }}</code>: this gate has not run (or the run stopped before it).</p>
+{% else %}
+<dl class="kv">
+  <dt>decided by</dt><dd>{{ g.decided_by or "— (no decision.json yet: waiting for approval)" }}{% if g.decided_utc %} <span class="muted">at {{ g.decided_utc }}</span>{% endif %}</dd>
+  <dt>worker</dt><dd>{{ g.worker or "—" }}</dd>
+  <dt>reviewer</dt><dd>{{ g.reviewer or "—" }}</dd>
+  <dt>policy check</dt><dd>{% if g.policy_check %}{{ "ok" if g.policy_check.ok else "violations: " ~ (g.policy_check.violations | join("; ")) }}{% else %}—{% endif %}</dd>
+  <dt>files</dt><dd>{% for k, v in g.files.items() %}<span class="pill {{ 'done' if v else '' }}">{{ k }}.json{% if not v %} missing{% endif %}</span> {% endfor %}
+    {% if g.has_report and not full %}<a href="{{ g.report_href }}">gate report</a>{% endif %}</dd>
+</dl>
+{% if g.rationale %}<p><b>Rationale (agent, advisory):</b> {{ g.rationale }}</p>{% endif %}
+{% if g.findings %}
+<table><thead><tr><th>severity</th><th>finding</th></tr></thead><tbody>
+{% for f in g.findings %}<tr><td><span class="pill {{ f.severity }}">{{ f.severity }}</span></td><td>{{ f.text }}</td></tr>{% endfor %}
+</tbody></table>
+{% endif %}
+{% if g.changes %}
+<p><b>Changes vs proposal:</b></p><ul>{% for c in g.changes %}<li>{{ c if c is string else (c | tojson) }}</li>{% endfor %}</ul>
+{% endif %}
+{% if full %}
+  {% if g.decision_json %}<h4>Decision</h4><pre>{{ g.decision_json }}</pre>{% endif %}
+  {% if g.proposal_json %}<details><summary>Proposal</summary><pre>{{ g.proposal_json }}</pre></details>{% endif %}
+  {% if g.bundle_json %}<details><summary>Evidence bundle (first 20 kB)</summary><pre>{{ g.bundle_json }}</pre></details>{% endif %}
+{% else %}
+  {% if g.decision_json %}<details><summary>Decision</summary><pre>{{ g.decision_json }}</pre></details>{% endif %}
+{% endif %}
+{% endif %}
+</div>

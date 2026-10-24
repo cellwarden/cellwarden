@@ -1,0 +1,53 @@
+{
+ "data": {
+  "search": {
+   "total": 27,
+   "hits": [
+    {
+     "id": "EFO_0002690",
+     "name": "systemic lupus erythematosus",
+     "entity": "disease",
+     "score": 93.7,
+     "description": "A chronic, relapsing, inflammatory, and often febrile multisystemic disorder of connective tissue, characterized principally by involvement of the skin, joints, kidneys, and serosal membranes.",
+     "object": {
+      "id": "EFO_0002690",
+      "name": "systemic lupus erythematosus"
+     }
+    },
+    {
+     "id": "EFO_0005697",
+     "name": "lupus nephritis",
+     "entity": "disease",
+     "score": 41.2,
+     "description": "Glomerulonephritis associated with systemic lupus erythematosus.",
+     "object": {
+      "id": "EFO_0005697",
+      "name": "lupus nephritis"
+     }
+    },
+    {
+     "id": "MONDO_0019558",
+     "name": "cutaneous lupus erythematosus",
+     "entity": "disease",
+     "score": 38.9,
+     "description": "A form of lupus erythematosus confined to the skin.",
+     "object": {
+      "id": "MONDO_0019558",
+      "name": "cutaneous lupus erythematosus"
+     }
+    },
+    {
+     "id": "EFO_0009574",
+     "name": "neonatal lupus erythematosus",
+     "entity": "disease",
+     "score": 30.1,
+     "description": "A passively acquired autoimmune disease of the newborn.",
+     "object": {
+      "id": "EFO_0009574",
+      "name": "neonatal lupus erythematosus"
+     }
+    }
+   ]
+  }
+ }
+}

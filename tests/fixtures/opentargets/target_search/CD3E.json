@@ -1,0 +1,42 @@
+{
+ "data": {
+  "search": {
+   "total": 6,
+   "hits": [
+    {
+     "id": "ENSG00000198851",
+     "name": "CD3E",
+     "entity": "target",
+     "score": 65.2,
+     "object": {
+      "id": "ENSG00000198851",
+      "approvedSymbol": "CD3E",
+      "approvedName": "CD3 epsilon subunit of T-cell receptor complex"
+     }
+    },
+    {
+     "id": "ENSG00000167286",
+     "name": "CD3D",
+     "entity": "target",
+     "score": 19.8,
+     "object": {
+      "id": "ENSG00000167286",
+      "approvedSymbol": "CD3D",
+      "approvedName": "CD3 delta subunit of T-cell receptor complex"
+     }
+    },
+    {
+     "id": "ENSG00000160654",
+     "name": "CD3G",
+     "entity": "target",
+     "score": 18.6,
+     "object": {
+      "id": "ENSG00000160654",
+      "approvedSymbol": "CD3G",
+      "approvedName": "CD3 gamma subunit of T-cell receptor complex"
+     }
+    }
+   ]
+  }
+ }
+}

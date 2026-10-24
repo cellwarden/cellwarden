@@ -1,0 +1,31 @@
+[workspace]
+resolver = "2"
+members = ["scfast-core", "scfast-py"]
+# scfast-py needs a Python toolchain (built with maturin); a plain `cargo build`/`cargo test`
+# in rust/ only builds the core library.
+default-members = ["scfast-core"]
+# scfast-r is an R package that builds its own Rust library through R CMD INSTALL.
+exclude = ["scfast-r"]
+
+[workspace.package]
+version = "0.3.0"
+edition = "2021"
+license = "Apache-2.0"
+repository = "https://github.com/mukeshkbj/singlecell"
+
+[workspace.dependencies]
+scfast-core = { path = "scfast-core" }
+faer = "0.24"
+rayon = "1.10"
+rand = "0.9"
+rand_chacha = "0.9"
+thiserror = "2"
+hnsw_rs = "0.3"
+# Pinned exactly: 0.7.0 was a breaking rewrite of the Leiden core (docs/RUST_ENGINE.md section 4).
+single-clustering = { version = "=0.7.0", default-features = false }
+# Runtime loading of libcugraph_c.so for GPU Leiden (scfast-core feature `cugraph`, Phase 7).
+libloading = "0.8"
+
+[profile.release]
+codegen-units = 1
+lto = "thin"

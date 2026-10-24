@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G4 DGE interpretation review — pbmc3k-20261024T202212Z-ab25e3</title>
+<style>
+:root { --fg:#1d1f21; --muted:#6b6f76; --bg:#ffffff; --panel:#f6f7f9; --line:#dfe2e6; --accent:#0072B2;
+        --ok:#009E73; --warn:#E69F00; --bad:#D55E00; }
+* { box-sizing: border-box; }
+body { margin:0; font: 14px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color:var(--fg); background:var(--bg); }
+header.top { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line); padding:10px 24px; z-index:5;
+             display:flex; flex-wrap:wrap; gap:6px 18px; align-items:baseline; }
+header.top h1 { font-size:18px; margin:0; }
+header.top nav a { color:var(--accent); text-decoration:none; margin-right:10px; font-size:13px; }
+main { max-width: 1200px; margin: 0 auto; padding: 16px 24px 60px; }
+section { margin: 28px 0; }
+h2 { font-size:20px; border-bottom:2px solid var(--line); padding-bottom:4px; margin: 0 0 12px; }
+h3 { font-size:15px; margin: 18px 0 6px; }
+table { border-collapse: collapse; width:100%; font-size:13px; margin: 6px 0 12px; }
+th, td { text-align:left; padding: 4px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { background:var(--panel); font-weight:600; }
+td.num, th.num { text-align:right; font-variant-numeric: tabular-nums; }
+.muted { color:var(--muted); }
+.notrun { background:var(--panel); border-left:4px solid var(--line); padding:8px 12px; color:var(--muted); }
+.pill { display:inline-block; padding:1px 8px; border-radius:10px; font-size:12px; background:var(--panel); border:1px solid var(--line); }
+.pill.done, .pill.approve, .pill.auto { background:#e4f5ee; border-color:var(--ok); }
+.pill.failed, .pill.block, .pill.escalate { background:#fbe9e1; border-color:var(--bad); }
+.pill.pending, .pill.warn, .pill.review, .pill.request_changes, .pill.skipped { background:#fdf1dc; border-color:var(--warn); }
+.grid { display:flex; flex-wrap:wrap; gap:16px; }
+.grid > * { flex: 1 1 320px; }
+.kv { display:grid; grid-template-columns: max-content 1fr; gap: 2px 14px; font-size:13px; }
+.kv dt { color:var(--muted); } .kv dd { margin:0; word-break:break-all; }
+svg.plot { font: 11px sans-serif; max-width:100%; height:auto; }
+svg.plot text.t { font-size:12px; font-weight:600; } svg.plot text.l { fill:#444; } svg.plot text.v { fill:#444; }
+svg.plot line.ax { stroke:#888; } svg.plot line.vl { stroke:#D55E00; stroke-dasharray:3 2; }
+figure.scatter { margin:0; } figure.scatter figcaption { font-weight:600; margin-bottom:4px; }
+.scatter-row { display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; }
+ul.legend { list-style:none; margin:0; padding:0; font-size:12px; columns: 2; max-width:300px; }
+ul.legend li { margin:1px 0; break-inside:avoid; } .sw { display:inline-block; width:10px; height:10px; margin-right:6px; vertical-align:middle; border-radius:2px; }
+pre { background:var(--panel); padding:8px; overflow:auto; font-size:12px; max-height:360px; }
+details > summary { cursor:pointer; color:var(--accent); }
+.genes { font-family: ui-monospace, Menlo, monospace; font-size:12px; }
+footer { color:var(--muted); font-size:12px; margin-top:40px; border-top:1px solid var(--line); padding-top:8px; }
+@media print { header.top { position:static; } }
+</style>
+</head>
+<body>
+<header class="top"><h1>Gate G4: DGE interpretation review
+  <span class="pill done">decided by agent</span></h1>
+  <span class="muted">run pbmc3k-20261024T202212Z-ab25e3 · pbmc3k</span></header>
+<main>
+<section id="gate">
+<div class="gate-card" id="gate-G4">
+<h3>G4 — DGE interpretation review
+<span class="pill auto">auto</span><span class="pill approve">reviewer: approve</span></h3>
+<dl class="kv">
+  <dt>decided by</dt><dd>agent <span class="muted">at 2026-10-24T20:37:18Z</span></dd>
+  <dt>worker</dt><dd>nvidia/nemotron-3-ultra-550b-a55b</dd>
+  <dt>reviewer</dt><dd>nvidia/nemotron-3-ultra-550b-a55b</dd>
+  <dt>policy check</dt><dd>ok</dd>
+  <dt>files</dt><dd><span class="pill done">bundle.json</span> <span class="pill done">proposal.json</span> <span class="pill done">review.json</span> <span class="pill done">decision.json</span> </dd>
+</dl>
+<p><b>Rationale (agent, advisory):</b> Focused on B cell group first due to rich Open Targets evidence on canonical B-cell markers (CD79A, CD79B, MS4A1, CD74, TCL1A) linking to B-cell malignancies and approved drugs. Downregulated CD3D included as a lineage-exclusion marker with expression evidence only. Other groups (dendritic cell, monocyte, NK cell, platelet, T cell) will be covered in follow-up proposals once tool budget resets, as the 24-call budget was exhausted gathering evidence for top candidates across groups.</p><table><thead><tr><th>severity</th><th>finding</th></tr></thead><tbody>
+<tr><td><span class="pill info">info</span></td><td>Proposal covers B cell group for markers contrast with summary and 6 hypotheses matching bundle direction and Open Targets evidence IDs; policy_check ok.</td></tr></tbody></table>
+<h4>Decision</h4><pre>{
+ &#34;contrasts&#34;: [
+  {
+   &#34;contrast&#34;: &#34;markers&#34;,
+   &#34;group&#34;: &#34;B cell&#34;,
+   &#34;summary&#34;: &#34;B cells show strong upregulation of canonical B-cell markers (CD79A, CD79B, MS4A1/CD20, CD74, HLA class II) and downregulation of T/NK cell genes (CD3D, IL32, S100A4/6/10/11). Open Targets evidence links these B-cell markers to B-cell malignancies and approved drugs.&#34;,
+   &#34;hypotheses&#34;: [
+    {
+     &#34;gene&#34;: &#34;CD79A&#34;,
+     &#34;direction&#34;: &#34;up&#34;,
+     &#34;evidence_ids&#34;: [
+      &#34;OT:ENSG00000105369:disease:MONDO_0016462&#34;,
+      &#34;OT:ENSG00000105369:disease:MONDO_0018905&#34;
+     ],
+     &#34;text&#34;: &#34;Hypothesis: CD79A upregulation in B cells reflects its role in B-cell receptor signaling and is associated with isolated agammaglobulinemia (MONDO_0016462) and diffuse large B-cell lymphoma (MONDO_0018905) in Open Targets.&#34;
+    },
+    {
+     &#34;gene&#34;: &#34;CD79B&#34;,
+     &#34;direction&#34;: &#34;up&#34;,
+     &#34;evidence_ids&#34;: [
+      &#34;OT:ENSG00000007312:disease:MONDO_0018905&#34;,
+      &#34;OT:ENSG00000007312:drug:CHEMBL3301582:MONDO_0018905&#34;
+     ],
+     &#34;text&#34;: &#34;Hypothesis: CD79B upregulation marks active B-cell receptor complexes; Open Targets links it to diffuse large B-cell lymphoma (MONDO_0018905) and the approved drug polatuzumab vedotin (CHEMBL3301582, phase 4) targeting CD79B in that disease.&#34;
+    },
+    {
+     &#34;gene&#34;: &#34;MS4A1&#34;,
+     &#34;direction&#34;: &#34;up&#34;,
+     &#34;evidence_ids&#34;: [
+      &#34;OT:ENSG00000156738:disease:MONDO_0018905&#34;,
+      &#34;OT:ENSG00000156738:drug:CHEMBL4298092:MONDO_0018905&#34;,
+      &#34;OT:ENSG00000156738:drug:CHEMBL1743048:MONDO_0018906&#34;
+     ],
+     &#34;text&#34;: &#34;Hypothesis: MS4A1 (CD20) upregulation identifies B cells and is the target of approved antibodies (glofitamab CHEMBL4298092, obinutuzumab CHEMBL1743048) for diffuse large B-cell lymphoma (MONDO_0018905) and follicular lymphoma (MONDO_0018906).&#34;
+    },
+    {
+     &#34;gene&#34;: &#34;CD74&#34;,
+     &#34;direction&#34;: &#34;up&#34;,
+     &#34;evidence_ids&#34;: [
+      &#34;OT:ENSG00000019582:disease:MONDO_0005233&#34;,
+      &#34;OT:ENSG00000019582:drug:CHEMBL1743040:MONDO_0018908&#34;
+     ],
+     &#34;text&#34;: &#34;Hypothesis: CD74 (invariant chain) upregulation in B cells is associated with non-small cell lung carcinoma (MONDO_0005233) and is the target of milatuzumab (CHEMBL1743040, phase 1.5) for non-Hodgkin lymphoma (MONDO_0018908).&#34;
+    },
+    {
+     &#34;gene&#34;: &#34;TCL1A&#34;,
+     &#34;direction&#34;: &#34;up&#34;,
+     &#34;evidence_ids&#34;: [
+      &#34;OT:ENSG00000100721:disease:MONDO_0004948&#34;,
+      &#34;OT:ENSG00000100721:disease:EFO_0010819&#34;
+     ],
+     &#34;text&#34;: &#34;Hypothesis: TCL1A upregulation in B cells is associated with B-cell chronic lymphocytic leukemia (MONDO_0004948) and clonal hematopoiesis (EFO_0010819) in Open Targets.&#34;
+    },
+    {
+     &#34;gene&#34;: &#34;CD3D&#34;,
+     &#34;direction&#34;: &#34;down&#34;,
+     &#34;evidence_ids&#34;: [],
+     &#34;text&#34;: &#34;Hypothesis: CD3D downregulation in B cells (log2FC -5.2) reflects the absence of T-cell lineage; no Open Targets drug or disease evidence was cited for this direction.&#34;
+    }
+   ]
+  }
+ ]
+}</pre><details><summary>Proposal</summary><pre>{
+ &#34;contrasts&#34;: [
+  {
+   &#34;contrast&#34;: &#34;markers&#34;,
+   &#34;group&#34;: &#34;B cell&#34;,
+   &#34;summary&#34;: &#34;B cells show strong upregulation of canonical B-cell markers (CD79A, CD79B, MS4A1/CD20, CD74, HLA class II) and downregulation of T/NK cell genes (CD3D, IL32, S100A4/6/10/11). Open Targets evidence links these B-cell markers to B-cell malignancies and approved drugs.&#34;,
+   &#34;hypotheses&#34;: [
+    {
+     &#34;gene&#34;: &#34;CD79A&#34;,
+     &#34;direction&#34;: &#34;up&#34;,
+     &#34;evidence_ids&#34;: [
+      &#34;OT:ENSG00000105369:disease:MONDO_0016462&#34;,
+      &#34;OT:ENSG00000105369:disease:MONDO_0018905&#34;
+     ],
+     &#34;text&#34;: &#34;Hypothesis: CD79A upregulation in B cells reflects its role in B-cell receptor signaling and is associated with isolated agammaglobulinemia (MONDO_0016462) and diffuse large B-cell lymphoma (MONDO_0018905) in Open Targets.&#34;
+    },
+    {
+     &#34;gene&#34;: &#34;CD79B&#34;,
+     &#34;direction&#34;: &#34;up&#34;,
+     &#34;evidence_ids&#34;: [
+      &#34;OT:ENSG00000007312:disease:MONDO_0018905&#34;,
+      &#34;OT:ENSG00000007312:drug:CHEMBL3301582:MONDO_0018905&#34;
+     ],
+     &#34;text&#34;: &#34;Hypothesis: CD79B upregulation marks active B-cell receptor complexes; Open Targets links it to diffuse large B-cell lymphoma (MONDO_0018905) and the approved drug polatuzumab vedotin (CHEMBL3301582, phase 4) targeting CD79B in that disease.&#34;
+    },
+    {
+     &#34;gene&#34;: &#34;MS4A1&#34;,
+     &#34;direction&#34;: &#34;up&#34;,
+     &#34;evidence_ids&#34;: [
+      &#34;OT:ENSG00000156738:disease:MONDO_0018905&#34;,
+      &#34;OT:ENSG00000156738:drug:CHEMBL4298092:MONDO_0018905&#34;,
+      &#34;OT:ENSG00000156738:drug:CHEMBL1743048:MONDO_0018906&#34;
+     ],
+     &#34;text&#34;: &#34;Hypothesis: MS4A1 (CD20) upregulation identifies B cells and is the target of approved antibodies (glofitamab CHEMBL4298092, obinutuzumab CHEMBL1743048) for diffuse large B-cell lymphoma (MONDO_0018905) and follicular lymphoma (MONDO_0018906).&#34;
+    },
+    {
+     &#34;gene&#34;: &#34;CD74&#34;,
+     &#34;direction&#34;: &#34;up&#34;,
+     &#34;evidence_ids&#34;: [
+      &#34;OT:ENSG00000019582:disease:MONDO_0005233&#34;,
+      &#34;OT:ENSG00000019582:drug:CHEMBL1743040:MONDO_0018908&#34;
+     ],
+     &#34;text&#34;: &#34;Hypothesis: CD74 (invariant chain) upregulation in B cells is associated with non-small cell lung carcinoma (MONDO_0005233) and is the target of milatuzumab (CHEMBL1743040, phase 1.5) for non-Hodgkin lymphoma (MONDO_0018908).&#34;
+    },
+    {
+     &#34;gene&#34;: &#34;TCL1A&#34;,
+     &#34;direction&#34;: &#34;up&#34;,
+     &#34;evidence_ids&#34;: [
+      &#34;OT:ENSG00000100721:disease:MONDO_0004948&#34;,
+      &#34;OT:ENSG00000100721:disease:EFO_0010819&#34;
+     ],
+     &#34;text&#34;: &#34;Hypothesis: TCL1A upregulation in B cells is associated with B-cell chronic lymphocytic leukemia (MONDO_0004948) and clonal hematopoiesis (EFO_0010819) in Open Targets.&#34;
+    },
+    {
+     &#34;gene&#34;: &#34;CD3D&#34;,
+     &#34;direction&#34;: &#34;down&#34;,
+     &#34;evidence_ids&#34;: [],
+     &#34;text&#34;: &#34;Hypothesis: CD3D downregulation in B cells (log2FC -5.2) reflects the absence of T-cell lineage; no Open Targets drug or disease evidence was cited for this direction.&#34;
+    }
+   ]
+  }
+ ]
+}</pre></details><details><summary>Evidence bundle (first 20 kB)</summary><pre>{
+ &#34;gate&#34;: &#34;G4&#34;,
+ &#34;method&#34;: {
+  &#34;requested&#34;: &#34;findmarkers&#34;,
+  &#34;engine&#34;: &#34;findmarkers&#34;,
+  &#34;test&#34;: &#34;MAST&#34;,
+  &#34;pseudobulk_method&#34;: null,
+  &#34;used&#34;: [
+   &#34;findmarkers:MAST&#34;
+  ],
+  &#34;available&#34;: {
+   &#34;DESeq2&#34;: true,
+   &#34;limma&#34;: true,
+   &#34;MAST&#34;: true
+  }
+ },
+ &#34;padj&#34;: null,
+ &#34;lfc&#34;: null,
+ &#34;contrasts&#34;: [
+  {
+   &#34;contrast&#34;: &#34;markers&#34;,
+   &#34;numerator&#34;: &#34;each group&#34;,
+   &#34;denominator&#34;: &#34;the other cells&#34;,
+   &#34;covariates&#34;: [],
+   &#34;groups&#34;: [
+    {
+     &#34;group&#34;: &#34;B cell&#34;,
+     &#34;n_up&#34;: 259,
+     &#34;n_down&#34;: 429,
+     &#34;n_tested&#34;: 1626,
+     &#34;skipped_reason&#34;: null,
+     &#34;top_up&#34;: [
+      {
+       &#34;gene&#34;: &#34;CD79A&#34;,
+       &#34;log2fc&#34;: 6.967,
+       &#34;padj&#34;: 0
+      },
+      {
+       &#34;gene&#34;: &#34;CD74&#34;,
+       &#34;log2fc&#34;: 3.1358,
+       &#34;padj&#34;: 0
+      },
+      {
+       &#34;gene&#34;: &#34;CD79B&#34;,
+       &#34;log2fc&#34;: 4.7911,
+       &#34;padj&#34;: 5.438e-277
+      },
+      {
+       &#34;gene&#34;: &#34;MS4A1&#34;,
+       &#34;log2fc&#34;: 5.7517,
+       &#34;padj&#34;: 1.397e-248
+      },
+      {
+       &#34;gene&#34;: &#34;HLA-DQA1&#34;,
+       &#34;log2fc&#34;: 4.2003,
+       &#34;padj&#34;: 1.027e-223
+      },
+      {
+       &#34;gene&#34;: &#34;HLA-DRA&#34;,
+       &#34;log2fc&#34;: 2.9622,
+       &#34;padj&#34;: 7.385e-221
+      },
+      {
+       &#34;gene&#34;: &#34;HLA-DQB1&#34;,
+       &#34;log2fc&#34;: 4.2699,
+       &#34;padj&#34;: 2.456e-216
+      },
+      {
+       &#34;gene&#34;: &#34;CD37&#34;,
+       &#34;log2fc&#34;: 2.1141,
+       &#34;padj&#34;: 2.962e-207
+      },
+      {
+       &#34;gene&#34;: &#34;HLA-DPB1&#34;,
+       &#34;log2fc&#34;: 2.681,
+       &#34;padj&#34;: 9.401e-191
+      },
+      {
+       &#34;gene&#34;: &#34;TCL1A&#34;,
+       &#34;log2fc&#34;: 7.2956,
+       &#34;padj&#34;: 2.374e-189
+      }
+     ],
+     &#34;top_down&#34;: [
+      {
+       &#34;gene&#34;: &#34;S100A4&#34;,
+       &#34;log2fc&#34;: -3.5976,
+       &#34;padj&#34;: 1.488e-115
+      },
+      {
+       &#34;gene&#34;: &#34;TMSB4X&#34;,
+       &#34;log2fc&#34;: -0.8517,
+       &#34;padj&#34;: 6.274e-110
+      },
+      {
+       &#34;gene&#34;: &#34;CD3D&#34;,
+       &#34;log2fc&#34;: -5.218,
+       &#34;padj&#34;: 2.483e-83
+      },
+      {
+       &#34;gene&#34;: &#34;S100A6&#34;,
+       &#34;log2fc&#34;: -2.8685,
+       &#34;padj&#34;: 6.175e-82
+      },
+      {
+       &#34;gene&#34;: &#34;IL32&#34;,
+       &#34;log2fc&#34;: -4.4281,
+       &#34;padj&#34;: 2.09e-76
+      },
+      {
+       &#34;gene&#34;: &#34;ANXA1&#34;,
+       &#34;log2fc&#34;: -3.5328,
+       &#34;padj&#34;: 3.209e-75
+      },
+      {
+       &#34;gene&#34;: &#34;GIMAP7&#34;,
+       &#34;log2fc&#34;: -3.7508,
+       &#34;padj&#34;: 3.837e-73
+      },
+      {
+       &#34;gene&#34;: &#34;HCST&#34;,
+       &#34;log2fc&#34;: -3.4915,
+       &#34;padj&#34;: 2.924e-72
+      },
+      {
+       &#34;gene&#34;: &#34;S100A10&#34;,
+       &#34;log2fc&#34;: -2.5492,
+       &#34;padj&#34;: 1.274e-58
+      },
+      {
+       &#34;gene&#34;: &#34;S100A11&#34;,
+       &#34;log2fc&#34;: -3.6366,
+       &#34;padj&#34;: 1.908e-56
+      }
+     ],
+     &#34;n_genes_with_direction&#34;: 20,
+     &#34;opentargets&#34;: {
+      &#34;up&#34;: [
+       {
+        &#34;gene&#34;: &#34;CD79A&#34;,
+        &#34;log2fc&#34;: 6.96696601323423,
+        &#34;evidence&#34;: [
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000105369:disease:MONDO_0016462&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;isolated agammaglobulinemia&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0016462&#34;,
+          &#34;score&#34;: 0.6629410934371811
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000105369:disease:MONDO_0015977&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;agammaglobulinemia&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0015977&#34;,
+          &#34;score&#34;: 0.47154569899764914
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000105369:disease:MONDO_0011096&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;autosomal agammaglobulinemia&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0011096&#34;,
+          &#34;score&#34;: 0.4697836486446416
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000105369:disease:MONDO_0018905&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;diffuse large B-cell lymphoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0018905&#34;,
+          &#34;score&#34;: 0.376267049114845
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000105369:disease:MONDO_0005008&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;colorectal adenocarcinoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005008&#34;,
+          &#34;score&#34;: 0.3716074108319304
+         }
+        ]
+       },
+       {
+        &#34;gene&#34;: &#34;CD74&#34;,
+        &#34;log2fc&#34;: 3.13582613971992,
+        &#34;evidence&#34;: [
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000019582:disease:MONDO_0005233&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;non-small cell lung carcinoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005233&#34;,
+          &#34;score&#34;: 0.6262176845921784
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000019582:disease:MONDO_0005070&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;neoplasm&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005070&#34;,
+          &#34;score&#34;: 0.4001502067862281
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000019582:disease:MONDO_0004992&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;cancer&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0004992&#34;,
+          &#34;score&#34;: 0.3941279684126143
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000019582:disease:MONDO_0005061&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;lung adenocarcinoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005061&#34;,
+          &#34;score&#34;: 0.37937616006456293
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000019582:disease:MONDO_0005097&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;squamous cell lung carcinoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005097&#34;,
+          &#34;score&#34;: 0.3764388974739022
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000019582:drug:CHEMBL4298138:MONDO_0005233&#34;,
+          &#34;type&#34;: &#34;known_drug&#34;,
+          &#34;label&#34;: &#34;REPOTRECTINIB&#34;,
+          &#34;phase&#34;: 4,
+          &#34;disease&#34;: &#34;non-small cell lung carcinoma&#34;,
+          &#34;mechanism&#34;: &#34;Nerve growth factor receptor Trk-A inhibitor&#34;
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000019582:drug:CHEMBL1743040:MONDO_0009693&#34;,
+          &#34;type&#34;: &#34;known_drug&#34;,
+          &#34;label&#34;: &#34;MILATUZUMAB&#34;,
+          &#34;phase&#34;: 1.5,
+          &#34;disease&#34;: &#34;plasma cell myeloma&#34;,
+          &#34;mechanism&#34;: &#34;HLA-DR antigens-associated invariant chain antagonist&#34;
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000019582:drug:CHEMBL1743040:MONDO_0018908&#34;,
+          &#34;type&#34;: &#34;known_drug&#34;,
+          &#34;label&#34;: &#34;MILATUZUMAB&#34;,
+          &#34;phase&#34;: 1.5,
+          &#34;disease&#34;: &#34;non-Hodgkin lymphoma&#34;,
+          &#34;mechanism&#34;: &#34;HLA-DR antigens-associated invariant chain antagonist&#34;
+         }
+        ]
+       },
+       {
+        &#34;gene&#34;: &#34;CD79B&#34;,
+        &#34;log2fc&#34;: 4.79111301583109,
+        &#34;evidence&#34;: [
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000007312:disease:MONDO_0018905&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;diffuse large B-cell lymphoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0018905&#34;,
+          &#34;score&#34;: 0.7538576823622339
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000007312:disease:MONDO_0016462&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;isolated agammaglobulinemia&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0016462&#34;,
+          &#34;score&#34;: 0.6366761551356266
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000007312:disease:MONDO_0011096&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;autosomal agammaglobulinemia&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0011096&#34;,
+          &#34;score&#34;: 0.46875897970380426
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000007312:disease:MONDO_0015977&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;agammaglobulinemia&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0015977&#34;,
+          &#34;score&#34;: 0.46543070039560375
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000007312:disease:HP_0000924&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;Abnormality of the skeletal system&#34;,
+          &#34;efo_id&#34;: &#34;HP_0000924&#34;,
+          &#34;score&#34;: 0.45964211466219995
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000007312:drug:CHEMBL3301582:MONDO_0018905&#34;,
+          &#34;type&#34;: &#34;known_drug&#34;,
+          &#34;label&#34;: &#34;POLATUZUMAB VEDOTIN&#34;,
+          &#34;phase&#34;: 4,
+          &#34;disease&#34;: &#34;diffuse large B-cell lymphoma&#34;,
+          &#34;mechanism&#34;: &#34;B-cell antigen receptor complex-associated protein beta chain binding agent&#34;
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000007312:drug:CHEMBL3301582:MONDO_0015759&#34;,
+          &#34;type&#34;: &#34;known_drug&#34;,
+          &#34;label&#34;: &#34;POLATUZUMAB VEDOTIN&#34;,
+          &#34;phase&#34;: 4,
+          &#34;disease&#34;: &#34;B-cell non-Hodgkin lymphoma&#34;,
+          &#34;mechanism&#34;: &#34;B-cell antigen receptor complex-associated protein beta chain binding agent&#34;
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000007312:drug:CHEMBL3301582:MONDO_0005070&#34;,
+          &#34;type&#34;: &#34;known_drug&#34;,
+          &#34;label&#34;: &#34;POLATUZUMAB VEDOTIN&#34;,
+          &#34;phase&#34;: 4,
+          &#34;disease&#34;: &#34;neoplasm&#34;,
+          &#34;mechanism&#34;: &#34;B-cell antigen receptor complex-associated protein beta chain binding agent&#34;
+         }
+        ]
+       },
+       {
+        &#34;gene&#34;: &#34;MS4A1&#34;,
+        &#34;log2fc&#34;: 5.75165816089817,
+        &#34;evidence&#34;: [
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000156738:disease:MONDO_0004948&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;B-cell chronic lymphocytic leukemia&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0004948&#34;,
+          &#34;score&#34;: 0.625839172528633
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000156738:disease:MONDO_0018905&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;diffuse large B-cell lymphoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0018905&#34;,
+          &#34;score&#34;: 0.6184775023309906
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000156738:disease:MONDO_0018906&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;follicular lymphoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0018906&#34;,
+          &#34;score&#34;: 0.6130691935991409
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000156738:disease:MONDO_0008383&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;rheumatoid arthritis&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0008383&#34;,
+          &#34;score&#34;: 0.6128295259684327
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000156738:disease:MONDO_0018908&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;non-Hodgkin lymphoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0018908&#34;,
+          &#34;score&#34;: 0.6115311517427435
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000156738:drug:CHEMBL4298092:MONDO_0018905&#34;,
+          &#34;type&#34;: &#34;known_drug&#34;,
+          &#34;label&#34;: &#34;GLOFITAMAB&#34;,
+          &#34;phase&#34;: 4,
+          &#34;disease&#34;: &#34;diffuse large B-cell lymphoma&#34;,
+          &#34;mechanism&#34;: &#34;B-lymphocyte antigen CD20 binding agent&#34;
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000156738:drug:CHEMBL1743048:MONDO_0018906&#34;,
+          &#34;type&#34;: &#34;known_drug&#34;,
+          &#34;label&#34;: &#34;OBINUTUZUMAB&#34;,
+          &#34;phase&#34;: 4,
+          &#34;disease&#34;: &#34;follicular lymphoma&#34;,
+          &#34;mechanism&#34;: &#34;B-lymphocyte antigen CD20 binding agent&#34;
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000156738:drug:CHEMBL2108354:EFO_0803536&#34;,
+          &#34;type&#34;: &#34;known_drug&#34;,
+          &#34;label&#34;: &#34;UBLITUXIMAB&#34;,
+          &#34;phase&#34;: 4,
+          &#34;disease&#34;: &#34;multiple sclerosis symptom measurement&#34;,
+          &#34;mechanism&#34;: &#34;B-lymphocyte antigen CD20 binding agent&#34;
+         }
+        ]
+       },
+       {
+        &#34;gene&#34;: &#34;HLA-DQA1&#34;,
+        &#34;log2fc&#34;: 4.20030378095929,
+        &#34;evidence&#34;: [
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000196735:disease:MONDO_0003308&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;pleural mesothelioma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0003308&#34;,
+          &#34;score&#34;: 0.1228600330569846
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000196735:disease:MONDO_0005147&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;type 1 diabetes mellitus&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005147&#34;,
+          &#34;score&#34;: 0.10791133462751387
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000196735:disease:MONDO_0005344&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;hepatitis B virus infection&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005344&#34;,
+          &#34;score&#34;: 0.09304241950934318
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000196735:disease:MONDO_0005070&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;neoplasm&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005070&#34;,
+          &#34;score&#34;: 0.08851206917434139
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000196735:disease:MONDO_0005580&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;esophageal squamous cell carcinoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005580&#34;,
+          &#34;score&#34;: 0.08306026510716197
+         }
+        ]
+       },
+       {
+        &#34;gene&#34;: &#34;HLA-DRA&#34;,
+        &#34;log2fc&#34;: 2.96219061366275,
+        &#34;evidence&#34;: [
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000204287:disease:MONDO_0018858&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;Graham Little-Piccardi-Lassueur syndrome&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0018858&#34;,
+          &#34;score&#34;: 0.2630689937859857
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000204287:disease:EFO_0009856&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;lichen planopilaris&#34;,
+          &#34;efo_id&#34;: &#34;EFO_0009856&#34;,
+          &#34;score&#34;: 0.2309874091779386
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000204287:disease:HP_0100806&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;Sepsis&#34;,
+          &#34;efo_id&#34;: &#34;HP_0100806&#34;,
+          &#34;score&#34;: 0.10038617303259545
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000204287:disease:MONDO_0007763&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;nonpapillary renal cell carcinoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0007763&#34;,
+          &#34;score&#34;: 0.09430426973784697
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000204287:disease:MONDO_0018905&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;diffuse large B-cell lymphoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0018905&#34;,
+          &#34;score&#34;: 0.08245181575442317
+         }
+        ]
+       },
+       {
+        &#34;gene&#34;: &#34;HLA-DQB1&#34;,
+        &#34;log2fc&#34;: 4.26988799150979,
+        &#34;evidence&#34;: [
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000179344:disease:MONDO_0005070&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;neoplasm&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005070&#34;,
+          &#34;score&#34;: 0.08857707190214612
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000179344:disease:MONDO_0007256&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;hepatocellular carcinoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0007256&#34;,
+          &#34;score&#34;: 0.08466133250152438
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000179344:disease:MONDO_0005344&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;hepatitis B virus infection&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005344&#34;,
+          &#34;score&#34;: 0.08214721662713914
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000179344:disease:MONDO_0006604&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;rosacea&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0006604&#34;,
+          &#34;score&#34;: 0.07747217385648704
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000179344:disease:MONDO_0005061&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;lung adenocarcinoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005061&#34;,
+          &#34;score&#34;: 0.0722004845638645
+         }
+        ]
+       },
+       {
+        &#34;gene&#34;: &#34;CD37&#34;,
+        &#34;log2fc&#34;: 2.11410480241308,
+        &#34;evidence&#34;: [
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000104894:disease:MONDO_0018905&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;diffuse large B-cell lymphoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0018905&#34;,
+          &#34;score&#34;: 0.1338825073902965
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000104894:disease:MONDO_0007915&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;systemic lupus erythematosus&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0007915&#34;,
+          &#34;score&#34;: 0.11500795320182934
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000104894:disease:MONDO_0018908&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;non-Hodgkin lymphoma&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0018908&#34;,
+          &#34;score&#34;: 0.11284123752196921
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000104894:disease:MONDO_0018874&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;acute myeloid leukemia&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0018874&#34;,
+          &#34;score&#34;: 0.1101280299209788
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000104894:disease:MONDO_0005070&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;neoplasm&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005070&#34;,
+          &#34;score&#34;: 0.10909539418276645
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000104894:drug:CHEMBL2109268:MONDO_0015759&#34;,
+          &#34;type&#34;: &#34;known_drug&#34;,
+          &#34;label&#34;: &#34;NARATUXIMAB EMTANSINE&#34;,
+          &#34;phase&#34;: 2,
+          &#34;disease&#34;: &#34;B-cell non-Hodgkin lymphoma&#34;,
+          &#34;mechanism&#34;: &#34;Leukocyte antigen CD37 binding agent&#34;
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000104894:drug:CHEMBL4594531:MONDO_0018905&#34;,
+          &#34;type&#34;: &#34;known_drug&#34;,
+          &#34;label&#34;: &#34;BI-836826&#34;,
+          &#34;phase&#34;: 2,
+          &#34;disease&#34;: &#34;diffuse large B-cell lymphoma&#34;,
+          &#34;mechanism&#34;: &#34;Leukocyte antigen CD37 inhibitor&#34;
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000104894:drug:CHEMBL3039539:MONDO_0000430&#34;,
+          &#34;type&#34;: &#34;known_drug&#34;,
+          &#34;label&#34;: &#34;OTLERTUZUMAB&#34;,
+          &#34;phase&#34;: 2,
+          &#34;disease&#34;: &#34;mature T-cell and NK-cell non-Hodgkin lymphoma&#34;,
+          &#34;mechanism&#34;: &#34;Leukocyte antigen CD37 binding agent&#34;
+         }
+        ]
+       },
+       {
+        &#34;gene&#34;: &#34;HLA-DPB1&#34;,
+        &#34;log2fc&#34;: 2.68096551247471,
+        &#34;evidence&#34;: [
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000223865:disease:MONDO_0005147&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;type 1 diabetes mellitus&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005147&#34;,
+          &#34;score&#34;: 0.13835126267518488
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000223865:disease:MONDO_0008383&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;rheumatoid arthritis&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0008383&#34;,
+          &#34;score&#34;: 0.10638733371644853
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000223865:disease:MONDO_0005100&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;systemic sclerosis&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005100&#34;,
+          &#34;score&#34;: 0.10522585724538182
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000223865:disease:MONDO_0005344&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;hepatitis B virus infection&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005344&#34;,
+          &#34;score&#34;: 0.10044913555714517
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000223865:disease:MONDO_0004967&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;acute lymphoblastic leukemia&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0004967&#34;,
+          &#34;score&#34;: 0.0938614762499426
+         }
+        ]
+       },
+       {
+        &#34;gene&#34;: &#34;TCL1A&#34;,
+        &#34;log2fc&#34;: 7.29558644452499,
+        &#34;evidence&#34;: [
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000100721:disease:EFO_0010819&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;clonal hematopoiesis&#34;,
+          &#34;efo_id&#34;: &#34;EFO_0010819&#34;,
+          &#34;score&#34;: 0.502396738516693
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000100721:disease:MONDO_0005559&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;neurodegenerative disease&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005559&#34;,
+          &#34;score&#34;: 0.4785975111733757
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000100721:disease:MONDO_0004948&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;B-cell chronic lymphocytic leukemia&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0004948&#34;,
+          &#34;score&#34;: 0.3936028086803817
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000100721:disease:MONDO_0005157&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;lymphoid neoplasm&#34;,
+          &#34;efo_id&#34;: &#34;MONDO_0005157&#34;,
+          &#34;score&#34;: 0.3705961992850847
+         },
+         {
+          &#34;evidence_id&#34;: &#34;OT:ENSG00000100721:disease:MONDO_0005012&#34;,
+          &#34;type&#34;: &#34;associated_disease&#34;,
+          &#34;label&#34;: &#34;cutaneo</pre></details></div></section>
+<section id="howto">
+<h2>Approving or editing this decision</h2>
+<p>If the run stopped here, review the decision above, optionally edit a copy of <code>decision.json</code>, then:</p>
+<pre>cellwarden approve --run-dir pbmc3k --stage interpretation-review [--from-file edited.json] [--by YOUR_NAME]
+cellwarden resume  --run-dir pbmc3k</pre>
+<p class="muted">Rules decide, agents advise, reviewers check, humans approve, everything is logged (docs/agents-spec.md).</p>
+</section>
+<section id="llm"><h2>LLM cost so far</h2>
+<p>GBP 0.7313 over 50 call(s).</p>
+</section>
+<section><h2>DGE per contrast x group</h2><table><thead><tr><th>contrast</th><th>group</th><th>n_up</th><th>n_down</th><th>n_tested</th><th>skipped_reason</th><th>genes with evidence</th></tr></thead><tbody><tr><td>markers</td><td>B cell</td><td>259</td><td>429</td><td>1626</td><td></td><td>40</td></tr><tr><td>markers</td><td>dendritic cell</td><td>256</td><td>17</td><td>3698</td><td></td><td>37</td></tr><tr><td>markers</td><td>monocyte</td><td>875</td><td>612</td><td>2130</td><td></td><td>40</td></tr><tr><td>markers</td><td>NK cell</td><td>301</td><td>161</td><td>2179</td><td></td><td>40</td></tr><tr><td>markers</td><td>platelet</td><td>205</td><td>100</td><td>2509</td><td></td><td>40</td></tr><tr><td>markers</td><td>T cell</td><td>296</td><td>642</td><td>1866</td><td></td><td>40</td></tr></tbody></table></section>
+<section><h2>Interpretation (every statement is a hypothesis)</h2><h3>markers / B cell</h3><p>B cells show strong upregulation of canonical B-cell markers (CD79A, CD79B, MS4A1/CD20, CD74, HLA class II) and downregulation of T/NK cell genes (CD3D, IL32, S100A4/6/10/11). Open Targets evidence links these B-cell markers to B-cell malignancies and approved drugs.</p><table><thead><tr><th>gene</th><th>direction</th><th>evidence_ids</th><th>text</th></tr></thead><tbody><tr><td>CD79A</td><td>up</td><td>OT:ENSG00000105369:disease:MONDO_0016462, OT:ENSG00000105369:disease:MONDO_0018905</td><td>Hypothesis: CD79A upregulation in B cells reflects its role in B-cell receptor signaling and is associated with isolated agammaglobulinemia (MONDO_0016462) and diffuse large B-cell lymphoma (MONDO_0018905) in Open Targets.</td></tr><tr><td>CD79B</td><td>up</td><td>OT:ENSG00000007312:disease:MONDO_0018905, OT:ENSG00000007312:drug:CHEMBL3301582:MONDO_0018905</td><td>Hypothesis: CD79B upregulation marks active B-cell receptor complexes; Open Targets links it to diffuse large B-cell lymphoma (MONDO_0018905) and the approved drug polatuzumab vedotin (CHEMBL3301582, phase 4) targeting CD79B in that disease.</td></tr><tr><td>MS4A1</td><td>up</td><td>OT:ENSG00000156738:disease:MONDO_0018905, OT:ENSG00000156738:drug:CHEMBL4298092:MONDO_0018905, OT:ENSG00000156738:drug:CHEMBL1743048:MONDO_0018906</td><td>Hypothesis: MS4A1 (CD20) upregulation identifies B cells and is the target of approved antibodies (glofitamab CHEMBL4298092, obinutuzumab CHEMBL1743048) for diffuse large B-cell lymphoma (MONDO_0018905) and follicular lymphoma (MONDO_0018906).</td></tr><tr><td>CD74</td><td>up</td><td>OT:ENSG00000019582:disease:MONDO_0005233, OT:ENSG00000019582:drug:CHEMBL1743040:MONDO_0018908</td><td>Hypothesis: CD74 (invariant chain) upregulation in B cells is associated with non-small cell lung carcinoma (MONDO_0005233) and is the target of milatuzumab (CHEMBL1743040, phase 1.5) for non-Hodgkin lymphoma (MONDO_0018908).</td></tr><tr><td>TCL1A</td><td>up</td><td>OT:ENSG00000100721:disease:MONDO_0004948, OT:ENSG00000100721:disease:EFO_0010819</td><td>Hypothesis: TCL1A upregulation in B cells is associated with B-cell chronic lymphocytic leukemia (MONDO_0004948) and clonal hematopoiesis (EFO_0010819) in Open Targets.</td></tr><tr><td>CD3D</td><td>down</td><td></td><td>Hypothesis: CD3D downregulation in B cells (log2FC -5.2) reflects the absence of T-cell lineage; no Open Targets drug or disease evidence was cited for this direction.</td></tr></tbody></table></section>
+<section><h2>Open Targets</h2><p>996 evidence record(s)</p></section>
+<footer>Generated 2026-10-24T20:37:18Z by CellWarden.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#SBATCH --job-name={{ job_name }}
+#SBATCH --output={{ log_path }}
+#SBATCH --error={{ log_path }}
+#SBATCH --time={{ time }}
+{% if partition %}#SBATCH --partition={{ partition }}
+{% endif %}{% if account %}#SBATCH --account={{ account }}
+{% endif %}{% if cpus %}#SBATCH --cpus-per-task={{ cpus }}
+{% endif %}{% if mem_gb %}#SBATCH --mem={{ mem_gb }}G
+{% endif %}{% if gpus %}#SBATCH --gres=gpu:{{ gpus }}
+{% endif %}{% for line in extra %}#SBATCH {{ line }}
+{% endfor %}#SBATCH --export=ALL
+{% include "_body.sh.j2" %}

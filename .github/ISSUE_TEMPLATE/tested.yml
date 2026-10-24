@@ -1,0 +1,47 @@
+name: I tested CellWarden
+description: Tell us how CellWarden worked on your data (good or bad, both help).
+title: "[tested] "
+labels: ["tested"]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for trying CellWarden. Leave out anything confidential.
+  - type: dropdown
+    id: how
+    attributes:
+      label: How did you run it?
+      options: [Docker, Apptainer / Singularity, Colab notebook, Native install, Other]
+    validations: {required: true}
+  - type: input
+    id: data
+    attributes:
+      label: Data
+      description: Tissue, number of samples and cells, format (10x h5, h5ad, rds ...)
+      placeholder: "PBMC, 4 samples, 40k cells, 10x h5"
+    validations: {required: true}
+  - type: input
+    id: machine
+    attributes:
+      label: Machine and time
+      description: CPU cores / GPU / memory, and how long the run took
+      placeholder: "16 cores, 64 GB, no GPU, 25 min"
+  - type: dropdown
+    id: llm
+    attributes:
+      label: Review agents
+      options: [No LLM (rules only), Claude, OpenAI, NVIDIA NIM, Own model server]
+  - type: textarea
+    id: worked
+    attributes:
+      label: What worked well?
+  - type: textarea
+    id: broke
+    attributes:
+      label: What broke or was confusing?
+      description: Paste the command and the last lines of the stage log if something failed.
+      render: text
+  - type: dropdown
+    id: agents
+    attributes:
+      label: How useful were the review agents' decisions?
+      options: ["Very useful", "Somewhat", "Not useful", "Did not use them"]

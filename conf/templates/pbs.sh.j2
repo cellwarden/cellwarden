@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#PBS -N {{ job_name }}
+#PBS -o {{ log_path }}
+#PBS -j oe
+#PBS -l walltime={{ time }}
+{% if queue or partition %}#PBS -q {{ queue or partition }}
+{% endif %}{% if account %}#PBS -A {{ account }}
+{% endif %}#PBS -l select=1{% if cpus %}:ncpus={{ cpus }}{% endif %}{% if mem_gb %}:mem={{ mem_gb }}gb{% endif %}{% if gpus %}:ngpus={{ gpus }}{% endif %}
+
+{% for line in extra %}#PBS {{ line }}
+{% endfor %}#PBS -V
+{% include "_body.sh.j2" %}

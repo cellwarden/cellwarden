@@ -1,0 +1,31 @@
+{
+ "data": {
+  "search": {
+   "total": 5,
+   "hits": [
+    {
+     "id": "ENSG00000156738",
+     "name": "MS4A1",
+     "entity": "target",
+     "score": 66.2,
+     "object": {
+      "id": "ENSG00000156738",
+      "approvedSymbol": "MS4A1",
+      "approvedName": "membrane spanning 4-domains A1"
+     }
+    },
+    {
+     "id": "ENSG00000166927",
+     "name": "MS4A7",
+     "entity": "target",
+     "score": 20.1,
+     "object": {
+      "id": "ENSG00000166927",
+      "approvedSymbol": "MS4A7",
+      "approvedName": "membrane spanning 4-domains A7"
+     }
+    }
+   ]
+  }
+ }
+}

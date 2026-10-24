@@ -1,0 +1,1 @@
+{"engine": "scfast-gpu", "reference": "seurat", "dataset": "n2638", "cells": 2638, "n_pcs_compared": 10, "pc_similarity": 1.0, "pc_similarity_min": 1.0, "knn_overlap": 0.99765, "ari": 0.8926, "n_clusters_ref": 8, "n_clusters": 9, "pass": {"pc_similarity": true, "knn_overlap": true, "ari": false}, "pass_all": false, "status": "ok"}

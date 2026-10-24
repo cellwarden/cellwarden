@@ -1,0 +1,3 @@
+# `maturin develop` copies the built extension into the source package
+python/scfast/*.so
+python/scfast/*.pyd

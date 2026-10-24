@@ -1,0 +1,33 @@
+{
+  "note": "Hand-built responses in the shape of the Open Targets Platform GraphQL API v4 (https://api.platform.opentargets.org/api/v4/graphql). The API was not reachable from the build workspace, so these are NOT recordings: Ensembl IDs and EFO/MONDO IDs are real, drug names and mechanisms are real approved/clinical agents for these targets, but scores, counts and ChEMBL IDs are plausible placeholders. Replace with live recordings (tests/python/test_opentargets.py shows the operation -> file routing) when the endpoint is reachable.",
+  "routing": {
+    "TargetSearch(text=<symbol>)": "target_search/<symbol>.json",
+    "TargetEvidence(id=<ensembl>)": "target_evidence/<ensembl>.json",
+    "EntitySearch(text, entities=[disease])": "entity_search/<entity>__<text with spaces as underscores>.json"
+  },
+  "genes": {
+    "PPBP": "ENSG00000163736",
+    "PF4": "ENSG00000163737",
+    "CD3E": "ENSG00000198851",
+    "MS4A1": "ENSG00000156738",
+    "LYZ": "ENSG00000090382",
+    "NKG7": "ENSG00000105374"
+  },
+  "files": [
+    "entity_search/disease__systemic_lupus_erythematosus.json",
+    "target_evidence/ENSG00000000000.json",
+    "target_evidence/ENSG00000090382.json",
+    "target_evidence/ENSG00000105374.json",
+    "target_evidence/ENSG00000156738.json",
+    "target_evidence/ENSG00000163736.json",
+    "target_evidence/ENSG00000163737.json",
+    "target_evidence/ENSG00000198851.json",
+    "target_search/CD3E.json",
+    "target_search/LYZ.json",
+    "target_search/MS4A1.json",
+    "target_search/NKG7.json",
+    "target_search/NOSUCHGENE1.json",
+    "target_search/PF4.json",
+    "target_search/PPBP.json"
+  ]
+}

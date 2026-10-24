@@ -1,0 +1,55 @@
+{
+  "node": "modal",
+  "platform": "Linux-4.19.0-gvisor-x86_64-with-glibc2.35",
+  "python": "3.12.1",
+  "cpu_model": "unknown",
+  "logical_cpus": 32,
+  "mem_total_bytes": 1099511627776,
+  "loadavg": [
+    0.0,
+    0.0,
+    0.0
+  ],
+  "threads_env": {
+    "OMP_NUM_THREADS": "16",
+    "OPENBLAS_NUM_THREADS": "16",
+    "MKL_NUM_THREADS": "16",
+    "NUMBA_NUM_THREADS": "16",
+    "VECLIB_MAXIMUM_THREADS": "16",
+    "RAYON_NUM_THREADS": "16"
+  },
+  "gpus": [
+    {
+      "index": 0,
+      "name": "NVIDIA H100 80GB HBM3",
+      "mem_used_mib": 559,
+      "mem_total_mib": 81559,
+      "util_pct": 4
+    }
+  ],
+  "commit": "unknown",
+  "packages": {
+    "scanpy": "1.12.4",
+    "anndata": "0.13.4",
+    "rapids_singlecell": "0.18.1",
+    "cupy": "14.2.0",
+    "scfast": "0.1.0",
+    "scfast_gpu": "NVIDIA H100 80GB HBM3",
+    "leiden_device": "cuda:0"
+  },
+  "time_utc": "2026-10-18T03:11:57Z",
+  "config": {
+    "engine": "scfast-gpu",
+    "data": "/data/prep/pbmc68k/n68260",
+    "out": "/tmp/run/h100_final_pbmc68k",
+    "reps": 2,
+    "threads": 16,
+    "n_hvg": 2000,
+    "n_pcs": 30,
+    "dims": 10,
+    "k": 20,
+    "resolution": 0.5,
+    "seed": 0,
+    "skip_umap": false
+  }
+}

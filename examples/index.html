@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CellWarden</title>
+<meta name="description" content="A single-cell RNA-seq pipeline whose decisions are guarded by rules, LLM review agents and you. Example reports on 10x PBMC 3k.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one centred column (68ch prose), a 2x2 grid of example cards, quiet footer */
+:root {
+  --bg: #f6f7f4; --surface: #ffffff; --ink: #1c2321; --muted: #5a6662; --line: #dfe3de;
+  --accent: #2b6e5a; --accent-soft: #e3efe9; --code: #eef1ec;
+  --display: "Source Serif 4", Georgia, serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #121816; --surface: #19211e; --ink: #e3e9e6; --muted: #9aa8a2; --line: #2a3531;
+    --accent: #6cc3a6; --accent-soft: #1d3029; --code: #1f2925; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #121816; --surface: #19211e; --ink: #e3e9e6; --muted: #9aa8a2; --line: #2a3531;
+  --accent: #6cc3a6; --accent-soft: #1d3029; --code: #1f2925; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.6 var(--body); }
+main { max-width: 920px; margin: 0 auto; padding: 56px 20px 40px; display: flex; flex-direction: column; gap: 40px; }
+header { display: flex; flex-direction: column; gap: 14px; max-width: 68ch; }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font: 600 clamp(34px, 6vw, 52px)/1.05 var(--display); margin: 0; text-wrap: balance; }
+.lede { font-size: 18px; color: var(--ink); margin: 0; }
+.gates { font: 13px/1.5 var(--mono); color: var(--muted); margin: 0; }
+.gates b { color: var(--accent); font-weight: 500; }
+h2 { font: 600 22px/1.2 var(--display); margin: 0 0 14px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; }
+.card { display: flex; flex-direction: column; gap: 6px; padding: 18px 18px 16px; background: var(--surface);
+        border: 1px solid var(--line); border-radius: 10px; color: inherit; text-decoration: none; min-width: 0; }
+.card:hover, .card:focus-visible { border-color: var(--accent); outline: none; }
+.card strong { font-weight: 600; }
+.card span { color: var(--muted); font-size: 14px; }
+.card .go { color: var(--accent); font-size: 13px; font-weight: 500; margin-top: auto; padding-top: 6px; }
+.note { color: var(--muted); font-size: 14px; margin: 12px 0 0; max-width: 68ch; }
+pre { background: var(--code); border-radius: 8px; padding: 14px 16px; margin: 0; overflow-x: auto;
+      font: 14px/1.6 var(--mono); }
+.links { display: flex; flex-wrap: wrap; gap: 10px 22px; }
+.links a, .note a { color: var(--accent); }
+footer { border-top: 1px solid var(--line); padding-top: 18px; color: var(--muted); font-size: 13px; }
+@media (max-width: 480px) { main { padding-top: 36px; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <span class="eyebrow">single-cell RNA-seq · Seurat · Rust · LLM review gates</span>
+    <h1>CellWarden</h1>
+    <p class="lede">A complete single-cell analysis, from QC to annotation, differential expression and Open Targets evidence. Its decisions are guarded: rules decide, LLM agents advise, a reviewer agent checks, and you approve.</p>
+    <p class="gates">ingest → QC → <b>[QC review]</b> → clustering → markers → <b>[context review]</b> → <b>[annotation review]</b> → DE + Open Targets → <b>[interpretation review]</b> → report</p>
+  </header>
+
+  <section>
+    <h2>Example: 10x PBMC 3k</h2>
+    <div class="cards">
+      <a class="card" href="examples/pbmc3k/report.html"><strong>Report</strong><span>QC, clusters, markers, cell types, differential expression, drugs and diseases from Open Targets, gate decisions, LLM cost.</span><span class="go">Open report →</span></a>
+      <a class="card" href="examples/pbmc3k/explorer.html"><strong>UMAP explorer</strong><span>Colour the 2,700 cells by cell type, cluster or any gene.</span><span class="go">Open explorer →</span></a>
+      <a class="card" href="examples/pbmc3k/dashboard.html"><strong>Run dashboard</strong><span>Every stage with its time and memory, and the gates with their decisions.</span><span class="go">Open dashboard →</span></a>
+      <a class="card" href="examples/pbmc3k/gates/G3/report.html"><strong>A review gate</strong><span>The annotation review: the evidence, the agent's proposal, the reviewer's verdict.</span><span class="go">Open gate report →</span></a>
+    </div>
+    <p class="note">Produced by <code>cellwarden run</code> with every gate on <code>auto</code>, using NVIDIA NIM agents. Data: 10x Genomics PBMC 3k, CC BY 4.0. <a href="https://github.com/cellwarden/cellwarden/tree/main/examples/pbmc3k">How it was made</a>.</p>
+  </section>
+
+  <section>
+    <h2>Try it</h2>
+    <pre>docker pull ghcr.io/cellwarden/cellwarden:latest
+apptainer pull cellwarden.sif docker://ghcr.io/cellwarden/cellwarden:latest
+
+cellwarden run data/*.h5 -i --out results/study</pre>
+    <p class="note">No install: <a href="https://colab.research.google.com/github/cellwarden/cellwarden/blob/main/examples/colab/cellwarden_quickstart.ipynb">open the Colab notebook</a>.</p>
+  </section>
+
+  <section class="links">
+    <a href="https://github.com/cellwarden/cellwarden">GitHub</a>
+    <a href="https://github.com/cellwarden/cellwarden/blob/main/docs/GETTING_STARTED.md">Getting started</a>
+    <a href="https://github.com/cellwarden/cellwarden/releases">Releases</a>
+    <a href="https://github.com/cellwarden/cellwarden/issues/new?template=tested.yml">Tell us how it went</a>
+  </section>
+
+  <footer>CellWarden is by Mukesh Agrawal, Ahmed Dawoud and David Williams, started at the Reinvent the Wheel AI hackathon, October 2026. Apache-2.0.</footer>
+</main>
+</body>
+</html>

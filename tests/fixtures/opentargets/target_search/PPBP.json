@@ -1,0 +1,31 @@
+{
+ "data": {
+  "search": {
+   "total": 5,
+   "hits": [
+    {
+     "id": "ENSG00000163736",
+     "name": "PPBP",
+     "entity": "target",
+     "score": 65.2,
+     "object": {
+      "id": "ENSG00000163736",
+      "approvedSymbol": "PPBP",
+      "approvedName": "pro-platelet basic protein"
+     }
+    },
+    {
+     "id": "ENSG00000275942",
+     "name": "PPBPP1",
+     "entity": "target",
+     "score": 21.3,
+     "object": {
+      "id": "ENSG00000275942",
+      "approvedSymbol": "PPBPP1",
+      "approvedName": "pro-platelet basic protein pseudogene 1"
+     }
+    }
+   ]
+  }
+ }
+}

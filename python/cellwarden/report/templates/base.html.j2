@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}CellWarden report{% endblock %}</title>
+<style>
+:root { --fg:#1d1f21; --muted:#6b6f76; --bg:#ffffff; --panel:#f6f7f9; --line:#dfe2e6; --accent:#0072B2;
+        --ok:#009E73; --warn:#E69F00; --bad:#D55E00; }
+* { box-sizing: border-box; }
+body { margin:0; font: 14px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color:var(--fg); background:var(--bg); }
+header.top { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line); padding:10px 24px; z-index:5;
+             display:flex; flex-wrap:wrap; gap:6px 18px; align-items:baseline; }
+header.top h1 { font-size:18px; margin:0; }
+header.top nav a { color:var(--accent); text-decoration:none; margin-right:10px; font-size:13px; }
+main { max-width: 1200px; margin: 0 auto; padding: 16px 24px 60px; }
+section { margin: 28px 0; }
+h2 { font-size:20px; border-bottom:2px solid var(--line); padding-bottom:4px; margin: 0 0 12px; }
+h3 { font-size:15px; margin: 18px 0 6px; }
+table { border-collapse: collapse; width:100%; font-size:13px; margin: 6px 0 12px; }
+th, td { text-align:left; padding: 4px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { background:var(--panel); font-weight:600; }
+td.num, th.num { text-align:right; font-variant-numeric: tabular-nums; }
+.muted { color:var(--muted); }
+.notrun { background:var(--panel); border-left:4px solid var(--line); padding:8px 12px; color:var(--muted); }
+.pill { display:inline-block; padding:1px 8px; border-radius:10px; font-size:12px; background:var(--panel); border:1px solid var(--line); }
+.pill.done, .pill.approve, .pill.auto { background:#e4f5ee; border-color:var(--ok); }
+.pill.failed, .pill.block, .pill.escalate { background:#fbe9e1; border-color:var(--bad); }
+.pill.pending, .pill.warn, .pill.review, .pill.request_changes, .pill.skipped { background:#fdf1dc; border-color:var(--warn); }
+.grid { display:flex; flex-wrap:wrap; gap:16px; }
+.grid > * { flex: 1 1 320px; }
+.kv { display:grid; grid-template-columns: max-content 1fr; gap: 2px 14px; font-size:13px; }
+.kv dt { color:var(--muted); } .kv dd { margin:0; word-break:break-all; }
+svg.plot { font: 11px sans-serif; max-width:100%; height:auto; }
+svg.plot text.t { font-size:12px; font-weight:600; } svg.plot text.l { fill:#444; } svg.plot text.v { fill:#444; }
+svg.plot line.ax { stroke:#888; } svg.plot line.vl { stroke:#D55E00; stroke-dasharray:3 2; }
+figure.scatter { margin:0; } figure.scatter figcaption { font-weight:600; margin-bottom:4px; }
+.scatter-row { display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; }
+ul.legend { list-style:none; margin:0; padding:0; font-size:12px; columns: 2; max-width:300px; }
+ul.legend li { margin:1px 0; break-inside:avoid; } .sw { display:inline-block; width:10px; height:10px; margin-right:6px; vertical-align:middle; border-radius:2px; }
+pre { background:var(--panel); padding:8px; overflow:auto; font-size:12px; max-height:360px; }
+details > summary { cursor:pointer; color:var(--accent); }
+.genes { font-family: ui-monospace, Menlo, monospace; font-size:12px; }
+footer { color:var(--muted); font-size:12px; margin-top:40px; border-top:1px solid var(--line); padding-top:8px; }
+@media print { header.top { position:static; } }
+</style>
+{% block head %}{% endblock %}
+</head>
+<body>
+{% block body %}{% endblock %}
+</body>
+</html>

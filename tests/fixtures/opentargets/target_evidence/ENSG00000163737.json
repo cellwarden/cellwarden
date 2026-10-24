@@ -1,0 +1,231 @@
+{
+ "data": {
+  "target": {
+   "id": "ENSG00000163737",
+   "approvedSymbol": "PF4",
+   "approvedName": "platelet factor 4",
+   "biotype": "protein_coding",
+   "tractability": [
+    {
+     "modality": "SM",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Structure with Ligand",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "High-Quality Ligand",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "High-Quality Pocket",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Med-Quality Pocket",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Druggable Family",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt loc high conf",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "GO CC high conf",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt loc med conf",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt SigP or TMHMM",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "GO CC med conf",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Human Protein Atlas loc",
+     "value": true
+    },
+    {
+     "modality": "PR",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Literature",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "UniProt Ubiquitination",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Database Ubiquitination",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Half-life Data",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Small Molecule Binder",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Phase 1 Clinical",
+     "value": false
+    }
+   ],
+   "knownDrugs": {
+    "count": 0,
+    "rows": []
+   },
+   "associatedDiseases": {
+    "count": 388,
+    "rows": [
+     {
+      "score": 0.704,
+      "disease": {
+       "id": "EFO_0004309",
+       "name": "platelet count"
+      }
+     },
+     {
+      "score": 0.602,
+      "disease": {
+       "id": "EFO_0004305",
+       "name": "mean platelet volume"
+      }
+     },
+     {
+      "score": 0.588,
+      "disease": {
+       "id": "EFO_1001344",
+       "name": "heparin-induced thrombocytopenia"
+      }
+     },
+     {
+      "score": 0.447,
+      "disease": {
+       "id": "EFO_0003854",
+       "name": "thrombocytopenia"
+      }
+     },
+     {
+      "score": 0.317,
+      "disease": {
+       "id": "EFO_0000685",
+       "name": "rheumatoid arthritis"
+      }
+     },
+     {
+      "score": 0.296,
+      "disease": {
+       "id": "EFO_0000384",
+       "name": "Crohn's disease"
+      }
+     },
+     {
+      "score": 0.282,
+      "disease": {
+       "id": "EFO_0003767",
+       "name": "inflammatory bowel disease"
+      }
+     },
+     {
+      "score": 0.251,
+      "disease": {
+       "id": "EFO_0000612",
+       "name": "myocardial infarction"
+      }
+     },
+     {
+      "score": 0.221,
+      "disease": {
+       "id": "MONDO_0005015",
+       "name": "diabetes mellitus"
+      }
+     },
+     {
+      "score": 0.203,
+      "disease": {
+       "id": "EFO_0000270",
+       "name": "asthma"
+      }
+     }
+    ]
+   }
+  }
+ }
+}

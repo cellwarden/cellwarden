@@ -1,0 +1,11 @@
+# Written by cellwarden ({{ written_utc }}) for run {{ run_id }}. Do not edit; rerun
+# `cellwarden run` to regenerate. The API key is never written here: the
+# scheduler propagates the submitting shell's environment (--export=ALL / -V).
+set -euo pipefail
+cd {{ repo_root | sh }}
+export PYTHONPATH={{ pythonpath | sh }}
+{% for k, v in env.items() %}export {{ k }}={{ v | sh }}
+{% endfor %}echo "cellwarden job on $(hostname) at $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+{% if container_cmd %}{{ container_cmd }} \
+  {% endif %}{{ python | sh }} -m cellwarden resume --run-dir {{ run_dir | sh }} --execution direct{% if until %} --until {{ until }}{% endif %}{% if no_gates %} --no-gates{% endif %}
+

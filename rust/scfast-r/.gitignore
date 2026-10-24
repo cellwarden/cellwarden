@@ -1,0 +1,12 @@
+# Rust build output (R CMD INSTALL builds into src/rust/target)
+src/rust/target/
+src/rust/vendor/
+src/.cargo/
+# compiled objects
+src/*.o
+src/*.so
+src/*.dll
+src/symbols.rds
+# R CMD check / build output
+*.Rcheck/
+scfastR_*.tar.gz

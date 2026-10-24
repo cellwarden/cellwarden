@@ -1,0 +1,24 @@
+{
+  "input": "/data/raw/pbmc68k/filtered_matrices_mex/hg19",
+  "cells_in": 68579,
+  "genes_in": 32738,
+  "cells_qc": 68260,
+  "genes_qc": 17789,
+  "qc": {
+    "min_cells": 3,
+    "min_genes": 200,
+    "max_genes": 2500.0,
+    "max_mt": 5.0,
+    "mt_prefix": "MT-"
+  },
+  "seed": 0,
+  "sizes": [
+    {
+      "cells": 68260,
+      "genes": 17789,
+      "nnz": 37210783,
+      "path": "/data/prep/pbmc68k/n68260/matrix.h5"
+    }
+  ],
+  "labels": true
+}

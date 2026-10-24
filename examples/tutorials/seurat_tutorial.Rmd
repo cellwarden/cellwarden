@@ -1,0 +1,2129 @@
+---
+title: "Single-Cell RNA-Seq Analysis with Seurat 5: A Beginner's Guide"
+author: "Seurat Tutorial"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    code_folding: show
+    fig_width: 10
+    fig_height: 6
+    theme: cosmo
+    highlight: tango
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, 
+                      warning = FALSE, 
+                      message = FALSE,
+                      fig.width = 10,
+                      fig.height = 6,
+                      eval = TRUE)
+```
+
+# Introduction and Learning Objectives
+
+## What You'll Learn
+
+This tutorial will guide you through a complete single-cell RNA-seq analysis workflow using Seurat 5. By the end of this tutorial, you will be able to:
+
+- Understand the structure of single-cell RNA-seq data
+- Perform quality control filtering on single-cell data
+- Normalize and scale expression data
+- Identify variable features for dimensionality reduction
+- Perform clustering to identify distinct cell populations
+- Visualize data using dimensionality reduction techniques (UMAP)
+- Identify marker genes for cell clusters
+- Annotate cell types based on marker gene expression
+- Perform sanity checks to validate your analysis
+
+## Prerequisites
+
+This tutorial assumes you have:
+
+- Basic familiarity with R (data frames, functions, plotting)
+- Access to IridisOnDemand with the required modules loaded
+- Basic understanding of biological concepts (cells, genes, RNA)
+
+## Overview of Single-Cell RNA-Seq Analysis
+
+Single-cell RNA sequencing (scRNA-seq) allows us to measure gene expression in individual cells, providing unprecedented resolution to study cellular heterogeneity. Unlike bulk RNA-seq which averages expression across thousands of cells, scRNA-seq reveals the diversity of cell types and states within a tissue.
+
+The typical analysis pipeline includes:
+
+1. **Quality Control**: Filtering out low-quality cells and genes
+2. **Normalization**: Accounting for sequencing depth differences
+3. **Feature Selection**: Identifying highly variable genes
+4. **Dimensionality Reduction**: Reducing complexity while preserving structure
+5. **Clustering**: Grouping cells with similar expression profiles
+6. **Annotation**: Identifying cell types based on marker genes
+
+## Why Seurat?
+
+Seurat is one of the most widely used R packages for single-cell analysis. It provides:
+
+- Efficient handling of large datasets
+- Comprehensive quality control tools
+- State-of-the-art clustering algorithms
+- Rich visualization capabilities
+- Active development and community support
+
+Seurat 5 introduces improved performance and new features, including enhanced layered assay structures for better data management.
+
+---
+
+# Environment Setup (Iridis X)
+
+This tutorial is designed to run on Iridis X, the University of Southampton's HPC cluster. The workflow involves two stages:
+
+1. **Package Installation** (on login node via RStudioServer)
+2. **Analysis Execution** (on compute nodes)
+
+## Module Loading
+
+**IMPORTANT**: Before starting your R session on Iridis X compute nodes, you must load the required modules. Run these commands in your terminal **before** starting R:
+
+```bash
+module load fftw
+module load hdf5
+```
+
+**Why these modules matter**: 
+- `fftw` provides Fast Fourier Transform libraries needed for numerical computations in Seurat
+- `hdf5` provides Hierarchical Data Format support, used for efficient storage and access of large datasets
+
+If you forget to load these modules, you may encounter errors when loading data or performing certain computations.
+
+**Note**: These modules should be loaded when running analysis on compute nodes. For package installation on the login node (see below), you typically don't need these modules.
+
+## Setting Up Reproducibility
+
+Reproducibility is crucial in scientific computing. We'll set a random seed to ensure that stochastic processes (like clustering and UMAP) produce consistent results across runs.
+
+```{r reproducibility}
+# Set random seed for reproducibility
+# This ensures clustering and UMAP results are consistent
+set.seed(42)
+```
+
+**Why this matters**: Many algorithms in single-cell analysis involve randomness (e.g., UMAP initialization, clustering algorithms). Setting a seed ensures you get the same results every time you run the analysis, which is essential for reproducibility and debugging.
+
+---
+
+# Package Installation and Loading
+
+## Installing Required Packages
+
+**IMPORTANT**: Package installation must be performed on the **Iridis X login node** by starting RStudioServer. This is because:
+
+- Package installation requires interactive access and can take time
+- Login nodes are designed for setup and interactive work
+- Compute nodes are for running analysis jobs and may have restrictions on package installation
+
+### Steps for Package Installation
+
+1. **Connect to Iridis X login node** and start RStudioServer
+2. **In RStudio**, run the installation code below to install required packages
+3. **Once installation is complete**, you can proceed with analysis on compute nodes
+
+```{r package-installation, eval=FALSE}
+# Install Seurat 5 from CRAN
+# This will also install required dependencies
+if (!requireNamespace("Seurat", quietly = TRUE)) {
+  install.packages("Seurat")
+}
+
+# Install additional useful packages
+if (!requireNamespace("dplyr", quietly = TRUE)) {
+  install.packages("dplyr")
+}
+
+if (!requireNamespace("patchwork", quietly = TRUE)) {
+  install.packages("patchwork")
+}
+
+# Install SeuratData for example datasets (optional but useful)
+if (!requireNamespace("SeuratData", quietly = TRUE)) {
+  if (!requireNamespace("remotes", quietly = TRUE)) {
+    install.packages("remotes")
+  }
+  remotes::install_github("satijalab/seurat-data")
+}
+```
+
+**Note**: The `eval=FALSE` chunk option means this code won't run when you knit the document. You should run this code manually in your RStudio session on the login node to install packages. Once installed, packages will be available for your analysis sessions.
+
+### Running Analysis on Compute Nodes
+
+After packages are installed, **subsequent analysis should be performed on Iridis X compute nodes**. This is important because:
+
+- Compute nodes have more resources (CPU, memory) for analysis
+- Login nodes have limited resources and should not be used for intensive computation
+- Running analysis on compute nodes prevents impacting other users on login nodes
+
+When submitting jobs or starting interactive sessions on compute nodes, make sure to:
+1. Load the required modules (`fftw`, `hdf5`)
+2. Load the R module (if required by your system)
+3. Start R/RStudio and load the libraries (they should already be installed from the login node)
+
+## Loading Libraries
+
+Now we'll load all the packages we need for the analysis:
+
+```{r load-libraries, warning=FALSE}
+# Load Seurat 5 - the main package for single-cell analysis
+# Note: You may see deprecation warnings from Seurat's internal functions
+# These are harmless and come from within the Seurat package itself
+# They will be addressed in future Seurat updates
+library(Seurat)
+
+# Load SeuratData for example datasets
+library(SeuratData)
+
+# Load ggplot2 for plotting
+library(ggplot2)
+
+# Load dplyr for data manipulation
+library(dplyr)
+
+# Load patchwork for combining plots
+library(patchwork)
+
+# Check Seurat version to ensure we're using Seurat 5
+packageVersion("Seurat")
+
+# Load the pbmc3k example dataset
+# This dataset contains 2,700 PBMCs from a healthy donor
+# Using Seurat 5's LoadData function which uses the correct layer API
+pbmc3k <- SeuratData::LoadData("pbmc3k")
+
+# ============================================
+# STUDENT DATA LOADING - UNCOMMENT AFTER COMPLETING TUTORIAL WITH EXAMPLE DATA
+# ============================================
+# Once you have completed the tutorial using the PBMC example data above,
+# you can uncomment the line below and replace it with your own data:
+# pbmc3k <- readRDS("path/to/your/seurat_object.rds")
+```
+
+**What each package does**:
+- `Seurat`: Main package providing all single-cell analysis functions
+- `SeuratData`: Provides example datasets for learning and testing
+- `dplyr`: Provides convenient data manipulation functions (though base R works too)
+- `patchwork`: Allows us to combine multiple plots side-by-side for comparison
+
+## Checking Versions
+
+It's good practice to record package versions for reproducibility:
+
+```{r session-info, eval=FALSE}
+# Print session info for troubleshooting and reproducibility
+# Uncomment this line to see your full session information
+# sessionInfo()
+```
+
+**Why this matters**: Package versions can change, and different versions may produce slightly different results. Recording your session info helps troubleshoot issues and ensures others can reproduce your analysis.
+
+---
+
+# Understanding Single-Cell Data Structure
+
+## What is Single-Cell RNA-Seq Data?
+
+Before diving into the code, let's understand what we're working with. Single-cell RNA-seq data is fundamentally a **count matrix** where:
+
+- **Rows** = Genes (typically 20,000-30,000 genes)
+- **Columns** = Cells (can range from hundreds to hundreds of thousands)
+- **Values** = Counts (number of RNA molecules detected for each gene in each cell)
+
+This creates a large, sparse matrix where most values are zero (most genes aren't expressed in most cells).
+
+## The Seurat Object Structure
+
+Seurat stores this count matrix (and much more) in a structured object called a `Seurat` object. The Seurat object contains:
+
+- **Assays**: The actual expression data (default is "RNA")
+  - `counts`: Raw counts (what we start with)
+  - `data`: Normalized counts
+  - `scale.data`: Scaled and centered data (for PCA)
+- **Meta.data**: Information about each cell (QC metrics, cluster assignments, etc.)
+- **Reductions**: Dimensionality reductions (PCA, UMAP, etc.)
+- **Graphs**: Cell-cell similarity graphs (for clustering)
+
+Think of the Seurat object as a container that holds your data and all the analyses you perform on it.
+
+## Exercise: Understanding Data Dimensions
+
+Before we load real data, think about what you expect:
+- How many cells do you think a typical single-cell experiment has?
+- How many genes are typically measured?
+- What does a "count" represent biologically?
+
+---
+
+# Loading Example Data
+
+## Choosing Your Dataset
+
+For this tutorial, we'll use the **PBMC3K** dataset - a publicly available dataset of 2,700 peripheral blood mononuclear cells (PBMCs) from a healthy donor. This dataset is commonly used for learning because:
+
+- It's well-characterized
+- It contains multiple known cell types (T cells, B cells, monocytes, etc.)
+- It's small enough to run quickly but large enough to be realistic
+
+**To use your own dataset**: See the "Adapting for Your Own Data" section below for instructions on how to modify the code.
+
+## Loading the PBMC3K Dataset
+
+The PBMC3K dataset is available through Seurat's data package. The dataset has already been loaded in the setup section above. If you need to reload it or are using your own data, see the code below:
+
+```{r load-data, eval=FALSE}
+# The pbmc3k dataset is already loaded in the setup section
+# If you need to reload it, use:
+# pbmc3k <- SeuratData::LoadData("pbmc3k")
+
+# ============================================
+# STUDENT DATA LOADING - UNCOMMENT AFTER COMPLETING TUTORIAL
+# ============================================
+# After completing the tutorial with the example data, uncomment below
+# to load your own Seurat object from an RDS file:
+# pbmc3k <- readRDS("path/to/your/seurat_object.rds")
+# 
+# See the "Adapting for Your Own Data" section below for more details
+```
+
+**Note**: The dataset is loaded in the setup section (see "Loading Libraries" above), so it's already available for the rest of the analysis.
+
+## Inspecting the Loaded Seurat Object
+
+Let's explore what we've loaded:
+
+```{r inspect-object}
+# Basic information about the Seurat object
+pbmc3k
+
+# More detailed information
+str(pbmc3k, max.level = 2)
+
+# Check dimensions: number of cells and genes
+dim(pbmc3k)
+```
+
+**Understanding the output**:
+- The first line shows the number of genes (features) and cells
+- `dim()` shows `[genes, cells]` - note the order!
+
+## Exercise: Check Your Own Data Structure
+
+**NOTE**: This exercise is for when you use your own data. Complete the tutorial with the example data first, then return here.
+
+```{r exercise-data-structure, eval=FALSE}
+# ============================================
+# STUDENT DATA EXERCISE - UNCOMMENT AFTER COMPLETING TUTORIAL
+# ============================================
+# After completing the tutorial with the example data, uncomment and modify
+# these commands to explore your own data structure:
+
+# How many cells do you have?
+# dim(your_seurat_object)
+# Note: Replace 'your_seurat_object' with 'pbmc3k' if you're using the same variable name
+
+# What are the first few gene names?
+# head(rownames(pbmc3k))
+
+# What are the first few cell barcodes?
+# head(colnames(pbmc3k))
+```
+
+## Sanity Check: Verify Expected Genes Are Present
+
+Before proceeding, let's verify that our dataset contains genes we expect to find in PBMCs. This is a crucial sanity check - if expected genes are missing, there might be an issue with the data.
+
+```{r sanity-check-genes}
+# Check for expected marker genes in PBMCs
+# T cell markers
+t_cell_markers <- c("CD3D", "CD3E", "CD3G")
+# B cell markers  
+b_cell_markers <- c("CD19", "CD79A", "MS4A1")
+# Monocyte markers
+monocyte_markers <- c("CD68", "CD14", "LYZ")
+# NK cell markers
+nk_markers <- c("NKG7", "GNLY", "KLRD1")
+
+# Check which are present in our dataset
+all_markers <- c(t_cell_markers, b_cell_markers, monocyte_markers, nk_markers)
+present_markers <- all_markers[all_markers %in% rownames(pbmc3k)]
+
+cat("Expected markers found:", length(present_markers), "out of", length(all_markers), "\n")
+cat("Present markers:", paste(present_markers, collapse = ", "), "\n")
+```
+
+**What to look for**: We should find most of these markers. If many are missing, it could indicate:
+- Wrong species (e.g., mouse vs human gene names)
+- Data quality issues
+- Wrong tissue type
+
+**Biological reasoning**: These are canonical markers for immune cell types. T cells express CD3 proteins, B cells express CD19 and CD79A, monocytes express CD68 and CD14. Their presence confirms we have immune cell data.
+
+## Adapting for Your Own Data
+
+**IMPORTANT**: Complete the tutorial using the PBMC example data first! This will help you understand the workflow and expected results. Once you've successfully completed the tutorial with the example data, return to this section to adapt it for your own dataset.
+
+Students should have their Seurat object saved as an RDS file. To use your own data:
+
+1. **First**: Complete the entire tutorial using the PBMC example data
+2. **Then**: Return to the "Loading Libraries" section above and uncomment the student data loading line
+3. **Replace** the example data loading with your RDS file path
+
+```{r adapt-your-data, eval=FALSE}
+# ============================================
+# STUDENT DATA CONFIGURATION
+# ============================================
+# UNCOMMENT AND MODIFY THIS SECTION AFTER COMPLETING THE TUTORIAL
+# WITH THE EXAMPLE DATA
+
+# Path to your Seurat object RDS file
+# Replace with the actual path to your RDS file
+# rds_file_path <- "path/to/your/seurat_object.rds"
+
+# Load your Seurat object from RDS file
+# Uncomment the line below and update the path:
+# pbmc3k <- readRDS(rds_file_path)
+
+# Verify the object was loaded correctly
+# pbmc3k
+
+# Check dimensions
+# dim(pbmc3k)
+```
+
+**What's happening here**:
+- `readRDS()` loads a previously saved Seurat object from an RDS file
+- RDS files preserve the complete Seurat object including all analyses already performed
+- The object will be loaded with the same variable name (`pbmc3k`) so the rest of the tutorial code will work without modification
+
+**Steps to use your own data**:
+1. In the "Loading Libraries" section above, comment out: `pbmc3k <- SeuratData::LoadData("pbmc3k")`
+2. Uncomment and modify: `pbmc3k <- readRDS("path/to/your/seurat_object.rds")`
+3. Update the sanity check section below with markers appropriate for your tissue type
+4. Re-run the analysis from the beginning with your data
+
+**Note**: If your Seurat object has a different name or structure, you may need to adjust the variable name throughout the tutorial. Make sure your RDS file contains a Seurat object that has at least the raw counts data.
+
+**Important**: After loading your data, you'll also need to update the sanity check section with markers appropriate for your tissue type.
+
+---
+
+# Quality Control (QC)
+
+## Understanding QC Metrics
+
+Quality control is the first critical step in single-cell analysis. We need to identify and remove low-quality cells that could confound our analysis. Low-quality cells can arise from:
+
+- **Cell death or stress**: Dying cells often have high mitochondrial gene expression
+- **Doublets**: Multiple cells captured together
+- **Empty droplets**: No cell captured, just background RNA
+- **Low sequencing depth**: Insufficient RNA captured
+
+We measure cell quality using three key metrics:
+
+1. **nFeature_RNA**: Number of unique genes detected in a cell
+   - Too low: Cell may be dead or empty
+   - Too high: May be a doublet (two cells)
+
+2. **nCount_RNA**: Total number of RNA molecules detected
+   - Correlates with sequencing depth
+   - Very low = poor sequencing
+   - Very high = possible doublet
+
+3. **percent.mt**: Percentage of reads mapping to mitochondrial genes
+   - High mitochondrial expression = cell stress or death
+   - Typical range: 5-20% for healthy cells, >20% suggests problems
+
+## Calculating QC Metrics
+
+The Seurat object automatically calculates `nFeature_RNA` and `nCount_RNA` when created. We need to calculate mitochondrial percentage manually:
+
+```{r calculate-qc}
+# Calculate percentage of mitochondrial genes
+# The pattern "^MT-" matches mitochondrial genes in human data
+# For mouse data, use "^mt-" (lowercase)
+pbmc3k[["percent.mt"]] <- PercentageFeatureSet(pbmc3k, pattern = "^MT-")
+
+# Note: Seurat 5 uses the [[ operator for adding metadata
+# This is equivalent to: pbmc3k$percent.mt <- PercentageFeatureSet(...)
+```
+
+**What's happening**:
+- `PercentageFeatureSet()` calculates what percentage of total counts come from genes matching the pattern
+- The `^MT-` pattern matches genes starting with "MT-" (human mitochondrial genes)
+- For mouse data, use `^mt-` (lowercase) or `^Mt-` depending on your gene naming
+
+**Biological reasoning**: Mitochondrial genes are highly expressed in stressed or dying cells. Healthy cells typically have 5-15% mitochondrial reads, while dying cells can have >20%.
+
+## Visualizing QC Metrics
+
+Before filtering, let's visualize our QC metrics to understand the distribution:
+
+```{r visualize-qc}
+# Create violin plots to visualize QC metrics
+# ncol = 3 arranges the plots side-by-side
+VlnPlot(pbmc3k, 
+        features = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
+        ncol = 3)
+```
+
+**How to read this plot**:
+- Each point represents a cell
+- The violin shape shows the distribution
+- Look for cells with extreme values (very high or very low)
+
+**What to look for**:
+- Cells with very low `nFeature_RNA` (< 200) are likely empty or dead
+- Cells with very high `nFeature_RNA` (> 4000) may be doublets
+- Cells with high `percent.mt` (> 20%) are likely stressed or dying
+
+## Scatter Plots for QC
+
+Scatter plots help us see relationships between metrics:
+
+```{r qc-scatter}
+# Create scatter plots to see relationships between metrics
+plot1 <- FeatureScatter(pbmc3k, feature1 = "nCount_RNA", feature2 = "percent.mt")
+plot2 <- FeatureScatter(pbmc3k, feature1 = "nCount_RNA", feature2 = "nFeature_RNA")
+
+# Combine plots side-by-side
+plot1 + plot2
+```
+
+**Interpretation**:
+- **Left plot**: `nCount_RNA` vs `percent.mt`
+  - Look for cells with high counts AND high mitochondrial percentage (top right) - these are likely dying cells
+- **Right plot**: `nCount_RNA` vs `nFeature_RNA`
+  - Should see a positive correlation (more counts = more features)
+  - Cells with high counts but low features (right side, low Y) may be problematic
+
+## Sanity Check: Review QC Metrics
+
+Before setting thresholds, let's check if our metrics are within expected ranges:
+
+```{r sanity-check-qc}
+# Calculate summary statistics
+qc_summary <- data.frame(
+  Metric = c("nFeature_RNA", "nCount_RNA", "percent.mt"),
+  Mean = c(mean(pbmc3k$nFeature_RNA),
+           mean(pbmc3k$nCount_RNA),
+           mean(pbmc3k$percent.mt)),
+  Median = c(median(pbmc3k$nFeature_RNA),
+             median(pbmc3k$nCount_RNA),
+             median(pbmc3k$percent.mt)),
+  Min = c(min(pbmc3k$nFeature_RNA),
+          min(pbmc3k$nCount_RNA),
+          min(pbmc3k$percent.mt)),
+  Max = c(max(pbmc3k$nFeature_RNA),
+          max(pbmc3k$nCount_RNA),
+          max(pbmc3k$percent.mt))
+)
+
+print(qc_summary)
+
+# Check for potential issues
+cat("\nPotential issues:\n")
+if (sum(pbmc3k$percent.mt > 20) > 0) {
+  cat("-", sum(pbmc3k$percent.mt > 20), "cells with >20% mitochondrial reads\n")
+}
+if (sum(pbmc3k$nFeature_RNA < 200) > 0) {
+  cat("-", sum(pbmc3k$nFeature_RNA < 200), "cells with <200 detected genes\n")
+}
+if (sum(pbmc3k$nFeature_RNA > 4000) > 0) {
+  cat("-", sum(pbmc3k$nFeature_RNA > 4000), "cells with >4000 detected genes (possible doublets)\n")
+}
+```
+
+**What to look for**:
+- Mean `nFeature_RNA`: Typically 1000-3000 for healthy cells
+- Mean `percent.mt`: Should be < 10% for most cell types
+- If you see many cells with extreme values, adjust your thresholds accordingly
+
+**Biological reasoning**: These ranges are based on typical healthy cell characteristics. However, different tissues may have different expected ranges - neurons often have higher mitochondrial content, for example.
+
+## Setting QC Thresholds
+
+Based on the visualizations, we'll set filtering thresholds. For PBMC data, typical thresholds are:
+
+- **nFeature_RNA**: 200-2500 (too few = empty, too many = doublet)
+- **percent.mt**: < 5% (though this can be higher for some tissues)
+
+```{r filter-cells}
+# Filter cells based on QC metrics
+# Keep cells with:
+# - Between 200 and 2500 detected genes
+# - Less than 5% mitochondrial reads
+pbmc3k <- subset(pbmc3k, 
+                 subset = nFeature_RNA > 200 & 
+                          nFeature_RNA < 2500 & 
+                          percent.mt < 5)
+
+# Check how many cells remain
+cat("Cells remaining after filtering:", ncol(pbmc3k), "\n")
+```
+
+**Why these thresholds**:
+- `nFeature_RNA > 200`: Ensures we have enough information per cell
+- `nFeature_RNA < 2500`: Removes likely doublets (two cells captured together)
+- `percent.mt < 5%`: Removes stressed/dying cells (though this can be adjusted for tissue type)
+
+**Biological reasoning**: These thresholds balance removing low-quality cells while preserving biological diversity. Too strict = lose rare cell types, too lenient = noise from poor-quality cells.
+
+## Common Pitfalls in QC
+
+### Over-filtering
+- **Problem**: Removing too many cells, especially rare cell types
+- **Solution**: Start lenient and tighten thresholds if needed
+- **Sign**: Very few cells remain after filtering
+
+### Under-filtering
+- **Problem**: Keeping too many low-quality cells
+- **Solution**: Check if clusters appear to be dominated by low-quality cells
+- **Sign**: Clusters with very high mitochondrial percentage
+
+### Tissue-specific considerations
+- **Neurons**: Often have higher mitochondrial content (10-15% is normal)
+- **Cardiomyocytes**: Very high mitochondrial content is expected
+- **Different tissues**: May need different gene count thresholds
+
+## Exercise: Adjust Thresholds and Observe Effects
+
+Try modifying the filtering thresholds and see how it affects your results:
+
+```{r exercise-adjust-thresholds, eval=FALSE}
+# Try stricter filtering
+pbmc3k_strict <- subset(pbmc3k, 
+                        subset = nFeature_RNA > 500 & 
+                                 nFeature_RNA < 2000 & 
+                                 percent.mt < 3)
+
+# Try more lenient filtering  
+pbmc3k_lenient <- subset(pbmc3k,
+                         subset = nFeature_RNA > 100 & 
+                                  nFeature_RNA < 3000 & 
+                                  percent.mt < 10)
+
+# Compare: How many cells in each?
+```
+
+## Checkpoint: Do Your QC Metrics Make Biological Sense?
+
+After filtering, ask yourself:
+- Are the remaining cell counts reasonable for your experiment?
+- Do the QC distributions look normal (no extreme outliers)?
+- Would you expect these cell numbers based on your experimental design?
+
+---
+
+# Data Normalization
+
+## Why Normalization is Needed
+
+Normalization corrects for differences in sequencing depth between cells. Imagine two identical cells:
+- Cell A: 10,000 total RNA molecules sequenced
+- Cell B: 20,000 total RNA molecules sequenced
+
+Without normalization, Cell B would appear to have twice the expression of every gene, even though they're identical cells. Normalization makes cells comparable by accounting for these sequencing depth differences.
+
+**Biological reasoning**: Different cells capture different amounts of RNA during sequencing. This is a technical artifact, not biological variation. Normalization removes this technical variation so we can focus on true biological differences.
+
+## Seurat 5 Normalization Method
+
+Seurat 5 uses a log-normalization approach that:
+
+1. Normalizes each cell's gene expression by total expression
+2. Multiplies by a scale factor (default: 10,000)
+3. Log-transforms the result
+
+This creates a "normalized" layer in the Seurat object while preserving the original "counts" layer.
+
+```{r normalize-data}
+# Normalize the data
+# This creates a new layer called "data" with normalized counts
+pbmc3k <- NormalizeData(pbmc3k, 
+                        normalization.method = "LogNormalize",
+                        scale.factor = 10000)
+
+# In Seurat 5, you can access different layers:
+# counts: raw counts
+# data: normalized data (log-normalized)
+# scale.data: scaled data (for PCA, created later)
+```
+
+**What's happening**:
+- `LogNormalize`: Normalizes to total expression, multiplies by scale factor, then log-transforms
+- `scale.factor = 10000`: This is somewhat arbitrary but standard - it puts values on a readable scale
+- The normalized data is stored in the `data` layer of the RNA assay
+
+**Technical details**: The formula is: `log1p(count / total_count * scale_factor)`, where `log1p` is `log(1 + x)` to handle zeros gracefully.
+
+## Understanding the Layered Assay Structure (Seurat 5)
+
+Seurat 5 uses a layered assay structure. You can think of it like this:
+
+```
+Seurat Object
+└── Assays
+    └── RNA
+        ├── counts     (raw counts - never modified)
+        ├── data       (normalized - log-normalized counts)
+        └── scale.data (scaled - for PCA, created later)
+```
+
+This structure allows you to:
+- Keep raw counts for reference
+- Use normalized data for most analyses
+- Use scaled data for PCA and clustering
+
+```{r explore-layers}
+# Check what layers are available in the RNA assay
+# In Seurat 5, use Layers() with uppercase L, and call it on the assay object
+Layers(pbmc3k[["RNA"]])
+
+# Access specific layers (examples - don't run on full data as it's large)
+# counts_layer <- LayerData(pbmc3k, layer = "counts")
+# data_layer <- LayerData(pbmc3k, layer = "data")
+```
+
+## Visualizing Normalization Effects
+
+While normalization doesn't dramatically change the appearance of the data, it's important to understand what happened:
+
+```{r visualize-normalization}
+# Compare total counts per cell before and after normalization
+# Get total counts from the raw counts layer
+total_counts_raw <- colSums(LayerData(pbmc3k, layer = "counts"))
+
+# Get total "counts" from the normalized data layer (log-normalized)
+# Note: normalized data is on log scale, so we need to back-transform for comparison
+total_counts_norm <- colSums(expm1(LayerData(pbmc3k, layer = "data")))
+
+# Create a comparison plot
+par(mfrow = c(1, 2))
+hist(total_counts_raw, 
+     breaks = 50, 
+     main = "Total Counts per Cell\n(Before Normalization)", 
+     xlab = "Total Counts",
+     col = "lightblue",
+     border = "navy")
+hist(total_counts_norm, 
+     breaks = 50, 
+     main = "Total Counts per Cell\n(After Normalization - Back-transformed)", 
+     xlab = "Total Counts",
+     col = "lightgreen",
+     border = "darkgreen")
+par(mfrow = c(1, 1))
+
+# Show summary statistics
+cat("Summary - Total Counts per Cell:\n")
+cat("Before normalization (raw):\n")
+print(summary(total_counts_raw))
+cat("\nAfter normalization (back-transformed):\n")
+print(summary(total_counts_norm))
+```
+
+**What this visualization shows**:
+- **Left plot**: Distribution of total counts per cell before normalization (raw counts)
+- **Right plot**: Distribution after normalization (back-transformed from log scale)
+- Normalization makes the distributions more similar across cells, reducing the impact of sequencing depth differences
+
+**Understanding the normalization effect**:
+- Before normalization: Cells with different sequencing depths have very different total counts
+- After normalization: The counts are adjusted to account for sequencing depth, making cells more comparable
+- The normalized data is stored in the `data` layer (log-transformed), while raw counts remain in the `counts` layer
+
+**Checkpoint: What Changed in Your Data?**
+
+After normalization:
+- The raw counts are still available in the `counts` layer
+- The normalized data is in the `data` layer
+- Values are now on a log scale and comparable between cells
+
+---
+
+# Feature Selection (Variable Genes)
+
+## Why We Need Variable Features
+
+Not all genes are useful for identifying cell types. Some genes are:
+- **Constantly expressed**: Expressed at similar levels in all cells (e.g., housekeeping genes)
+- **Rarely expressed**: Expressed in very few cells
+- **Highly variable**: Expressed at different levels across cells (these are the interesting ones!)
+
+We want to focus on **highly variable genes** because they capture the biological differences between cell types. Using all genes would:
+- Include noise from constantly expressed genes
+- Slow down computation
+- Make it harder to find meaningful patterns
+
+**Biological reasoning**: Cell type identity is defined by which genes are expressed and at what levels. Highly variable genes are those that distinguish cell types - they're the "signature" of different cell populations.
+
+## How Variable Features Are Identified
+
+Seurat identifies variable features using the **variance-stabilizing transformation (VST)** method, which:
+
+1. Calculates mean expression and variance for each gene
+2. Models the relationship between mean and variance
+3. Selects genes with higher variance than expected given their mean expression
+4. Returns the top N most variable genes (default: 2000)
+
+```{r find-variable-features}
+# Find variable features
+# selection.method = "vst" uses variance-stabilizing transformation
+# nfeatures = 2000 selects the top 2000 most variable genes
+pbmc3k <- FindVariableFeatures(pbmc3k, 
+                               selection.method = "vst",
+                               nfeatures = 2000)
+
+# Check how many variable features were found
+length(VariableFeatures(pbmc3k))
+```
+
+**What's happening**:
+- `FindVariableFeatures()` analyzes all genes and identifies those with high cell-to-cell variation
+- `selection.method = "vst"`: Uses variance-stabilizing transformation (most common method)
+- `nfeatures = 2000`: Selects top 2000 variable genes (default, can be adjusted)
+
+**Technical details**: The VST method fits a trend line to mean-variance relationships and identifies genes with variance above the trend. This finds genes that vary more than expected by chance.
+
+## Visualizing Variable Features
+
+Let's visualize which genes were selected and why:
+
+```{r visualize-variable-features}
+# Plot variable features
+# Top 20 most variable genes are labeled
+top10 <- head(VariableFeatures(pbmc3k), 10)
+
+plot1 <- VariableFeaturePlot(pbmc3k)
+plot2 <- LabelPoints(plot = plot1, points = top10, repel = TRUE)
+
+plot2
+```
+
+**How to read this plot**:
+- **X-axis**: Mean expression (average across all cells)
+- **Y-axis**: Variance (how much expression varies between cells)
+- **Red points**: Selected as variable features
+- **Black points**: Not selected (too constant or too rare)
+- **Labeled points**: Top 10 most variable genes
+
+**What to look for**:
+- Variable features should be spread across different expression levels
+- Very highly expressed genes that are constant (top right, low variance) are correctly excluded
+- Genes with high variance relative to their mean are selected
+
+## Understanding What "Variable" Means
+
+A gene is "variable" if its expression differs significantly between cells. This could mean:
+- **Cell type-specific**: Expressed in one cell type but not others
+- **Activation state**: Varies with cell activation or differentiation state
+- **Cell cycle**: Varies with cell cycle phase
+
+**Biological reasoning**: Genes that define cell types are naturally variable - they're what makes cell types different. Housekeeping genes (like GAPDH, ACTB) are constant and don't help distinguish cell types.
+
+## Exercise: Try Different Numbers of Variable Features
+
+The number of variable features is a parameter you can adjust:
+
+```{r exercise-variable-features, eval=FALSE}
+# Try fewer variable features
+pbmc3k_few <- FindVariableFeatures(pbmc3k, nfeatures = 500)
+
+# Try more variable features
+pbmc3k_many <- FindVariableFeatures(pbmc3k, nfeatures = 3000)
+
+# Compare: How does this affect downstream analysis?
+# (We'll see this in the PCA step)
+```
+
+**When to adjust**:
+- **Fewer features (500-1000)**: Focuses on most important genes, faster computation
+- **More features (3000-5000)**: Captures more subtle differences, slower computation
+- **Default (2000)**: Good balance for most datasets
+
+---
+
+# Scaling and PCA
+
+## Why Scaling Matters
+
+Scaling standardizes gene expression so that:
+- Genes with different expression levels are comparable
+- Highly expressed genes don't dominate the analysis
+- The mean expression is 0 and standard deviation is 1 for each gene
+
+**Biological reasoning**: Without scaling, a gene expressed at 1000 counts would dominate over a gene expressed at 10 counts, even if both are equally informative for cell type identity. Scaling ensures all genes contribute equally to the analysis.
+
+## Scaling the Data
+
+In Seurat, scaling is done on the variable features (not all genes) to save computation:
+
+```{r scale-data}
+# Scale the data
+# This centers and scales the expression of each gene
+# Uses only variable features by default (faster)
+pbmc3k <- ScaleData(pbmc3k, 
+                    features = VariableFeatures(object = pbmc3k))
+
+# Note: In Seurat 5, scaled data goes into the "scale.data" layer
+```
+
+**What's happening**:
+- For each gene: `(expression - mean) / standard_deviation`
+- This creates z-scores (mean = 0, SD = 1)
+- Only variable features are scaled (saves memory and time)
+- Results stored in `scale.data` layer
+
+**Technical details**: Scaling is necessary for PCA because PCA is sensitive to the scale of variables. Without scaling, PCA would be dominated by highly expressed genes.
+
+## Visualizing Scaling Effects
+
+Let's visualize how scaling transforms the data by comparing expression values before and after scaling:
+
+```{r visualize-scaling}
+# Get expression values for a few example variable genes
+# Before scaling (normalized data layer)
+example_genes <- head(VariableFeatures(pbmc3k), 3)
+gene_names <- example_genes
+
+# Get normalized expression (before scaling)
+expr_normalized <- LayerData(pbmc3k, layer = "data")[example_genes, , drop = FALSE]
+
+# Get scaled expression (after scaling)
+expr_scaled <- LayerData(pbmc3k, layer = "scale.data")[example_genes, , drop = FALSE]
+
+# Create comparison plots
+par(mfrow = c(3, 2))
+for (i in 1:length(example_genes)) {
+  gene <- example_genes[i]
+  
+  # Plot normalized expression (before scaling)
+  hist(expr_normalized[i, ], 
+       breaks = 30,
+       main = paste(gene, "\n(Normalized - Before Scaling)"),
+       xlab = "Expression",
+       col = "lightcoral",
+       border = "darkred",
+       xlim = range(c(expr_normalized[i, ], expr_scaled[i, ])))
+  
+  # Plot scaled expression (after scaling)
+  hist(expr_scaled[i, ], 
+       breaks = 30,
+       main = paste(gene, "\n(Scaled - After Scaling)"),
+       xlab = "Z-score",
+       col = "lightsteelblue",
+       border = "darkblue",
+       xlim = range(c(expr_normalized[i, ], expr_scaled[i, ])))
+}
+
+par(mfrow = c(1, 1))
+
+# Show summary statistics for one example gene
+cat("Example: Scaling effect for", example_genes[1], "\n")
+cat("Before scaling (normalized):\n")
+cat("  Mean:", round(mean(expr_normalized[1, ]), 2), "\n")
+cat("  SD:", round(sd(expr_normalized[1, ]), 2), "\n")
+cat("  Range:", round(range(expr_normalized[1, ]), 2), "\n")
+cat("\nAfter scaling:\n")
+cat("  Mean:", round(mean(expr_scaled[1, ]), 2), "(should be ~0)\n")
+cat("  SD:", round(sd(expr_scaled[1, ]), 2), "(should be ~1)\n")
+cat("  Range:", round(range(expr_scaled[1, ]), 2), "\n")
+```
+
+**What this visualization shows**:
+- For each of 3 example variable genes, the plots show side-by-side comparison:
+  - **Left plot**: Distribution of normalized expression values (before scaling)
+  - **Right plot**: Distribution of scaled expression values (z-scores) for the same gene (after scaling)
+- Notice how scaling centers each gene at 0 and standardizes the variance to 1
+- Compare the left and right plots for each gene to see the transformation: normalized values have different means and variances, while scaled values are centered at 0 with SD = 1
+
+**Understanding the scaling effect**:
+- **Before scaling**: Different genes have different means and variances (e.g., one gene might range from 0-5, another from 0-10)
+- **After scaling**: All genes are centered at 0 with standard deviation of 1 (z-scores)
+- This ensures that highly expressed genes don't dominate PCA - all genes contribute equally
+- The summary statistics show that after scaling, mean ≈ 0 and SD ≈ 1 for each gene
+
+## Understanding PCA Conceptually
+
+Principal Component Analysis (PCA) is a dimensionality reduction technique that:
+
+1. Finds the directions (principal components, PCs) of maximum variance in the data
+2. Projects the data onto these new axes
+3. Reduces thousands of dimensions (genes) to tens of dimensions (PCs)
+
+**Why we need it**: 
+- We have ~2000 variable features (dimensions)
+- This is too many to visualize or cluster directly
+- PCA finds the most important patterns and reduces complexity
+
+**Biological interpretation**: Each PC captures a combination of genes that vary together. The first PC captures the most variation (often major cell type differences), subsequent PCs capture more subtle patterns.
+
+## Running PCA
+
+Now we'll run PCA on the scaled variable features:
+
+```{r run-pca}
+# Run PCA
+# Uses variable features from scaled data
+pbmc3k <- RunPCA(pbmc3k, 
+                 features = VariableFeatures(object = pbmc3k))
+
+# Check the PCA results
+# Shows variance explained by each PC
+print(pbmc3k[["pca"]], dims = 1:5, nfeatures = 5)
+```
+
+**What's happening**:
+- `RunPCA()` performs principal component analysis
+- Uses the scaled variable features
+- Creates a new "reduction" called "pca"
+- Each cell now has coordinates in PC space
+
+## Visualizing PCA Results
+
+### PCA Scatter Plot
+
+The most common way to visualize PCA is to plot cells in PC space. Let's visualize the first two principal components:
+
+```{r pca-plot}
+# Visualize cells in PCA space (PC1 vs PC2)
+DimPlot(pbmc3k, reduction = "pca")
+```
+
+**How to read this plot**:
+- Each point represents a cell
+- **X-axis**: PC1 (first principal component) - captures the most variation
+- **Y-axis**: PC2 (second principal component) - captures the second most variation
+- Cells that are close together have similar expression patterns
+- Cells that are far apart have different expression patterns
+
+**What to look for**:
+- Groups of cells clustering together may represent different cell types
+- The separation between groups indicates how distinct they are
+- This is a 2D projection of high-dimensional data - some relationships may not be visible
+
+### Elbow Plot
+
+The elbow plot shows how much variance each PC explains. This helps us decide how many PCs to use:
+
+```{r elbow-plot}
+# Visualize variance explained by each PC
+ElbowPlot(pbmc3k)
+```
+
+**How to read this plot**:
+- **X-axis**: Principal component number
+- **Y-axis**: Standard deviation (related to variance explained)
+- Look for the "elbow" - where the curve bends sharply
+- PCs before the elbow capture most of the important variation
+
+**Interpretation guide**: 
+- The first few PCs capture most variation (cell type differences)
+- Later PCs capture noise or very subtle differences
+- Typically use 10-50 PCs depending on dataset size
+
+### Heatmap of Top PCs
+
+We can visualize which genes contribute most to each PC:
+
+```{r pca-heatmap}
+# Visualize top genes contributing to first 4 PCs
+# This helps understand what biological processes each PC captures
+DimHeatmap(pbmc3k, dims = 1:4, cells = 500, balanced = TRUE)
+```
+
+**How to read this heatmap**:
+- Each column is a PC
+- Rows show genes that contribute most (positively, yellow/purple) or least (negatively, blue/purple)
+- The color scale shows the contribution of each gene to each PC
+- Helps interpret what biological processes each PC represents
+
+## Interpreting PCA Results
+
+The first few PCs typically capture:
+- **PC1**: Often major cell type differences (e.g., immune vs non-immune)
+- **PC2**: Often another major split (e.g., T cells vs B cells)
+- **PC3-10**: More subtle differences (cell subtypes, activation states)
+
+**Biological reasoning**: Major biological differences (like cell type) create large variation in gene expression, which PCA captures in the first components.
+
+## Guidelines for Choosing the Number of PCs
+
+When we do clustering, we'll need to choose how many PCs to use. This is an important parameter that affects clustering results:
+
+**Guidelines for choosing PCs**:
+- **Small datasets (< 3000 cells)**: 10-20 PCs
+- **Medium datasets (3000-10000 cells)**: 20-40 PCs  
+- **Large datasets (> 10000 cells)**: 40-50+ PCs
+- **Use elbow plot**: Look for where variance explained drops off
+
+---
+
+# Clustering
+
+## Understanding Clustering Conceptually
+
+Clustering groups cells with similar gene expression patterns together. The goal is to:
+- Identify distinct cell populations
+- Group cells that are biologically similar
+- Separate different cell types
+
+**What we're trying to find**: Groups of cells that share similar expression of variable genes. These groups often correspond to:
+- Different cell types
+- Different cell states (activated vs resting)
+- Different differentiation stages
+
+**Biological reasoning**: Cells of the same type should have similar gene expression profiles. Clustering finds these natural groups in the data.
+
+## Building the Neighbor Graph
+
+Before clustering, we need to build a graph representing cell-cell similarities:
+
+```{r find-neighbors}
+# Build a shared nearest neighbor (SNN) graph
+# This creates a graph where cells are connected if they're similar
+# dims = 1:10 uses the first 10 principal components
+pbmc3k <- FindNeighbors(pbmc3k, dims = 1:10)
+
+# What's happening:
+# - Calculates distances between cells in PC space
+# - Finds nearest neighbors for each cell
+# - Creates a graph structure for clustering
+```
+
+**What's happening**:
+- `FindNeighbors()` uses the PCA reduction to find similar cells
+- `dims = 1:10`: Uses first 10 PCs (you can adjust this)
+- Creates a graph where cells are nodes and similarity creates edges
+- This graph is used by the clustering algorithm
+
+**Why PC space**: We use PCs instead of all genes because:
+- PCs capture the most important variation
+- Reduces noise from less important genes
+- Much faster computation
+
+## Understanding the Resolution Parameter
+
+The resolution parameter controls how many clusters are found:
+- **Low resolution (0.1-0.4)**: Fewer, larger clusters (broad cell types)
+- **Medium resolution (0.5-0.8)**: Moderate number of clusters (typical cell types)
+- **High resolution (1.0+)**: More, smaller clusters (cell subtypes)
+
+**Biological meaning**: 
+- Low resolution: Groups major cell types (e.g., all T cells together)
+- High resolution: Separates subtypes (e.g., CD4+ vs CD8+ T cells, naive vs memory)
+
+**How to choose**: Start with 0.5, then adjust based on:
+- Expected number of cell types
+- Whether clusters seem too broad or too split
+
+## Finding Clusters
+
+Now we'll perform the actual clustering using the Louvain algorithm:
+
+```{r find-clusters}
+# Find clusters using the Louvain algorithm
+# resolution = 0.5 is a good starting point
+pbmc3k <- FindClusters(pbmc3k, resolution = 0.5)
+
+# Check how many clusters were found
+n_clusters <- length(levels(pbmc3k))
+cat("Number of clusters:", n_clusters, "\n")
+cat("Cluster sizes:\n")
+table(pbmc3k$seurat_clusters)
+```
+
+**What's happening**:
+- `FindClusters()` uses the neighbor graph from `FindNeighbors()`
+- Applies the Louvain algorithm to find communities in the graph
+- Assigns each cell to a cluster
+- Results stored in `pbmc3k$seurat_clusters`
+
+**Technical details**: The Louvain algorithm optimizes modularity - it finds groups where cells are more connected within groups than between groups.
+
+## Visualizing Clusters
+
+We can visualize clusters on a UMAP plot (we'll create UMAP in the next section), but first let's see the cluster assignments:
+
+```{r visualize-clusters-prep}
+# We'll visualize clusters in the next section after creating UMAP
+# For now, let's just check the cluster assignments
+head(pbmc3k$seurat_clusters)
+```
+
+## Interpretation Guide: What Resolution Means Biologically
+
+- **resolution = 0.3**: May give 5-8 clusters (broad types: T cells, B cells, monocytes, NK cells, etc.)
+- **resolution = 0.5**: May give 8-12 clusters (separates T cell subtypes, B cell subtypes)
+- **resolution = 0.8**: May give 15-20 clusters (fine subtypes, activation states)
+
+**Biological reasoning**: Different biological questions require different resolutions. If you want major cell types, use low resolution. If you want detailed subtypes, use higher resolution.
+
+## Exercise: Try Different Resolutions and Compare
+
+This is a critical exercise - try different resolutions to see how it affects clustering:
+
+```{r exercise-resolution}
+# Try different resolutions
+# Note: We need to re-run FindNeighbors and FindClusters for each
+
+# Low resolution
+pbmc3k_low <- FindNeighbors(pbmc3k, dims = 1:10)
+pbmc3k_low <- FindClusters(pbmc3k_low, resolution = 0.3)
+cat("Low resolution (0.3):", length(levels(pbmc3k_low)), "clusters\n")
+
+# Medium resolution (what we already have)
+cat("Medium resolution (0.5):", length(levels(pbmc3k)), "clusters\n")
+
+# High resolution
+pbmc3k_high <- FindNeighbors(pbmc3k, dims = 1:10)
+pbmc3k_high <- FindClusters(pbmc3k_high, resolution = 0.8)
+cat("High resolution (0.8):", length(levels(pbmc3k_high)), "clusters\n")
+```
+
+**What to observe**: 
+- How does the number of clusters change?
+- Do clusters split (one cluster becomes two)?
+- Do clusters merge (two clusters become one)?
+
+## Checkpoint: Do Your Clusters Make Biological Sense?
+
+After clustering, ask yourself:
+- Is the number of clusters reasonable for your tissue type?
+- Do clusters seem distinct (not just noise)?
+- Would you expect this many cell types based on biology?
+
+We'll verify this more rigorously when we identify marker genes and annotate cell types.
+
+---
+
+# Dimensionality Reduction Visualization (UMAP)
+
+## Understanding UMAP Conceptually
+
+UMAP (Uniform Manifold Approximation and Projection) is a dimensionality reduction technique that:
+- Projects high-dimensional data (PCs) into 2D space
+- Preserves local structure (similar cells stay close)
+- Preserves global structure (different cell types stay separate)
+
+**What does it preserve?**
+- **Local structure**: Cells that are similar in high-D space are close in 2D
+- **Global structure**: Major groups (cell types) are separated
+
+**What doesn't it preserve?**
+- Exact distances (distances are approximate)
+- Very fine-grained relationships
+
+**Biological reasoning**: UMAP helps us visualize the "landscape" of cell types. Similar cell types cluster together, and we can see the relationships between different populations.
+
+## Running UMAP
+
+We'll run UMAP on the same PCs we used for clustering:
+
+```{r run-umap}
+# Run UMAP
+# dims = 1:10 uses the first 10 PCs (same as clustering)
+pbmc3k <- RunUMAP(pbmc3k, dims = 1:10)
+
+# Check that UMAP was created
+pbmc3k[["umap"]]
+```
+
+**What's happening**:
+- `RunUMAP()` takes the PCA coordinates and projects them to 2D
+- `dims = 1:10`: Uses the same PCs as clustering (important for consistency!)
+- Creates a new "reduction" called "umap"
+- Each cell now has (x, y) coordinates in UMAP space
+
+**Technical details**: UMAP uses the same dimensionality (PCs) as clustering to ensure consistency. Using different PCs would give misleading visualizations.
+
+## Visualizing Clusters on UMAP
+
+Now we can see our clusters in 2D space:
+
+```{r visualize-clusters-umap}
+# Plot clusters on UMAP
+DimPlot(pbmc3k, reduction = "umap", label = TRUE)
+```
+
+**How to read this plot**:
+- Each point is a cell
+- Color indicates cluster assignment
+- Labels show cluster numbers
+- Cells of the same cluster should be close together
+
+**What to look for**:
+- **Distinct clusters**: Well-separated groups (good!)
+- **Overlapping clusters**: May need higher resolution or more PCs
+- **Scattered cells**: May be noise or need different parameters
+
+## Visualizing by Other Features
+
+We can also visualize other features on the UMAP:
+
+```{r visualize-features-umap}
+# Visualize QC metrics on UMAP
+plot1 <- DimPlot(pbmc3k, reduction = "umap", group.by = "seurat_clusters")
+plot2 <- FeaturePlot(pbmc3k, features = "nFeature_RNA")
+plot3 <- FeaturePlot(pbmc3k, features = "percent.mt")
+
+plot1 + plot2 + plot3
+```
+
+**Interpretation**:
+- **Left**: Cluster assignments
+- **Middle**: Number of features (genes detected) - should be relatively uniform
+- **Right**: Mitochondrial percentage - should be relatively uniform
+
+If you see clusters with very high or low QC metrics, they might be artifacts.
+
+## Interpretation Guide: What UMAP Shows and Doesn't Show
+
+### What UMAP Shows:
+- **Major cell type differences**: Different cell types appear as separate clusters
+- **Cell type relationships**: Similar cell types are closer together
+- **Substructure**: Sub-clusters within major types
+
+### What UMAP Doesn't Show:
+- **Exact distances**: Distance between points is approximate
+- **All relationships**: Some relationships are lost in 2D projection
+- **Temporal information**: No time/developmental trajectory (need other methods)
+
+**Common pitfalls**: 
+- **Over-interpreting distances**: Don't assume cells far apart are completely unrelated
+- **Assuming all separation is biological**: Some separation could be technical (batch effects)
+
+## Exercise: Compare Clustering at Different Resolutions on UMAP
+
+Let's visualize how different resolutions affect the clustering:
+
+```{r exercise-resolution-umap}
+# Create UMAP for different resolutions (using the objects from earlier)
+pbmc3k_low <- RunUMAP(pbmc3k_low, dims = 1:10)
+pbmc3k_high <- RunUMAP(pbmc3k_high, dims = 1:10)
+
+# Plot comparisons
+plot_low <- DimPlot(pbmc3k_low, reduction = "umap", label = TRUE) + 
+  ggtitle("Resolution 0.3")
+plot_med <- DimPlot(pbmc3k, reduction = "umap", label = TRUE) + 
+  ggtitle("Resolution 0.5")
+plot_high <- DimPlot(pbmc3k_high, reduction = "umap", label = TRUE) + 
+  ggtitle("Resolution 0.8")
+
+plot_low + plot_med + plot_high
+```
+
+**What to observe**:
+- How do clusters split as resolution increases?
+- Which resolution seems most appropriate for your data?
+- Do the splits make biological sense?
+
+---
+
+# Finding Marker Genes
+
+## What Are Marker Genes?
+
+Marker genes are genes that are:
+- **Differentially expressed**: Expressed at significantly different levels in one cluster compared to others
+- **Characteristic**: Help identify or characterize a cell type
+- **Specific**: Ideally expressed in one cell type but not others
+
+**Biological definition**: Marker genes are the "signature" of a cell type. They're what makes that cell type unique. For example:
+- **CD3D, CD3E**: T cell markers
+- **CD19, CD79A**: B cell markers  
+- **CD68, CD14**: Monocyte markers
+
+**Why we need them**: Marker genes help us:
+1. Identify what cell types our clusters represent
+2. Understand the biology of each cluster
+3. Validate our clustering (do clusters express expected markers?)
+
+## Statistical Methods for Finding Markers
+
+Seurat uses statistical tests to identify marker genes. The default method compares expression in one cluster to all other clusters using:
+
+- **Wilcoxon rank sum test**: Non-parametric test for differential expression
+- **Fold change**: How much more/less expressed in the cluster
+- **P-value**: Statistical significance of the difference
+
+**Biological reasoning**: We want genes that are statistically significantly different, not just genes that happen to vary by chance.
+
+## Finding Markers for All Clusters
+
+We'll find markers that distinguish each cluster from all others:
+
+```{r find-all-markers}
+# Find markers for all clusters
+# only.pos = TRUE: only return genes that are higher in the cluster
+# min.pct = 0.25: gene must be detected in at least 25% of cells
+# logfc.threshold = 0.25: minimum log fold change
+cluster.markers <- FindAllMarkers(pbmc3k, 
+                                  only.pos = TRUE,
+                                  min.pct = 0.25,
+                                  logfc.threshold = 0.25)
+
+# Look at the results
+head(cluster.markers, n = 10)
+```
+
+**Parameters explained**:
+- `only.pos = TRUE`: Only find genes that are higher in the cluster (not lower)
+- `min.pct = 0.25`: Gene must be expressed in at least 25% of cells in the cluster
+- `logfc.threshold = 0.25`: Minimum log fold change (about 1.2x difference)
+
+**What the output means**:
+- `p_val`: P-value (lower = more significant)
+- `avg_log2FC`: Average log2 fold change (how much more expressed)
+- `pct.1`: Percentage of cells in cluster expressing the gene
+- `pct.2`: Percentage of cells in other clusters expressing the gene
+- `cluster`: Which cluster this marker is for
+
+## Interpreting Marker Results
+
+Let's look at the top markers for each cluster:
+
+```{r top-markers}
+# Get top 5 markers for each cluster
+top_markers <- cluster.markers %>%
+  group_by(cluster) %>%
+  top_n(n = 5, wt = avg_log2FC)
+
+# View the results
+print(top_markers)
+```
+
+**How to interpret**:
+- **High avg_log2FC**: Gene is much more expressed in this cluster
+- **Low p_val**: Difference is statistically significant
+- **High pct.1, low pct.2**: Gene is specific to this cluster
+
+## Visualizing Markers
+
+### Heatmap of Top Markers
+
+A heatmap shows expression of marker genes across clusters:
+
+```{r marker-heatmap}
+# Get top 3 markers per cluster
+top3_markers <- cluster.markers %>%
+  group_by(cluster) %>%
+  top_n(n = 3, wt = avg_log2FC)
+
+# Create heatmap
+DoHeatmap(pbmc3k, features = top3_markers$gene) + NoLegend()
+```
+
+**How to read this heatmap**:
+- Each row is a marker gene
+- Each column is a cell (grouped by cluster)
+- Red = high expression, blue = low expression
+- Markers should show high expression (red) in their cluster
+
+### Violin Plots
+
+Violin plots show the distribution of marker expression:
+
+```{r marker-violin}
+# Plot top markers for a few clusters
+# Let's look at top 2 markers for clusters 0, 1, and 2
+top_markers_subset <- top_markers %>%
+  filter(cluster %in% c(0, 1, 2)) %>%
+  group_by(cluster) %>%
+  top_n(n = 2, wt = avg_log2FC)
+
+VlnPlot(pbmc3k, features = unique(top_markers_subset$gene))
+```
+
+**How to read violin plots**:
+- Each plot shows expression distribution for one gene
+- Colored by cluster
+- Look for clusters with high expression (top of violin)
+
+### Feature Plots on UMAP
+
+Feature plots show where marker genes are expressed in UMAP space:
+
+```{r marker-featureplot}
+# Plot a few known markers on UMAP
+# These are markers we expect to see in PBMCs
+known_markers <- c("CD3D", "CD19", "CD68", "NKG7")
+
+FeaturePlot(pbmc3k, features = known_markers)
+```
+
+**How to read feature plots**:
+- Each plot shows expression of one gene on UMAP
+- Red = high expression, blue = low/no expression
+- Expression should be concentrated in specific clusters
+
+## Sanity Check: Verify Known Marker Genes
+
+This is a critical sanity check - let's verify that known marker genes are identified as markers for the expected clusters:
+
+```{r sanity-check-markers}
+# Check if known markers appear in our marker list
+known_markers <- c("CD3D", "CD3E", "CD19", "CD79A", "CD68", "CD14", "NKG7")
+
+# Find which clusters express these markers
+for (marker in known_markers) {
+  if (marker %in% cluster.markers$gene) {
+    marker_info <- cluster.markers %>%
+      filter(gene == marker) %>%
+      arrange(avg_log2FC) %>%
+      slice_tail(n = 1)  # Get the cluster where it's highest
+    
+    cat(marker, "is a marker for cluster", marker_info$cluster, 
+        "(log2FC =", round(marker_info$avg_log2FC, 2), ")\n")
+  } else {
+    cat(marker, "not found in marker list\n")
+  }
+}
+
+# Visualize these markers to verify they're in expected clusters
+FeaturePlot(pbmc3k, features = known_markers, ncol = 4)
+```
+
+**What to look for**:
+- **CD3D, CD3E**: Should be markers for T cell clusters
+- **CD19, CD79A**: Should be markers for B cell clusters
+- **CD68, CD14**: Should be markers for monocyte clusters
+- **NKG7**: Should be marker for NK cell clusters
+
+**If markers aren't where expected**:
+- Clusters might be mis-identified
+- Resolution might be wrong (too high or too low)
+- Data quality issues
+
+## Exercise: Find Markers for a Specific Cluster
+
+Try finding markers for a cluster you're interested in:
+
+```{r exercise-specific-markers, eval=FALSE}
+# Find markers for cluster 0 (or any cluster you choose)
+cluster0_markers <- FindMarkers(pbmc3k, 
+                                ident.1 = 0,  # Cluster of interest
+                                min.pct = 0.25)
+
+# Look at top markers
+head(cluster0_markers, n = 10)
+
+# Visualize top markers
+top5_cluster0 <- rownames(cluster0_markers)[1:5]
+FeaturePlot(pbmc3k, features = top5_cluster0)
+```
+
+## Interpretation Guide: How to Read Marker Gene Tables
+
+When looking at marker gene results:
+
+1. **Check p-value**: Should be very small (< 0.05, ideally < 0.01)
+2. **Check fold change**: Higher is better (2x = log2FC = 1, 4x = log2FC = 2)
+3. **Check percentages**: 
+   - `pct.1` should be high (gene expressed in most cells of the cluster)
+   - `pct.2` should be low (gene not expressed in other clusters)
+4. **Check gene names**: Do they make biological sense for the expected cell type?
+
+---
+
+# Cell Type Annotation
+
+## Using Marker Genes to Identify Cell Types
+
+Now that we have marker genes for each cluster, we can identify what cell types they represent. This process involves:
+
+1. Looking at the top marker genes for each cluster
+2. Comparing to known cell type markers
+3. Assigning cell type identities
+4. Verifying with sanity checks
+
+**Biological reasoning**: Each cell type has a characteristic "signature" of marker genes. By comparing our clusters' markers to known signatures, we can identify cell types.
+
+## Examining Marker Genes for Annotation
+
+**Important**: Properly examining marker genes and annotating cell types is a time-consuming process that requires careful consideration. Don't rush through this step - take the time to:
+- Thoroughly examine marker genes for each cluster
+- Compare markers to known cell type signatures
+- Verify your annotations with sanity checks
+- Consult literature or databases for your specific tissue type
+
+This process may take 30 minutes to several hours depending on:
+- The number of clusters to annotate
+- Your familiarity with the tissue type and cell type markers
+- Whether you need to consult references or literature
+- The complexity of your data
+
+Let's look at the top markers for each cluster to identify cell types:
+
+```{r examine-markers-annotation}
+# Get top 10 markers for each cluster
+top10_markers <- cluster.markers %>%
+  group_by(cluster) %>%
+  top_n(n = 10, wt = avg_log2FC)
+
+# Display markers for each cluster
+for (clust in sort(unique(cluster.markers$cluster))) {
+  clust_markers <- top10_markers %>%
+    filter(cluster == clust) %>%
+    pull(gene)
+  
+  cat("\n=== Cluster", clust, "===\n")
+  cat("Top markers:", paste(head(clust_markers, 5), collapse = ", "), "\n")
+}
+```
+
+**How to identify cell types**:
+- **T cells**: CD3D, CD3E, CD3G, CD2
+- **CD4+ T cells**: CD4, IL7R, CCR7 (naive), CD44 (memory)
+- **CD8+ T cells**: CD8A, CD8B, GZMK, GZMB
+- **B cells**: CD19, CD79A, CD79B, MS4A1
+- **Monocytes**: CD68, CD14, LYZ, S100A8, S100A9
+- **NK cells**: NKG7, GNLY, KLRD1, KLRB1
+- **Dendritic cells**: FCGR3A, CST3
+
+## Annotating Clusters
+
+**Note for tutorial**: In this tutorial, we'll use an automated approach to assign cell types based on known markers. This is a simplified method for demonstration purposes. In real analysis, you would carefully examine each cluster's markers, verify with literature, and may need to refine annotations based on additional evidence.
+
+Based on the marker genes, we'll automatically assign cell type identities by matching known markers:
+
+```{r annotate-clusters}
+# Define known markers for each cell type
+# This is a simplified approach for the tutorial
+cell_type_markers <- list(
+  "Naive CD4 T" = c("CD3D", "CD3E", "CD4", "IL7R", "CCR7"),
+  "Memory CD4 T" = c("CD3D", "CD3E", "CD4", "IL7R", "CD44"),
+  "CD8 T" = c("CD3D", "CD3E", "CD8A", "CD8B", "GZMK"),
+  "B cells" = c("CD19", "CD79A", "CD79B", "MS4A1"),
+  "CD14+ Monocytes" = c("CD68", "CD14", "LYZ", "S100A8"),
+  "NK cells" = c("NKG7", "GNLY", "KLRD1", "KLRB1"),
+  "FCGR3A+ Monocytes" = c("CD68", "FCGR3A", "LYZ"),
+  "Dendritic cells" = c("FCGR3A", "CST3", "CD1C"),
+  "Platelets" = c("PPBP", "PF4", "GP9")
+)
+
+# Function to score each cluster against known cell type markers
+score_cluster <- function(cluster_num, top_markers_df, cell_type_markers) {
+  # Get top markers for this cluster
+  clust_markers <- top_markers_df %>%
+    filter(cluster == cluster_num) %>%
+    pull(gene)
+  
+  # Score each cell type based on how many of its markers are in cluster markers
+  scores <- sapply(names(cell_type_markers), function(cell_type) {
+    markers <- cell_type_markers[[cell_type]]
+    # Count how many known markers appear in top cluster markers
+    sum(markers %in% clust_markers)
+  })
+  
+  # Return the cell type with the highest score
+  best_match <- names(scores)[which.max(scores)]
+  return(list(cell_type = best_match, score = max(scores)))
+}
+
+# Automatically assign cell types based on marker matching
+new.cluster.ids <- character(length(levels(pbmc3k)))
+names(new.cluster.ids) <- levels(pbmc3k)
+
+for (clust in levels(pbmc3k)) {
+  clust_num <- as.numeric(clust)
+  result <- score_cluster(clust_num, top10_markers, cell_type_markers)
+  new.cluster.ids[clust] <- result$cell_type
+  
+  # Print the assignment for verification
+  cat("Cluster", clust, "->", result$cell_type, 
+      "(score:", result$score, "matching markers)\n")
+}
+
+# Rename the clusters
+pbmc3k <- RenameIdents(pbmc3k, new.cluster.ids)
+
+# Visualize annotated clusters
+DimPlot(pbmc3k, reduction = "umap", label = TRUE, pt.size = 0.5) + NoLegend()
+```
+
+**What this automated approach does**:
+- For each cluster, it checks which known cell type markers appear in the cluster's top markers
+- Assigns the cell type with the most matching markers
+- Prints the assignment and score for verification
+- This is a simplified method for the tutorial - in real analysis, you would:
+  - Manually examine marker lists more carefully
+  - Consider marker specificity (some markers appear in multiple cell types)
+  - Verify with additional evidence (expression levels, literature)
+  - May need to sub-cluster or refine annotations
+
+**Note**: The automated assignment may not be perfect. If you see clusters assigned incorrectly, you can manually adjust by modifying the `new.cluster.ids` vector or refining the marker lists in `cell_type_markers`.
+
+## Sanity Check: Verify Annotated Cell Types Express Expected Markers
+
+This is the most important sanity check! We need to verify that our annotations are correct by checking that annotated cell types express their expected marker genes.
+
+### FeaturePlot Verification
+
+Let's visualize expected markers on the annotated UMAP:
+
+```{r sanity-check-annotation-featureplot}
+# Define expected markers for each cell type
+marker_checks <- list(
+  "T cells" = c("CD3D", "CD3E"),
+  "B cells" = c("CD19", "CD79A"),
+  "Monocytes" = c("CD68", "CD14"),
+  "NK cells" = c("NKG7", "GNLY")
+)
+
+# Create feature plots for verification
+for (cell_type in names(marker_checks)) {
+  markers <- marker_checks[[cell_type]]
+  cat("\n=== Checking", cell_type, "markers:", paste(markers, collapse = ", "), "===\n")
+  
+  # Plot on UMAP
+  p <- FeaturePlot(pbmc3k, features = markers, ncol = 2)
+  print(p)
+  
+  # Check which clusters express these markers
+  # (This is a simplified check - in practice, look at the plots)
+}
+```
+
+**What to verify**:
+- **T cell clusters** should show high expression of CD3D and CD3E
+- **B cell clusters** should show high expression of CD19 and CD79A
+- **Monocyte clusters** should show high expression of CD68 and CD14
+- **NK cell clusters** should show high expression of NKG7 and GNLY
+
+### Violin Plot Verification
+
+Violin plots let us compare marker expression across all annotated clusters:
+
+```{r sanity-check-annotation-violin}
+# Compare marker expression across annotated clusters
+# In Seurat 5, the active identity (from RenameIdents) is used by default
+# No need to specify group.by = "ident"
+
+# T cell markers
+VlnPlot(pbmc3k, features = c("CD3D", "CD3E"))
+
+# B cell markers
+VlnPlot(pbmc3k, features = c("CD19", "CD79A"))
+
+# Monocyte markers
+VlnPlot(pbmc3k, features = c("CD68", "CD14"))
+
+# NK cell markers
+VlnPlot(pbmc3k, features = c("NKG7", "GNLY"))
+```
+
+**How to read these plots**:
+- Each plot shows expression of marker genes
+- Colored by annotated cell type
+- **Expected pattern**: The cell type should have the highest expression (top of violin)
+- **Problem**: If another cell type has higher expression, the annotation might be wrong
+
+### Quantitative Verification
+
+Let's calculate average expression of markers in each annotated cluster:
+
+```{r sanity-check-annotation-quantitative}
+# Calculate mean expression of markers in each cluster
+markers_to_check <- c("CD3D", "CD19", "CD68", "NKG7")
+
+# Get average expression for each cluster
+# In Seurat 5, the active identity (from RenameIdents) is used by default
+avg_expression <- AverageExpression(pbmc3k, 
+                                    features = markers_to_check)
+
+# Display as a table
+print(avg_expression$RNA)
+```
+
+**Interpretation**:
+- Each cell type should have the highest expression of its own marker
+- For example, "Naive CD4 T" should have high CD3D, low CD19, low CD68, low NKG7
+
+**If verification fails**:
+- Re-examine your marker analysis
+- Check if resolution is appropriate
+- Consider that some markers might be expressed in multiple cell types
+- Verify your marker gene list is correct for your tissue/species
+
+## Interpretation Guide: How to Verify Your Annotations Are Correct
+
+A good annotation should satisfy:
+
+1. **Marker expression**: The annotated cell type has the highest expression of its characteristic markers
+2. **Marker specificity**: The markers are not highly expressed in other cell types
+3. **Biological plausibility**: The annotation makes sense for your tissue type
+4. **Consistency**: Multiple markers for the same cell type all point to the same cluster
+
+**Red flags**:
+- Expected markers not expressed in annotated cluster
+- Markers highly expressed in wrong cell types
+- Clusters that don't match any known cell type (might be doublets or artifacts)
+
+## Exercise: Annotate Clusters Based on Your Marker Analysis
+
+**NOTE**: This exercise is for when you use your own data. Complete the tutorial with the example data first, then return here.
+
+```{r exercise-annotate-own-data, eval=FALSE}
+# ============================================
+# STUDENT DATA EXERCISE - UNCOMMENT AFTER COMPLETING TUTORIAL
+# ============================================
+# After completing the tutorial with the example data, use these steps
+# to annotate clusters in your own data:
+
+# For your own data:
+# 1. Examine the top markers for each cluster
+# 2. Compare to known cell type markers for your tissue
+# 3. Assign identities
+# 4. Verify with sanity checks (FeaturePlot, VlnPlot)
+# 5. Adjust if markers don't match
+```
+
+## Checkpoint: Do Your Annotations Match Expected Marker Patterns?
+
+After annotation, verify:
+- ✅ Each cell type expresses its expected markers
+- ✅ Markers are not highly expressed in unexpected cell types
+- ✅ The number and types of cell types make biological sense
+- ✅ If you have a reference, do your annotations match?
+
+---
+
+# Troubleshooting and Common Issues
+
+## Common Errors and Solutions
+
+### Error: "Object not found" or "Function not found"
+
+**Problem**: Seurat functions not recognized
+
+**Solutions**:
+```{r troubleshooting-library}
+# Make sure Seurat is loaded
+library(Seurat)
+
+# Check if it's installed
+if (!requireNamespace("Seurat", quietly = TRUE)) {
+  install.packages("Seurat")
+}
+```
+
+### Error: "Cannot allocate vector" or Out of Memory
+
+**Problem**: Dataset too large for available memory
+
+**Solutions**:
+- Reduce the number of variable features
+- Filter more aggressively during QC
+- Use a machine with more RAM
+- Consider using Seurat's disk-based storage options
+
+### Error: UMAP looks strange or cells are all in one blob
+
+**Problem**: Wrong number of PCs or other parameters
+
+**Solutions**:
+```{r troubleshooting-umap}
+# Try different numbers of PCs
+pbmc3k <- RunUMAP(pbmc3k, dims = 1:20)  # Try more PCs
+
+# Check if PCA worked
+ElbowPlot(pbmc3k)
+
+# Make sure you're using the same PCs for clustering and UMAP
+```
+
+### Warning: "The following features were omitted" in FeaturePlot
+
+**Problem**: Gene names don't match (common with mouse vs human)
+
+**Solutions**:
+```{r troubleshooting-gene-names}
+# Check if gene exists
+"CD3D" %in% rownames(pbmc3k)
+
+# Check gene naming convention (human vs mouse)
+head(rownames(pbmc3k))
+
+# For mouse data, gene names might be "Cd3d" (capitalization)
+# or "CD3D" might not exist
+```
+
+## When Things Look Wrong: Diagnostic Steps
+
+### Clusters Don't Make Biological Sense
+
+**Diagnostic**:
+1. Check QC metrics per cluster
+2. Verify variable features are reasonable
+3. Try different numbers of PCs
+4. Try different resolution
+
+### Expected Markers Not Found
+
+**Diagnostic**:
+1. Check gene naming (human vs mouse, capitalization)
+2. Verify species/tissue matches expectations
+3. Check if data was filtered too aggressively
+
+### UMAP Shows Weird Patterns
+
+**Diagnostic**:
+1. Check if using correct PCs (same as clustering)
+2. Verify normalization worked
+3. Check for batch effects
+4. Try different UMAP parameters
+
+## Visual Examples of Problematic Data
+
+### Over-filtering
+
+If you filtered too aggressively, you might see:
+- Very few cells remaining
+- Loss of expected cell types
+- Clusters with very uniform expression
+
+**Solution**: Relax QC thresholds
+
+### Under-filtering
+
+If you didn't filter enough, you might see:
+- Clusters dominated by high mitochondrial percentage
+- Clusters that look like technical artifacts
+- Poor separation in UMAP
+
+**Solution**: Tighten QC thresholds
+
+### Wrong Number of PCs
+
+If you use too few PCs:
+- Clusters might not be well separated
+- Biological variation might be lost
+
+If you use too many PCs:
+- Noise might be included
+- Clustering might be over-fitted
+
+**Solution**: Use ElbowPlot to choose appropriate number
+
+## Getting Help
+
+### Resources
+
+- **Seurat Website**: https://satijalab.org/seurat/
+- **Seurat GitHub**: https://github.com/satijalab/seurat
+- **Seurat Tutorials**: https://satijalab.org/seurat/articles/get_started.html
+- **Seurat Discussion Forum**: https://github.com/satijalab/seurat/discussions
+
+### What Information to Include When Asking for Help
+
+1. Seurat version
+2. R version
+3. Session info
+4. Error messages (full text)
+5. What you've already tried
+6. Sample of your data (if possible)
+
+## Session Info for Reproducibility
+
+Always record your session info for troubleshooting:
+
+```{r session-info-final}
+# Print session information
+# This helps others reproduce your analysis and troubleshoot issues
+sessionInfo()
+```
+
+**Why this matters**: Different versions of R and packages can produce different results. Recording session info ensures reproducibility.
+
+---
+
+# Summary and Next Steps
+
+## Recap of the Workflow
+
+We've completed a full single-cell RNA-seq analysis pipeline:
+
+1. **Quality Control**: Filtered low-quality cells based on QC metrics
+2. **Normalization**: Normalized expression data to account for sequencing depth
+3. **Feature Selection**: Identified highly variable genes
+4. **Dimensionality Reduction**: Performed PCA to reduce complexity
+5. **Clustering**: Grouped cells into distinct populations
+6. **Visualization**: Created UMAP plots to visualize cell relationships
+7. **Marker Identification**: Found genes that characterize each cluster
+8. **Cell Type Annotation**: Identified what cell types each cluster represents
+9. **Sanity Checks**: Verified that annotations match expected marker patterns
+
+## What to Do with Your Annotated Data
+
+Now that you have annotated clusters, you can:
+
+### Further Analysis Options
+
+1. **Differential Expression**: Compare expression between conditions
+   
+   **A. Comparing between cell types**:
+   ```{r next-steps-de, eval=FALSE}
+   # Example: Compare expression between two cell types
+   markers <- FindMarkers(pbmc3k, 
+                          ident.1 = "Naive CD4 T",
+                          ident.2 = "Memory CD4 T")
+   ```
+   
+   **B. Comparing within the same cell type across metadata groups** (e.g., young vs old):
+   
+   This is a common analysis when you have experimental conditions or metadata that you want to compare within the same cell type. For example, comparing gene expression in T cells from young vs old individuals.
+   
+   ```{r next-steps-de-metadata, eval=FALSE}
+   # Step 1: Ensure your metadata column is set up
+   # For this example, assume you have a "age" column with "young" and "old"
+   # If your data doesn't have this, you would add it like:
+   # pbmc3k$age <- c("young", "old", ...)  # Your actual metadata
+   
+   # Step 2: Subset to the cell type of interest
+   # For example, compare T cells between young and old
+   t_cells_only <- subset(pbmc3k, idents = c("Naive CD4 T", "Memory CD4 T", "CD8 T"))
+   
+   # Step 3: Set the identity to your metadata column for comparison
+   # This temporarily changes what "identities" are for the comparison
+   Idents(t_cells_only) <- "age"  # Use your metadata column name
+   
+   # Step 4: Find differentially expressed genes
+   # Compare "young" vs "old" T cells
+   de_genes <- FindMarkers(t_cells_only,
+                          ident.1 = "young",  # First group
+                          ident.2 = "old",    # Second group
+                          min.pct = 0.1,      # Gene must be expressed in at least 10% of cells
+                          logfc.threshold = 0.25)  # Minimum log fold change
+   
+   # Step 5: View results
+   head(de_genes, n = 20)
+   
+   # Step 6: Visualize top differentially expressed genes
+   # Get top upregulated genes (higher in "young")
+   top_up <- rownames(de_genes)[de_genes$avg_log2FC > 0][1:5]
+   # Get top downregulated genes (higher in "old")
+   top_down <- rownames(de_genes)[de_genes$avg_log2FC < 0][1:5]
+   
+   # Create feature plots
+   FeaturePlot(t_cells_only, features = top_up, split.by = "age")
+   FeaturePlot(t_cells_only, features = top_down, split.by = "age")
+   
+   # Create violin plots
+   VlnPlot(t_cells_only, features = c(top_up[1], top_down[1]), split.by = "age")
+   ```
+   
+   **Key points for this type of analysis**:
+   - **Subset to one cell type**: This ensures you're comparing like with like
+   - **Use metadata as identity**: Set `Idents()` to your metadata column to compare groups
+   - **Interpret with caution**: Make sure you've accounted for potential confounders (batch effects, technical variation)
+   - **Consider multiple comparisons**: If comparing multiple cell types, you may need to adjust for multiple testing
+
+2. **Sub-clustering**: Further analyze specific cell types
+   ```{r next-steps-subcluster, eval=FALSE}
+   # Example: Sub-cluster T cells
+   t_cells <- subset(pbmc3k, idents = c("Naive CD4 T", "Memory CD4 T", "CD8 T"))
+   t_cells <- FindVariableFeatures(t_cells)
+   t_cells <- ScaleData(t_cells)
+   t_cells <- RunPCA(t_cells)
+   t_cells <- FindNeighbors(t_cells, dims = 1:10)
+   t_cells <- FindClusters(t_cells, resolution = 0.5)
+   t_cells <- RunUMAP(t_cells, dims = 1:10)
+   ```
+
+3. **Trajectory Analysis**: Study cell differentiation (requires additional packages like Monocle3 or Slingshot)
+
+4. **Integration**: Combine multiple datasets (see Seurat integration tutorials)
+
+5. **Cell Type Prediction**: Use reference datasets to annotate (see Azimuth or scType)
+
+## Saving Your Work
+
+```{r save-work, eval=FALSE}
+# Save the Seurat object for future use
+saveRDS(pbmc3k, file = "pbmc3k_annotated.rds")
+
+# You can load it later with:
+# pbmc3k <- readRDS("pbmc3k_annotated.rds")
+```
+
+## Resources for Learning More
+
+### Seurat-Specific Resources
+
+- **Official Seurat Vignettes**: https://satijalab.org/seurat/articles/get_started.html
+- **Seurat Guided Clustering Tutorial**: Comprehensive walkthrough
+- **Seurat Integration Tutorial**: For combining multiple datasets
+- **Seurat Reference Mapping**: For annotating with reference data
+
+### General Single-Cell Resources
+
+- **Orchestrating Single-Cell Analysis with Bioconductor**: https://osca.bioconductor.org/
+- **Single Cell Best Practices**: https://www.sc-best-practices.org/
+- **Single-Cell RNA-seq Analysis Course**: Various online courses
+
+### Biological Interpretation
+
+- **CellMarker Database**: Reference for cell type markers
+- **PanglaoDB**: Database of cell type markers
+- **Cell Ontology**: Standardized cell type definitions
+
+## Key Takeaways
+
+1. **Quality control is critical**: Poor QC leads to poor results
+2. **Parameter choices matter**: Resolution, PCs, and thresholds affect results
+3. **Sanity checks are essential**: Always verify your annotations make biological sense
+4. **Interpretation requires biology**: Understanding cell types and markers is crucial
+5. **Reproducibility matters**: Document your parameters and session info
+
+## Final Checkpoint
+
+Before considering your analysis complete, verify:
+
+- ✅ QC metrics are reasonable
+- ✅ Clusters are well-separated and make biological sense
+- ✅ Marker genes match expected cell types
+- ✅ Annotations are verified with sanity checks
+- ✅ Results are reproducible (seed set, session info recorded)
+
+---
+
+## Appendix: Adapting This Tutorial for Your Own Data
+
+**IMPORTANT**: Complete the tutorial using the PBMC example data first! This appendix is a reference guide for when you're ready to analyze your own data.
+
+```{r appendix-adapting-data, eval=FALSE}
+# ============================================
+# STUDENT DATA REFERENCE - UNCOMMENT AFTER COMPLETING TUTORIAL
+# ============================================
+# This section provides guidance for adapting the tutorial to your own data.
+# Uncomment and review after completing the tutorial with example data.
+```
+
+### Key Changes Needed
+
+**After completing the tutorial with example data, you will need to:**
+
+1. **Data Loading**: Modify the data loading section with your file paths (see "Adapting for Your Own Data" section above)
+2. **QC Thresholds**: Adjust based on your tissue type and sequencing method
+3. **Expected Markers**: Update marker gene lists for your tissue type (see sanity check sections)
+4. **Cell Type Annotations**: Use appropriate cell types for your tissue
+5. **Species**: Adjust gene naming (human vs mouse) and mitochondrial patterns (e.g., `^MT-` for human, `^mt-` for mouse)
+
+### Tissue-Specific Considerations
+
+- **Brain**: Higher mitochondrial content normal, many cell subtypes
+- **Blood**: Well-characterized, many established markers
+- **Tumor**: High heterogeneity, may need doublet detection
+- **Development**: May need trajectory analysis
+- **Immune**: Well-characterized, many markers available
+
+Good luck with your single-cell analysis!
+

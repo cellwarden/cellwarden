@@ -1,0 +1,42 @@
+{
+  "source": "Open Targets Platform GraphQL v4 (recorded fixture)",
+  "offline": true,
+  "contrasts": {
+    "disease_vs_control": {
+      "T cell": {
+        "up": {
+          "n_genes": 5, "n_with_evidence": 3,
+          "genes": [
+            {"gene": "ISG15", "ensembl_id": "ENSG00000187608", "direction": "up", "log2fc": 2.9,
+             "evidence": [{"evidence_id": "OT-ISG15-disease-EFO_0007479", "type": "associated_disease", "label": "COVID-19", "efo_id": "EFO_0007479", "score": 0.61},
+                          {"evidence_id": "OT-ISG15-tract-SM", "type": "tractability", "label": "small molecule: predicted tractable"}]},
+            {"gene": "MX1", "ensembl_id": "ENSG00000157601", "direction": "up", "log2fc": 2.2,
+             "evidence": [{"evidence_id": "OT-MX1-disease-EFO_0007479", "type": "associated_disease", "label": "COVID-19", "efo_id": "EFO_0007479", "score": 0.55}]},
+            {"gene": "JAK1", "ensembl_id": "ENSG00000162434", "direction": "up", "log2fc": 0.8,
+             "evidence": [{"evidence_id": "OT-JAK1-drug-baricitinib", "type": "known_drug", "label": "baricitinib", "phase": 4, "disease": "COVID-19", "mechanism": "JAK inhibitor"},
+                          {"evidence_id": "OT-JAK1-tract-SM", "type": "tractability", "label": "small molecule: approved drug"}]},
+            {"gene": "IFI44L", "ensembl_id": "ENSG00000137959", "direction": "up", "log2fc": 3.1, "evidence": []},
+            {"gene": "IFIT3", "ensembl_id": "ENSG00000119917", "direction": "up", "log2fc": 2.6, "evidence": []}
+          ]
+        },
+        "down": {
+          "n_genes": 3, "n_with_evidence": 1,
+          "genes": [
+            {"gene": "CCR7", "ensembl_id": "ENSG00000126353", "direction": "down", "log2fc": -1.4,
+             "evidence": [{"evidence_id": "OT-CCR7-disease-EFO_0000685", "type": "associated_disease", "label": "rheumatoid arthritis", "efo_id": "EFO_0000685", "score": 0.3}]},
+            {"gene": "SELL", "ensembl_id": "ENSG00000188404", "direction": "down", "log2fc": -1.1, "evidence": []},
+            {"gene": "TCF7", "ensembl_id": "ENSG00000081059", "direction": "down", "log2fc": -0.9, "evidence": []}
+          ]
+        }
+      },
+      "B cell": {
+        "up": {"n_genes": 2, "n_with_evidence": 1,
+               "genes": [{"gene": "ISG15", "ensembl_id": "ENSG00000187608", "direction": "up", "log2fc": 2.4,
+                          "evidence": [{"evidence_id": "OT-ISG15-disease-EFO_0007479", "type": "associated_disease", "label": "COVID-19", "efo_id": "EFO_0007479", "score": 0.61}]},
+                         {"gene": "IFI6", "ensembl_id": "ENSG00000126709", "direction": "up", "log2fc": 1.9, "evidence": []}]},
+        "down": {"n_genes": 1, "n_with_evidence": 0,
+                 "genes": [{"gene": "FCER2", "ensembl_id": "ENSG00000104921", "direction": "down", "log2fc": -1.2, "evidence": []}]}
+      }
+    }
+  }
+}

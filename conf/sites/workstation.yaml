@@ -1,0 +1,23 @@
+# Site file for a workstation or cloud VM of your own: no scheduler, no
+# container, no need to be polite. Raise the caps to what the machine has.
+# `cellwarden init-site` drafts this file from what it detects.
+site: workstation
+execution: direct
+resources:
+  threads: 16
+  max_memory_gb: 128
+  gpu_mem_cap_gb: 20
+  nice: 0
+scratch: ~/cellwarden
+container:
+  runtime: none
+  image: null
+  options: []
+scheduler:
+  partition: null
+  account: null
+  time: "24:00:00"
+  cpus: null
+  mem_gb: null
+  gpus: 0
+  extra: []

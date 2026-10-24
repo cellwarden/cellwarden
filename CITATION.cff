@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use CellWarden, please cite it as below."
+title: "CellWarden: a single-cell RNA-seq pipeline whose decisions are guarded by rules, LLM review agents and you"
+type: software
+authors:
+  - family-names: Agrawal
+    given-names: Mukesh
+  - family-names: Dawoud
+    given-names: Ahmed
+    affiliation: University of Southampton
+  - family-names: Williams
+    given-names: David
+    affiliation: University of Dundee
+repository-code: "https://github.com/cellwarden/cellwarden"
+url: "https://cellwarden.github.io/cellwarden/"
+license: Apache-2.0
+version: 0.3.0
+date-released: "2026-10-25"
+keywords:
+  - single-cell RNA-seq
+  - Seurat
+  - LLM agents
+  - Rust
+  - reproducibility

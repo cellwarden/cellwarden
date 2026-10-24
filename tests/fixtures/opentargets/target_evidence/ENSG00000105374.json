@@ -1,0 +1,231 @@
+{
+ "data": {
+  "target": {
+   "id": "ENSG00000105374",
+   "approvedSymbol": "NKG7",
+   "approvedName": "natural killer cell granule protein 7",
+   "biotype": "protein_coding",
+   "tractability": [
+    {
+     "modality": "SM",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Structure with Ligand",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "High-Quality Ligand",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "High-Quality Pocket",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Med-Quality Pocket",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Druggable Family",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt loc high conf",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "GO CC high conf",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt loc med conf",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt SigP or TMHMM",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "GO CC med conf",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "Human Protein Atlas loc",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Literature",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "UniProt Ubiquitination",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Database Ubiquitination",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Half-life Data",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Small Molecule Binder",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Phase 1 Clinical",
+     "value": false
+    }
+   ],
+   "knownDrugs": {
+    "count": 0,
+    "rows": []
+   },
+   "associatedDiseases": {
+    "count": 154,
+    "rows": [
+     {
+      "score": 0.244,
+      "disease": {
+       "id": "EFO_0003778",
+       "name": "psoriatic arthritis"
+      }
+     },
+     {
+      "score": 0.238,
+      "disease": {
+       "id": "EFO_0000685",
+       "name": "rheumatoid arthritis"
+      }
+     },
+     {
+      "score": 0.221,
+      "disease": {
+       "id": "EFO_0002690",
+       "name": "systemic lupus erythematosus"
+      }
+     },
+     {
+      "score": 0.197,
+      "disease": {
+       "id": "EFO_0003885",
+       "name": "multiple sclerosis"
+      }
+     },
+     {
+      "score": 0.181,
+      "disease": {
+       "id": "EFO_0000384",
+       "name": "Crohn's disease"
+      }
+     },
+     {
+      "score": 0.173,
+      "disease": {
+       "id": "EFO_0000729",
+       "name": "ulcerative colitis"
+      }
+     },
+     {
+      "score": 0.156,
+      "disease": {
+       "id": "MONDO_0005147",
+       "name": "type 1 diabetes mellitus"
+      }
+     },
+     {
+      "score": 0.149,
+      "disease": {
+       "id": "EFO_0004237",
+       "name": "lymphocyte count"
+      }
+     },
+     {
+      "score": 0.112,
+      "disease": {
+       "id": "EFO_0000270",
+       "name": "asthma"
+      }
+     },
+     {
+      "score": 0.104,
+      "disease": {
+       "id": "EFO_0000676",
+       "name": "psoriasis"
+      }
+     }
+    ]
+   }
+  }
+ }
+}

@@ -1,0 +1,32 @@
+[build-system]
+# maturin >= 1.9.4 sets PYO3_BUILD_EXTENSION_MODULE, which replaces PyO3's deprecated
+# "extension-module" feature.
+requires = ["maturin>=1.9.4,<2"]
+build-backend = "maturin"
+
+[project]
+name = "scfast"
+description = "Fast single-cell kernels in Rust: implicitly scaled PCA, kNN, SNN and Leiden for Seurat- and Scanpy-style workflows"
+readme = { text = "Python bindings for scfast (docs/RUST_ENGINE.md in https://github.com/mukeshkbj/singlecell).", content-type = "text/plain" }
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+dependencies = ["numpy>=1.22", "scipy>=1.8"]
+dynamic = ["version"]
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.urls]
+Repository = "https://github.com/mukeshkbj/singlecell"
+
+[tool.maturin]
+# Mixed layout: the pure-Python package scfast (python/scfast) wraps the native extension
+# scfast._scfast built from this crate (lib name "_scfast" in Cargo.toml).
+python-source = "python"
+module-name = "scfast._scfast"
+bindings = "pyo3"

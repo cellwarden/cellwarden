@@ -1,0 +1,31 @@
+{
+ "data": {
+  "search": {
+   "total": 5,
+   "hits": [
+    {
+     "id": "ENSG00000090382",
+     "name": "LYZ",
+     "entity": "target",
+     "score": 64.2,
+     "object": {
+      "id": "ENSG00000090382",
+      "approvedSymbol": "LYZ",
+      "approvedName": "lysozyme"
+     }
+    },
+    {
+     "id": "ENSG00000257018",
+     "name": "LYZL1",
+     "entity": "target",
+     "score": 17.4,
+     "object": {
+      "id": "ENSG00000257018",
+      "approvedSymbol": "LYZL1",
+      "approvedName": "lysozyme like 1"
+     }
+    }
+   ]
+  }
+ }
+}

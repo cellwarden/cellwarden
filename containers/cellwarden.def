@@ -1,0 +1,21 @@
+# cellwarden for Apptainer/Singularity: the published Docker image (containers/Dockerfile),
+# so both runtimes get exactly the same software. Usually you only need
+#
+#   apptainer pull cellwarden.sif docker://ghcr.io/cellwarden/cellwarden:latest       # Docker Hub copy: docker://ad2n15/cellwarden:latest
+#
+# This file is for sites that build images from a definition file:
+#
+#   apptainer build cellwarden.sif containers/cellwarden.def
+#   apptainer exec --nv cellwarden.sif cellwarden doctor --config config.yaml
+#
+# Run with --nv so the host GPU driver is used; point the site file at the image
+# (container.runtime: apptainer, container.image: /path/to/cellwarden.sif).
+Bootstrap: docker
+From: ghcr.io/cellwarden/cellwarden:latest
+
+%runscript
+    exec cellwarden "$@"
+
+%test
+    cellwarden --help >/dev/null
+    python -c "import scfast, cellwarden"

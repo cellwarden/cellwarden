@@ -1,0 +1,29 @@
+# QC policy for the S0-S2 end-to-end test. Same structure as
+# config/examples/qc_policy.yaml; only the hard limits are lowered, because
+# the synthetic fixture is shallow (median ~170 genes and ~540 UMIs per cell).
+# With these limits:
+#   - injected low-quality cells (35-60 % MT) fail max_mito_pct      -> exclude
+#   - injected platelets (~60 genes, ~140 UMIs) pass the hard limits but
+#     fall below the adaptive lower bounds, and carry >= 17 % of their UMIs
+#     in PPBP/PF4/GNG11                                                -> review (PROTECTED_POP:Platelet)
+#   - injected doublets are left to scrublet (and the adaptive upper bounds)
+hard_limits:
+  min_genes: 40
+  max_mito_pct: 25
+  min_umis: 80
+adaptive:
+  n_mads: 3
+  metrics: [log_genes, log_umis, mito_pct]
+  min_cells_for_mad: 100
+doublets:
+  exclude_called: true
+protected_populations:
+  - name: Platelet
+    markers: [PPBP, PF4, GNG11]
+    min_fraction: 0.01
+  - name: Erythrocyte
+    markers: [HBB, HBA1, HBA2]
+    min_fraction: 0.05
+review_triggers:
+  max_cells_removed_per_sample_pct: 30
+  max_cluster_removed_pct: 50

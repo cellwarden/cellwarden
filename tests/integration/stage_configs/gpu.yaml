@@ -1,0 +1,31 @@
+# End-to-end test config for S0-S2, GPU path (tests/integration/run_stages.sh).
+# Identical to cpu.yaml apart from `device` and `project`. On a machine
+# without a GPU the harness sets CELLWARDEN_ALLOW_CPU_AS_GPU=1 (test-only), so the
+# GPU path runs through the exchange format with gpu_core's CPU fallback.
+project: stage_test_gpu
+run_dir: /tmp/cellwarden-stage-test/gpu      # always overridden with --run-dir by the harness
+seed: 42
+samples: samples.csv                     # sample paths in it are relative to this folder
+qc_policy: qc_policy.yaml
+object_format: rds
+resources:
+  threads: 2
+  max_memory_gb: 4
+  gpu_mem_cap_gb: 2
+  nice: 10
+doublets:
+  method: scrublet
+qc:
+  review_action: keep
+normalization: lognorm
+n_hvg: 500                               # the fixture has only 808 genes
+# This script compares the Seurat and exchange (rapids/scanpy) paths; scfast is covered by run_full.sh.
+engine: seurat
+device: gpu
+integration:
+  method: none
+  batch_key: sample_id
+pcs: auto
+n_neighbors: 20
+clustering:
+  resolution: 0.5

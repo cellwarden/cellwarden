@@ -1,0 +1,34 @@
+# data and large outputs
+#filtered_gene_bc_matrices/
+*.tar.gz
+*.rds
+*.h5ad
+*.csv
+cache/
+# environments and logs
+.env
+.venv/
+.venv-scanpy/
+*.log
+.Rhistory
+.RData
+.Rproj.user/
+.DS_Store
+__pycache__/
+
+# keep small test inputs and example sheets despite the *.csv / *.h5ad rules above
+!config/examples/*.csv
+!tests/fixtures/**/*.csv
+!tests/integration/stage_configs/*.csv
+!tests/fixtures/**/*.h5ad
+# Python caches
+__pycache__/
+.pytest_cache/
+tests/benchmark/inputs/
+tests/benchmark/results/
+# benchmark runs (commit a chosen baseline with git add -f)
+bench/results/
+rust/target/
+.venv-bench/
+*.egg-info/
+launch/

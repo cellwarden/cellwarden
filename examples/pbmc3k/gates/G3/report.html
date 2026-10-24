@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>G3 Cell-type annotation review — pbmc3k-20261024T202212Z-ab25e3</title>
+<style>
+:root { --fg:#1d1f21; --muted:#6b6f76; --bg:#ffffff; --panel:#f6f7f9; --line:#dfe2e6; --accent:#0072B2;
+        --ok:#009E73; --warn:#E69F00; --bad:#D55E00; }
+* { box-sizing: border-box; }
+body { margin:0; font: 14px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, sans-serif; color:var(--fg); background:var(--bg); }
+header.top { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line); padding:10px 24px; z-index:5;
+             display:flex; flex-wrap:wrap; gap:6px 18px; align-items:baseline; }
+header.top h1 { font-size:18px; margin:0; }
+header.top nav a { color:var(--accent); text-decoration:none; margin-right:10px; font-size:13px; }
+main { max-width: 1200px; margin: 0 auto; padding: 16px 24px 60px; }
+section { margin: 28px 0; }
+h2 { font-size:20px; border-bottom:2px solid var(--line); padding-bottom:4px; margin: 0 0 12px; }
+h3 { font-size:15px; margin: 18px 0 6px; }
+table { border-collapse: collapse; width:100%; font-size:13px; margin: 6px 0 12px; }
+th, td { text-align:left; padding: 4px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+th { background:var(--panel); font-weight:600; }
+td.num, th.num { text-align:right; font-variant-numeric: tabular-nums; }
+.muted { color:var(--muted); }
+.notrun { background:var(--panel); border-left:4px solid var(--line); padding:8px 12px; color:var(--muted); }
+.pill { display:inline-block; padding:1px 8px; border-radius:10px; font-size:12px; background:var(--panel); border:1px solid var(--line); }
+.pill.done, .pill.approve, .pill.auto { background:#e4f5ee; border-color:var(--ok); }
+.pill.failed, .pill.block, .pill.escalate { background:#fbe9e1; border-color:var(--bad); }
+.pill.pending, .pill.warn, .pill.review, .pill.request_changes, .pill.skipped { background:#fdf1dc; border-color:var(--warn); }
+.grid { display:flex; flex-wrap:wrap; gap:16px; }
+.grid > * { flex: 1 1 320px; }
+.kv { display:grid; grid-template-columns: max-content 1fr; gap: 2px 14px; font-size:13px; }
+.kv dt { color:var(--muted); } .kv dd { margin:0; word-break:break-all; }
+svg.plot { font: 11px sans-serif; max-width:100%; height:auto; }
+svg.plot text.t { font-size:12px; font-weight:600; } svg.plot text.l { fill:#444; } svg.plot text.v { fill:#444; }
+svg.plot line.ax { stroke:#888; } svg.plot line.vl { stroke:#D55E00; stroke-dasharray:3 2; }
+figure.scatter { margin:0; } figure.scatter figcaption { font-weight:600; margin-bottom:4px; }
+.scatter-row { display:flex; gap:12px; align-items:flex-start; flex-wrap:wrap; }
+ul.legend { list-style:none; margin:0; padding:0; font-size:12px; columns: 2; max-width:300px; }
+ul.legend li { margin:1px 0; break-inside:avoid; } .sw { display:inline-block; width:10px; height:10px; margin-right:6px; vertical-align:middle; border-radius:2px; }
+pre { background:var(--panel); padding:8px; overflow:auto; font-size:12px; max-height:360px; }
+details > summary { cursor:pointer; color:var(--accent); }
+.genes { font-family: ui-monospace, Menlo, monospace; font-size:12px; }
+footer { color:var(--muted); font-size:12px; margin-top:40px; border-top:1px solid var(--line); padding-top:8px; }
+@media print { header.top { position:static; } }
+</style>
+</head>
+<body>
+<header class="top"><h1>Gate G3: Cell-type annotation review
+  <span class="pill done">decided by agent</span></h1>
+  <span class="muted">run pbmc3k-20261024T202212Z-ab25e3 · pbmc3k</span></header>
+<main>
+<section id="gate">
+<div class="gate-card" id="gate-G3">
+<h3>G3 — Cell-type annotation review
+<span class="pill auto">auto</span><span class="pill approve">reviewer: approve</span></h3>
+<dl class="kv">
+  <dt>decided by</dt><dd>agent <span class="muted">at 2026-10-24T20:27:02Z</span></dd>
+  <dt>worker</dt><dd>nvidia/nemotron-3-ultra-550b-a55b</dd>
+  <dt>reviewer</dt><dd>nvidia/nemotron-3-ultra-550b-a55b</dd>
+  <dt>policy check</dt><dd>ok</dd>
+  <dt>files</dt><dd><span class="pill done">bundle.json</span> <span class="pill done">proposal.json</span> <span class="pill done">review.json</span> <span class="pill done">decision.json</span> </dd>
+</dl>
+<p><b>Rationale (agent, advisory):</b> All 9 clusters have consensus status in the baseline (confidence 0.639–0.949). No clusters were flagged as low_confidence or conflict in low_confidence_clusters, so no relabelling is permitted. The proposal is therefore empty and the consensus labels are kept unchanged.</p><table><thead><tr><th>severity</th><th>finding</th></tr></thead><tbody>
+<tr><td><span class="pill info">info</span></td><td>All 9 clusters retain consensus labels, cl_ids, and confidences; no low_confidence or conflict clusters exist to modify.</td></tr><tr><td><span class="pill info">info</span></td><td>Policy check passes with no violations; proposal is internally consistent with the evidence bundle.</td></tr></tbody></table>
+<h4>Decision</h4><pre>{
+ &#34;clusters&#34;: [
+  {
+   &#34;cluster&#34;: &#34;0&#34;,
+   &#34;label_broad&#34;: &#34;T cell&#34;,
+   &#34;label_fine&#34;: &#34;T cell&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000084&#34;,
+   &#34;confidence&#34;: 0.6964,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;1&#34;,
+   &#34;label_broad&#34;: &#34;T cell&#34;,
+   &#34;label_fine&#34;: &#34;T cell&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000084&#34;,
+   &#34;confidence&#34;: 0.8178,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;2&#34;,
+   &#34;label_broad&#34;: &#34;monocyte&#34;,
+   &#34;label_fine&#34;: &#34;CD14 monocyte&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000860&#34;,
+   &#34;confidence&#34;: 0.8027,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;3&#34;,
+   &#34;label_broad&#34;: &#34;B cell&#34;,
+   &#34;label_fine&#34;: &#34;B cell&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000236&#34;,
+   &#34;confidence&#34;: 0.8898,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;4&#34;,
+   &#34;label_broad&#34;: &#34;T cell&#34;,
+   &#34;label_fine&#34;: &#34;CD8 T cell&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000625&#34;,
+   &#34;confidence&#34;: 0.7979,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;5&#34;,
+   &#34;label_broad&#34;: &#34;monocyte&#34;,
+   &#34;label_fine&#34;: &#34;CD16 monocyte&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000875&#34;,
+   &#34;confidence&#34;: 0.845,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;6&#34;,
+   &#34;label_broad&#34;: &#34;NK cell&#34;,
+   &#34;label_fine&#34;: &#34;NK cell&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000623&#34;,
+   &#34;confidence&#34;: 0.714,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;7&#34;,
+   &#34;label_broad&#34;: &#34;dendritic cell&#34;,
+   &#34;label_fine&#34;: &#34;conventional dendritic cell&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000990&#34;,
+   &#34;confidence&#34;: 0.639,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;8&#34;,
+   &#34;label_broad&#34;: &#34;platelet&#34;,
+   &#34;label_fine&#34;: &#34;platelet&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000233&#34;,
+   &#34;confidence&#34;: 0.9492,
+   &#34;status&#34;: &#34;consensus&#34;
+  }
+ ]
+}</pre><details><summary>Proposal</summary><pre>{
+ &#34;clusters&#34;: [
+  {
+   &#34;cluster&#34;: &#34;0&#34;,
+   &#34;label_broad&#34;: &#34;T cell&#34;,
+   &#34;label_fine&#34;: &#34;T cell&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000084&#34;,
+   &#34;confidence&#34;: 0.6964,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;1&#34;,
+   &#34;label_broad&#34;: &#34;T cell&#34;,
+   &#34;label_fine&#34;: &#34;T cell&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000084&#34;,
+   &#34;confidence&#34;: 0.8178,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;2&#34;,
+   &#34;label_broad&#34;: &#34;monocyte&#34;,
+   &#34;label_fine&#34;: &#34;CD14 monocyte&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000860&#34;,
+   &#34;confidence&#34;: 0.8027,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;3&#34;,
+   &#34;label_broad&#34;: &#34;B cell&#34;,
+   &#34;label_fine&#34;: &#34;B cell&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000236&#34;,
+   &#34;confidence&#34;: 0.8898,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;4&#34;,
+   &#34;label_broad&#34;: &#34;T cell&#34;,
+   &#34;label_fine&#34;: &#34;CD8 T cell&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000625&#34;,
+   &#34;confidence&#34;: 0.7979,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;5&#34;,
+   &#34;label_broad&#34;: &#34;monocyte&#34;,
+   &#34;label_fine&#34;: &#34;CD16 monocyte&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000875&#34;,
+   &#34;confidence&#34;: 0.845,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;6&#34;,
+   &#34;label_broad&#34;: &#34;NK cell&#34;,
+   &#34;label_fine&#34;: &#34;NK cell&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000623&#34;,
+   &#34;confidence&#34;: 0.714,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;7&#34;,
+   &#34;label_broad&#34;: &#34;dendritic cell&#34;,
+   &#34;label_fine&#34;: &#34;conventional dendritic cell&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000990&#34;,
+   &#34;confidence&#34;: 0.639,
+   &#34;status&#34;: &#34;consensus&#34;
+  },
+  {
+   &#34;cluster&#34;: &#34;8&#34;,
+   &#34;label_broad&#34;: &#34;platelet&#34;,
+   &#34;label_fine&#34;: &#34;platelet&#34;,
+   &#34;cl_id&#34;: &#34;CL:0000233&#34;,
+   &#34;confidence&#34;: 0.9492,
+   &#34;status&#34;: &#34;consensus&#34;
+  }
+ ]
+}</pre></details><details><summary>Evidence bundle (first 20 kB)</summary><pre>{
+ &#34;gate&#34;: &#34;G3&#34;,
+ &#34;clusters&#34;: [
+  {
+   &#34;cluster&#34;: &#34;0&#34;,
+   &#34;n_cells&#34;: 570,
+   &#34;pct_cells&#34;: 23.4568,
+   &#34;n_samples_present&#34;: 1,
+   &#34;median_genes&#34;: 760,
+   &#34;median_umis&#34;: 2239,
+   &#34;median_pct_mito&#34;: 1.7978,
+   &#34;top_markers&#34;: [
+    &#34;LDHB&#34;,
+    &#34;CD3D&#34;,
+    &#34;CCR7&#34;,
+    &#34;CD3E&#34;,
+    &#34;RPS27A&#34;,
+    &#34;RPS3A&#34;,
+    &#34;NOSIP&#34;,
+    &#34;NPM1&#34;,
+    &#34;RPL31&#34;,
+    &#34;RPS29&#34;,
+    &#34;RPL9&#34;,
+    &#34;CD7&#34;,
+    &#34;RPS25&#34;,
+    &#34;LTB&#34;,
+    &#34;RPS27&#34;,
+    &#34;C6orf48&#34;,
+    &#34;RPS13&#34;,
+    &#34;RPS12&#34;,
+    &#34;MALAT1&#34;,
+    &#34;RPSA&#34;
+   ],
+   &#34;signatures&#34;: {
+    &#34;interferon&#34;: -0.217286,
+    &#34;inflammation&#34;: -0.159708,
+    &#34;proliferation&#34;: -0.004999,
+    &#34;hypoxia&#34;: 0.065167,
+    &#34;stress&#34;: 0.698214,
+    &#34;platelet&#34;: -0.029088,
+    &#34;erythrocyte&#34;: -0.002044,
+    &#34;T&#34;: 0.468948,
+    &#34;CD4_T&#34;: 0.265291,
+    &#34;CD8_T&#34;: -0.195822,
+    &#34;NK&#34;: -0.356673,
+    &#34;B&#34;: -0.276512,
+    &#34;plasma&#34;: -0.015233,
+    &#34;mono_CD14&#34;: -0.342278,
+    &#34;mono_CD16&#34;: -0.284921,
+    &#34;macrophage&#34;: -0.078543,
+    &#34;cDC&#34;: -0.136825,
+    &#34;pDC&#34;: -0.138673,
+    &#34;neutrophil&#34;: -0.057639,
+    &#34;mast&#34;: -0.000277,
+    &#34;HSPC&#34;: -0.06289,
+    &#34;epithelial&#34;: 0.001196,
+    &#34;endothelial&#34;: -0.003007,
+    &#34;fibroblast&#34;: 0.000478,
+    &#34;smooth_muscle&#34;: -0.003605,
+    &#34;hepatocyte&#34;: -0.058324,
+    &#34;neuron&#34;: -5.7e-05,
+    &#34;glia&#34;: 0.003451,
+    &#34;microglia&#34;: -0.040674
+   },
+   &#34;celltypist&#34;: {},
+   &#34;consensus&#34;: {
+    &#34;label_broad&#34;: &#34;T cell&#34;,
+    &#34;label_fine&#34;: &#34;T cell&#34;,
+    &#34;cl_id&#34;: &#34;CL:0000084&#34;,
+    &#34;confidence&#34;: 0.6964,
+    &#34;status&#34;: &#34;consensus&#34;,
+    &#34;votes&#34;: {
+     &#34;broad_scores&#34;: {
+      &#34;T cell&#34;: 0.6966,
+      &#34;epithelial cell&#34;: 0.0004,
+      &#34;glial cell&#34;: 0.0
+     },
+     &#34;celltypist&#34;: {},
+     &#34;celltypist_unmapped&#34;: {},
+     &#34;fine_scores&#34;: {
+      &#34;CD4 T cell&#34;: 0.6157,
+      &#34;MAIT cell&#34;: 0.3965,
+      &#34;T cell&#34;: 0.5465,
+      &#34;gamma-delta T cell&#34;: 0.4965,
+      &#34;regulatory T cell&#34;: 0.3965
+     },
+     &#34;markers&#34;: {
+      &#34;T cell&#34;: 0.8
+     },
+     &#34;signature&#34;: {
+      &#34;T cell&#34;: 0.5931,
+      &#34;epithelial cell&#34;: 0.0008,
+      &#34;glial cell&#34;: 0.0001
+     },
+     &#34;source_top&#34;: {
+      &#34;markers&#34;: &#34;T cell&#34;,
+      &#34;signature&#34;: &#34;T cell&#34;
+     },
+     &#34;sources&#34;: [
+      &#34;signature&#34;,
+      &#34;markers&#34;
+     ],
+     &#34;weights&#34;: {
+      &#34;markers&#34;: 0.35,
+      &#34;signature&#34;: 0.35
+     }
+    }
+   }
+  },
+  {
+   &#34;cluster&#34;: &#34;1&#34;,
+   &#34;n_cells&#34;: 556,
+   &#34;pct_cells&#34;: 22.8807,
+   &#34;n_samples_present&#34;: 1,
+   &#34;median_genes&#34;: 872,
+   &#34;median_umis&#34;: 2501.5,
+   &#34;median_pct_mito&#34;: 1.7019,
+   &#34;top_markers&#34;: [
+    &#34;LTB&#34;,
+    &#34;IL32&#34;,
+    &#34;CD3D&#34;,
+    &#34;LDHB&#34;,
+    &#34;IL7R&#34;,
+    &#34;CD3E&#34;,
+    &#34;CD2&#34;,
+    &#34;JUN&#34;,
+    &#34;ANXA1&#34;,
+    &#34;JUNB&#34;,
+    &#34;VIM&#34;,
+    &#34;GIMAP7&#34;,
+    &#34;HINT1&#34;,
+    &#34;MYL12A&#34;,
+    &#34;TMEM66&#34;,
+    &#34;AES&#34;,
+    &#34;AQP3&#34;,
+    &#34;RPS27A&#34;,
+    &#34;EVL&#34;,
+    &#34;NOSIP&#34;
+   ],
+   &#34;signatures&#34;: {
+    &#34;interferon&#34;: -0.150278,
+    &#34;inflammation&#34;: -0.140551,
+    &#34;proliferation&#34;: -0.014483,
+    &#34;hypoxia&#34;: 0.115817,
+    &#34;stress&#34;: 0.79418,
+    &#34;platelet&#34;: -0.033382,
+    &#34;erythrocyte&#34;: -0.002776,
+    &#34;T&#34;: 0.613501,
+    &#34;CD4_T&#34;: 0.25996,
+    &#34;CD8_T&#34;: -0.227728,
+    &#34;NK&#34;: -0.38512,
+    &#34;B&#34;: -0.298807,
+    &#34;plasma&#34;: 0.019588,
+    &#34;mono_CD14&#34;: -0.382611,
+    &#34;mono_CD16&#34;: -0.336363,
+    &#34;macrophage&#34;: -0.088815,
+    &#34;cDC&#34;: -0.146343,
+    &#34;pDC&#34;: -0.151947,
+    &#34;neutrophil&#34;: -0.073651,
+    &#34;mast&#34;: -0.005443,
+    &#34;HSPC&#34;: -0.056856,
+    &#34;epithelial&#34;: 0.000918,
+    &#34;endothelial&#34;: -0.002467,
+    &#34;fibroblast&#34;: -0.00024,
+    &#34;smooth_muscle&#34;: -0.002154,
+    &#34;hepatocyte&#34;: -0.065223,
+    &#34;neuron&#34;: -0.00052,
+    &#34;glia&#34;: -0.006229,
+    &#34;microglia&#34;: -0.091578
+   },
+   &#34;celltypist&#34;: {},
+   &#34;consensus&#34;: {
+    &#34;label_broad&#34;: &#34;T cell&#34;,
+    &#34;label_fine&#34;: &#34;T cell&#34;,
+    &#34;cl_id&#34;: &#34;CL:0000084&#34;,
+    &#34;confidence&#34;: 0.8178,
+    &#34;status&#34;: &#34;consensus&#34;,
+    &#34;votes&#34;: {
+     &#34;broad_scores&#34;: {
+      &#34;T cell&#34;: 0.8678,
+      &#34;epithelial cell&#34;: 0.0502,
+      &#34;innate lymphoid cell&#34;: 0.1,
+      &#34;plasma cell&#34;: 0.0013
+     },
+     &#34;celltypist&#34;: {},
+     &#34;celltypist_unmapped&#34;: {},
+     &#34;fine_scores&#34;: {
+      &#34;CD4 T cell&#34;: 0.5598,
+      &#34;MAIT cell&#34;: 0.5678,
+      &#34;T cell&#34;: 0.8678,
+      &#34;gamma-delta T cell&#34;: 0.5678,
+      &#34;regulatory T cell&#34;: 0.4678
+     },
+     &#34;markers&#34;: {
+      &#34;T cell&#34;: 1.0,
+      &#34;epithelial cell&#34;: 0.1,
+      &#34;innate lymphoid cell&#34;: 0.2
+     },
+     &#34;signature&#34;: {
+      &#34;T cell&#34;: 0.7355,
+      &#34;epithelial cell&#34;: 0.0004,
+      &#34;plasma cell&#34;: 0.0026
+     },
+     &#34;source_top&#34;: {
+      &#34;markers&#34;: &#34;T cell&#34;,
+      &#34;signature&#34;: &#34;T cell&#34;
+     },
+     &#34;sources&#34;: [
+      &#34;signature&#34;,
+      &#34;markers&#34;
+     ],
+     &#34;weights&#34;: {
+      &#34;markers&#34;: 0.35,
+      &#34;signature&#34;: 0.35
+     }
+    }
+   }
+  },
+  {
+   &#34;cluster&#34;: &#34;2&#34;,
+   &#34;n_cells&#34;: 461,
+   &#34;pct_cells&#34;: 18.9712,
+   &#34;n_samples_present&#34;: 1,
+   &#34;median_genes&#34;: 881,
+   &#34;median_umis&#34;: 2373,
+   &#34;median_pct_mito&#34;: 2.2251,
+   &#34;top_markers&#34;: [
+    &#34;S100A9&#34;,
+    &#34;LYZ&#34;,
+    &#34;S100A8&#34;,
+    &#34;CST3&#34;,
+    &#34;TYROBP&#34;,
+    &#34;FCN1&#34;,
+    &#34;LGALS1&#34;,
+    &#34;AIF1&#34;,
+    &#34;LGALS2&#34;,
+    &#34;FTL&#34;,
+    &#34;LST1&#34;,
+    &#34;FCER1G&#34;,
+    &#34;TYMP&#34;,
+    &#34;GSTP1&#34;,
+    &#34;CTSS&#34;,
+    &#34;GPX1&#34;,
+    &#34;FTH1&#34;,
+    &#34;SAT1&#34;,
+    &#34;S100A6&#34;,
+    &#34;HLA-DRA&#34;
+   ],
+   &#34;signatures&#34;: {
+    &#34;interferon&#34;: 0.036239,
+    &#34;inflammation&#34;: 0.054975,
+    &#34;proliferation&#34;: -0.028215,
+    &#34;hypoxia&#34;: 0.139844,
+    &#34;stress&#34;: 0.66941,
+    &#34;platelet&#34;: 0.015646,
+    &#34;erythrocyte&#34;: -0.003213,
+    &#34;T&#34;: -0.601372,
+    &#34;CD4_T&#34;: -0.513307,
+    &#34;CD8_T&#34;: -0.530934,
+    &#34;NK&#34;: 0.07015,
+    &#34;B&#34;: -0.108155,
+    &#34;plasma&#34;: -9.1e-05,
+    &#34;mono_CD14&#34;: 2.029411,
+    &#34;mono_CD16&#34;: 0.420444,
+    &#34;macrophage&#34;: 0.106118,
+    &#34;cDC&#34;: 0.352643,
+    &#34;pDC&#34;: -0.146314,
+    &#34;neutrophil&#34;: 0.789256,
+    &#34;mast&#34;: -0.001655,
+    &#34;HSPC&#34;: -0.075076,
+    &#34;epithelial&#34;: 0.000973,
+    &#34;endothelial&#34;: -3e-05,
+    &#34;fibroblast&#34;: -0.000325,
+    &#34;smooth_muscle&#34;: 0.000896,
+    &#34;hepatocyte&#34;: 0.049873,
+    &#34;neuron&#34;: -0.000508,
+    &#34;glia&#34;: -0.000855,
+    &#34;microglia&#34;: 0.260499
+   },
+   &#34;celltypist&#34;: {},
+   &#34;consensus&#34;: {
+    &#34;label_broad&#34;: &#34;monocyte&#34;,
+    &#34;label_fine&#34;: &#34;CD14 monocyte&#34;,
+    &#34;cl_id&#34;: &#34;CL:0000860&#34;,
+    &#34;confidence&#34;: 0.8027,
+    &#34;status&#34;: &#34;consensus&#34;,
+    &#34;votes&#34;: {
+     &#34;broad_scores&#34;: {
+      &#34;NK cell&#34;: 0.15,
+      &#34;epithelial cell&#34;: 0.1,
+      &#34;granulocyte&#34;: 0.3945,
+      &#34;macrophage&#34;: 0.1349,
+      &#34;monocyte&#34;: 1.0
+     },
+     &#34;celltypist&#34;: {},
+     &#34;celltypist_unmapped&#34;: {},
+     &#34;fine_scores&#34;: {
+      &#34;CD14 monocyte&#34;: 1.0,
+      &#34;CD16 monocyte&#34;: 0.2302,
+      &#34;monocyte&#34;: 0.5
+     },
+     &#34;markers&#34;: {
+      &#34;NK cell&#34;: 0.3,
+      &#34;epithelial cell&#34;: 0.2,
+      &#34;granulocyte&#34;: 0.4,
+      &#34;macrophage&#34;: 0.2,
+      &#34;monocyte&#34;: 1.0
+     },
+     &#34;signature&#34;: {
+      &#34;dendritic cell&#34;: 0.0267,
+      &#34;granulocyte&#34;: 0.3889,
+      &#34;hepatocyte&#34;: 0.016,
+      &#34;macrophage&#34;: 0.0698,
+      &#34;monocyte&#34;: 1.0
+     },
+     &#34;source_top&#34;: {
+      &#34;markers&#34;: &#34;monocyte&#34;,
+      &#34;signature&#34;: &#34;monocyte&#34;
+     },
+     &#34;sources&#34;: [
+      &#34;signature&#34;,
+      &#34;markers&#34;
+     ],
+     &#34;weights&#34;: {
+      &#34;markers&#34;: 0.35,
+      &#34;signature&#34;: 0.35
+     }
+    }
+   }
+  },
+  {
+   &#34;cluster&#34;: &#34;3&#34;,
+   &#34;n_cells&#34;: 297,
+   &#34;pct_cells&#34;: 12.2222,
+   &#34;n_samples_present&#34;: 1,
+   &#34;median_genes&#34;: 667,
+   &#34;median_umis&#34;: 1737,
+   &#34;median_pct_mito&#34;: 2.0833,
+   &#34;top_markers&#34;: [
+    &#34;HLA-DRA&#34;,
+    &#34;CD74&#34;,
+    &#34;CD79A&#34;,
+    &#34;HLA-DPB1&#34;,
+    &#34;CD79B&#34;,
+    &#34;HLA-DRB1&#34;,
+    &#34;HLA-DQA1&#34;,
+    &#34;HLA-DPA1&#34;,
+    &#34;HLA-DQB1&#34;,
+    &#34;MS4A1&#34;,
+    &#34;TCL1A&#34;,
+    &#34;HLA-DRB5&#34;,
+    &#34;CD37&#34;,
+    &#34;LINC00926&#34;,
+    &#34;HLA-DMA&#34;,
+    &#34;VPREB3&#34;,
+    &#34;LTB&#34;,
+    &#34;HLA-DQA2&#34;,
+    &#34;HLA-DMB&#34;,
+    &#34;BANK1&#34;
+   ],
+   &#34;signatures&#34;: {
+    &#34;interferon&#34;: -0.156028,
+    &#34;inflammation&#34;: -0.147664,
+    &#34;proliferation&#34;: -0.008915,
+    &#34;hypoxia&#34;: 0.017168,
+    &#34;stress&#34;: 0.516456,
+    &#34;platelet&#34;: -0.030643,
+    &#34;erythrocyte&#34;: -0.001662,
+    &#34;T&#34;: -0.222511,
+    &#34;CD4_T&#34;: -0.073748,
+    &#34;CD8_T&#34;: -0.464862,
+    &#34;NK&#34;: -0.380513,
+    &#34;B&#34;: 1.427009,
+    &#34;plasma&#34;: 0.015044,
+    &#34;mono_CD14&#34;: -0.325224,
+    &#34;mono_CD16&#34;: -0.295556,
+    &#34;macrophage&#34;: -0.075644,
+    &#34;cDC&#34;: 0.360702,
+    &#34;pDC&#34;: -0.039246,
+    &#34;neutrophil&#34;: -0.055748,
+    &#34;mast&#34;: -0.005462,
+    &#34;HSPC&#34;: -0.060273,
+    &#34;epithelial&#34;: 0.001026,
+    &#34;endothelial&#34;: -0.001899,
+    &#34;fibroblast&#34;: -0.00025,
+    &#34;smooth_muscle&#34;: -0.00492,
+    &#34;hepatocyte&#34;: -0.057326,
+    &#34;neuron&#34;: 0.000181,
+    &#34;glia&#34;: -0.014766,
+    &#34;microglia&#34;: -0.086142
+   },
+   &#34;celltypist&#34;: {},
+   &#34;consensus&#34;: {
+    &#34;label_broad&#34;: &#34;B cell&#34;,
+    &#34;label_fine&#34;: &#34;B cell&#34;,
+    &#34;cl_id&#34;: &#34;CL:0000236&#34;,
+    &#34;confidence&#34;: 0.8898,
+    &#34;status&#34;: &#34;consensus&#34;,
+    &#34;votes&#34;: {
+     &#34;broad_scores&#34;: {
+      &#34;B cell&#34;: 1.0,
+      &#34;T cell&#34;: 0.05,
+      &#34;dendritic cell&#34;: 0.2205,
+      &#34;epithelial cell&#34;: 0.0001,
+      &#34;plasma cell&#34;: 0.0002
+     },
+     &#34;celltypist&#34;: {},
+     &#34;celltypist_unmapped&#34;: {},
+     &#34;fine_scores&#34;: {
+      &#34;B cell&#34;: 1.0,
+      &#34;memory B cell&#34;: 0.7,
+      &#34;naive B cell&#34;: 0.85
+     },
+     &#34;markers&#34;: {
+      &#34;B cell&#34;: 1.0,
+      &#34;T cell&#34;: 0.1,
+      &#34;dendritic cell&#34;: 0.4
+     },
+     &#34;signature&#34;: {
+      &#34;B cell&#34;: 1.0,
+      &#34;dendritic cell&#34;: 0.0411,
+      &#34;epithelial cell&#34;: 0.0002,
+      &#34;plasma cell&#34;: 0.0004
+     },
+     &#34;source_top&#34;: {
+      &#34;markers&#34;: &#34;B cell&#34;,
+      &#34;signature&#34;: &#34;B cell&#34;
+     },
+     &#34;sources&#34;: [
+      &#34;signature&#34;,
+      &#34;markers&#34;
+     ],
+     &#34;weights&#34;: {
+      &#34;markers&#34;: 0.35,
+      &#34;signature&#34;: 0.35
+     }
+    }
+   }
+  },
+  {
+   &#34;cluster&#34;: &#34;4&#34;,
+   &#34;n_cells&#34;: 271,
+   &#34;pct_cells&#34;: 11.1523,
+   &#34;n_samples_present&#34;: 1,
+   &#34;median_genes&#34;: 783,
+   &#34;median_umis&#34;: 1921,
+   &#34;median_pct_mito&#34;: 2.4291,
+   &#34;top_markers&#34;: [
+    &#34;CCL5&#34;,
+    &#34;NKG7&#34;,
+    &#34;GZMA&#34;,
+    &#34;CST7&#34;,
+    &#34;GZMK&#34;,
+    &#34;CTSW&#34;,
+    &#34;IL32&#34;,
+    &#34;CD3D&#34;,
+    &#34;LYAR&#34;,
+    &#34;GZMH&#34;,
+    &#34;PTPRCAP&#34;,
+    &#34;CD8A&#34;,
+    &#34;KLRG1&#34;,
+    &#34;GZMM&#34;,
+    &#34;HCST&#34;,
+    &#34;CD8B&#34;,
+    &#34;PRF1&#34;,
+    &#34;HOPX&#34;,
+    &#34;HLA-C&#34;,
+    &#34;HLA-A&#34;
+   ],
+   &#34;signatures&#34;: {
+    &#34;interferon&#34;: -0.203716,
+    &#34;inflammation&#34;: -0.084418,
+    &#34;proliferation&#34;: -0.011864,
+    &#34;hypoxia&#34;: 0.071754,
+    &#34;stress&#34;: 0.562016,
+    &#34;platelet&#34;: -0.020395,
+    &#34;erythrocyte&#34;: 0.002388,
+    &#34;T&#34;: 0.408439,
+    &#34;CD4_T&#34;: -0.209709,
+    &#34;CD8_T&#34;: 1.322323,
+    &#34;NK&#34;: 0.275886,
+    &#34;B&#34;: -0.226409,
+    &#34;plasma&#34;: 0.029307,
+    &#34;mono_CD14&#34;: -0.3672,
+    &#34;mono_CD16&#34;: -0.269335,
+    &#34;macrophage&#34;: -0.081326,
+    &#34;cDC&#34;: -0.072948,
+    &#34;pDC&#34;: -0.070985,
+    &#34;neutrophil&#34;: -0.103987,
+    &#34;mast&#34;: -0.00307,
+    &#34;HSPC&#34;: 0.0081,
+    &#34;epithelial&#34;: -0.002807,
+    &#34;endothelial&#34;: -0.002665,
+    &#34;fibroblast&#34;: 0.000204,
+    &#34;smooth_muscle&#34;: 0.00159,
+    &#34;hepatocyte&#34;: -0.058544,
+    &#34;neuron&#34;: 6.2e-05,
+    &#34;glia&#34;: 0.001352,
+    &#34;microglia&#34;: -0.070054
+   },
+   &#34;celltypist&#34;: {},
+   &#34;consensus&#34;: {
+    &#34;label_broad&#34;: &#34;T cell&#34;,
+    &#34;label_fine&#34;: &#34;CD8 T cell&#34;,
+    &#34;cl_id&#34;: &#34;CL:0000625&#34;,
+    &#34;confidence&#34;: 0.7979,
+    &#34;status&#34;: &#34;consensus&#34;,
+    &#34;votes&#34;: {
+     &#34;broad_scores&#34;: {
+      &#34;NK cell&#34;: 0.361,
+      &#34;T cell&#34;: 0.9784,
+      &#34;epithelial cell&#34;: 0.05,
+      &#34;hematopoietic stem cell&#34;: 0.0515,
+      &#34;plasma cell&#34;: 0.0019
+     },
+     &#34;celltypist&#34;: {},
+     &#34;celltypist_unmapped&#34;: {},
+     &#34;fine_scores&#34;: {
+      &#34;CD8 T cell&#34;: 0.9784,
+      &#34;MAIT cell&#34;: 0.6284,
+      &#34;T cell&#34;: 0.3324,
+      &#34;gamma-delta T cell&#34;: 0.6284,
+      &#34;regulatory T cell&#34;: 0.6284
+     },
+     &#34;markers&#34;: {
+      &#34;NK cell&#34;: 0.7,
+      &#34;T cell&#34;: 1.0,
+      &#34;epithelial cell&#34;: 0.1,
+      &#34;hematopoietic stem cell&#34;: 0.1
+     },
+     &#34;signature&#34;: {
+      &#34;NK cell&#34;: 0.022,
+      &#34;T cell&#34;: 0.9569,
+      &#34;erythrocyte&#34;: 0.0001,
+      &#34;hematopoietic stem cell&#34;: 0.003,
+      &#34;plasma cell&#34;: 0.0038
+     },
+     &#34;source_top&#34;: {
+      &#34;markers&#34;: &#34;T cell&#34;,
+      &#34;signature&#34;: &#34;T cell&#34;
+     },
+     &#34;sources&#34;: [
+      &#34;signature&#34;,
+      &#34;markers&#34;
+     ],
+     &#34;weights&#34;: {
+      &#34;markers&#34;: 0.35,
+      &#34;signature&#34;: 0.35
+     }
+    }
+   }
+  },
+  {
+   &#34;cluster&#34;: &#34;5&#34;,
+   &#34;n_cells&#34;: 136,
+   &#34;pct_cells&#34;: 5.5967,
+   &#34;n_samples_present&#34;: 1,
+   &#34;median_genes&#34;: 1276.5,
+   &#34;median_umis&#34;: 3888,
+   &#34;median_pct_mito&#34;: 2.4643,
+   &#34;top_markers&#34;: [
+    &#34;LST1&#34;,
+    &#34;FCER1G&#34;,
+    &#34;AIF1&#34;,
+    &#34;FCGR3A&#34;,
+    &#34;CST3&#34;,
+    &#34;TYROBP&#34;,
+    &#34;IFITM3&#34;,
+    &#34;COTL1&#34;,
+    &#34;SAT1&#34;,
+    &#34;FTL&#34;,
+    &#34;LGALS1&#34;,
+    &#34;CTSS&#34;,
+    &#34;FTH1&#34;,
+    &#34;S100A11&#34;,
+    &#34;PSAP&#34;,
+    &#34;IFITM2&#34;,
+    &#34;SERPINA1&#34;,
+    &#34;CFD&#34;,
+    &#34;TIMP1&#34;,
+    &#34;MS4A7&#34;
+   ],
+   &#34;signatures&#34;: {
+    &#34;interferon&#34;: 0.087535,
+    &#34;inflammation&#34;: -0.091151,
+    &#34;proliferation&#34;: 0.00761,
+    &#34;hypoxia&#34;: 0.222333,
+    &#34;stress&#34;: 0.52229,
+    &#34;platelet&#34;: -0.003165,
+    &#34;erythrocyte&#34;: -0.003955,
+    &#34;T&#34;: -0.642108,
+    &#34;CD4_T&#34;: -0.567169,
+    &#34;CD8_T&#34;: -0.614197,
+    &#34;NK&#34;: 0.273894,
+    &#34;B&#34;: -0.073903,
+    &#34;plasma&#34;: -0.091741,
+    &#34;mono_CD14&#34;: 1.046022,
+    &#34;mono_CD16&#34;: 1.417049,
+    &#34;macrophage&#34;: 0.123414,
+    &#34;cDC&#34;: 0.335896,
+    &#34;pDC&#34;: -0.121264,
+    &#34;neutrophil&#34;: 0.376066,
+    &#34;mast&#34;: -0.004084,
+    &#34;HSPC&#34;: -0.09873,
+    &#34;epithelial&#34;: -0.003855,
+    &#34;endothelial&#34;: 0.001967,
+    &#34;fibroblast&#34;: -0.000347,
+    &#34;smooth_muscle&#34;: 0.004509,
+    &#34;hepatocyte&#34;: 0.094536,
+    &#34;neuron&#34;: -0.000137,
+    &#34;glia&#34;: 0.005977,
+    &#34;microglia&#34;: 0.408218
+   },
+   &#34;celltypist&#34;: {},
+   &#34;consensus&#34;: {
+    &#34;label_broad&#34;: &#34;monocyte&#34;,
+    &#34;label_fine&#34;: &#34;CD16 monocyte&#34;,
+    &#34;cl_id&#34;: &#34;CL:0000875&#34;,
+    &#34;confidence&#34;: 0.845,
+    &#34;status&#34;: &#34;consensus&#34;,
+    &#34;votes&#34;: {
+     &#34;broad_scores&#34;: {
+      &#34;NK cell&#34;: 0.31,
+      &#34;granulocyte&#34;: 0.0575,
+      &#34;hepatocyte&#34;: 0.0833,
+      &#34;macrophage&#34;: 0.2366,
+      &#34;monocyte&#34;: 1.0
+     },
+     &#34;celltypist&#34;: {},
+     &#34;celltypist_unmapped&#34;: {},
+     &#34;fine_scores&#34;: {
+      &#34;CD14 monocyte&#34;: 0.5611,
+      &#34;CD16 monocyte&#34;: 1.0,
+      &#34;monocyte&#34;: 0.5
+     },
+     &#34;markers&#34;: {
+      &#34;NK cell&#34;: 0.6,
+      &#34;epithelial cell&#34;: 0.1,
+      &#34;hepatocyte&#34;: 0.1,
+      &#34;macrophage&#34;: 0.2,
+      &#34;monocyte&#34;: 1.0
+     },
+     &#34;signature&#34;: {
+      &#34;dendritic cell&#34;: 0.0321,
+      &#34;granulocyte&#34;: 0.1151,
+      &#34;hepatocyte&#34;: 0.0667,
+      &#34;macrophage&#34;: 0.2733,
+      &#34;monocyte&#34;: 1.0
+     },
+     &#34;source_top&#34;: {
+      &#34;markers&#34;: &#34;monocyte&#34;,
+      &#34;signature&#34;: &#34;monocyte&#34;
+     },
+     &#34;sources&#34;: [
+      &#34;signature&#34;,
+      &#34;markers&#34;
+     ],
+     &#34;weights&#34;: {
+      &#34;markers&#34;: 0.35,
+      &#34;signature&#34;: 0.35
+     }
+    }
+   }
+  },
+  {
+   &#34;cluster&#34;: &#34;6&#34;,
+   &#34;n_cells&#34;: 108,
+   &#34;pct_cells&#34;: 4.4444,
+   &#34;n_samples_present&#34;: 1,
+   &#34;median_genes&#34;: 892,
+   &#34;median_umis&#34;: 1833,
+   &#34;median_pct_mito&#34;: 1.9641,
+   &#34;top_markers&#34;: [
+    &#34;NKG7&#34;,
+    &#34;GNLY&#34;,
+    &#34;GZMB&#34;,
+    &#34;PRF1&#34;,
+    &#34;FGFBP2&#34;,
+    &#34;CST7&#34;,
+    &#34;GZMA&#34;,
+    &#34;CTSW&#34;,
+    &#34;SPON2&#34;,
+    &#34;FCGR3A&#34;,
+    &#34;CCL4&#34;,
+    &#34;CD247&#34;,
+    &#34;CCL5&#34;,
+    &#34;GZMM&#34;,
+    &#34;CD7&#34;,
+    &#34;PLAC8&#34;,
+    &#34;FCER1G&#34;,
+    &#34;GZMH&#34;,
+    &#34;IGFBP7&#34;,
+    &#34;HOPX&#34;
+   ],
+   &#34;signatures&#34;: {
+    &#34;interferon&#34;: -0.132704,
+    &#34;inflammation&#34;: 0.048847,
+    &#34;proliferation&#34;: -0.001029,
+    &#34;hypoxia&#34;: 0.111111,
+    &#34;stress&#34;: 0.369092,
+    &#34;platelet&#34;: -0.053848,
+    &#34;erythrocyte&#34;: 0.028909,
+    &#34;T&#34;: -0.190276,
+    &#34;CD4_T&#34;: -0.507542,
+    &#34;CD8_T&#34;: 0.943406,
+    &#34;NK&#34;: 1.890123,
+    &#34;B&#34;: -0.282732,
+    &#34;plasma&#34;: 0.084298,
+    &#34;mono_CD14&#34;: -0.19863,
+    &#34;mono_CD16&#34;: -0.021544,
+    &#34;macrophage&#34;: -0.096533,
+    &#34;cDC&#34;: -0.126118,
+    &#34;pDC&#34;: 0.246542,
+    &#34;neutrophil&#34;: -0.022766,
+    &#34;mast&#34;: 0.000882,
+    &#34;HSPC&#34;: 0.074768,
+    &#34;epithelial&#34;: -0.004218,
+    &#34;endothelial&#34;: -4e-06,
+    &#34;fibroblast&#34;: 0.001072,
+    &#34;smooth_muscle&#34;: 0.00388,
+    &#34;hepatocyte&#34;: -0.067417,
+    &#34;neuron&#34;: 0.002714,
+    &#34;glia&#34;: 0.049453,
+    &#34;microglia&#34;: -0.01999
+   },
+   &#34;celltypist&#34;: {},
+   &#34;consensus&#34;: {
+    &#34;label_broad&#34;: &#34;NK cell&#34;,
+    &#34;label_fine&#34;: &#34;NK cell&#34;,
+    &#34;cl_id&#34;: &#34;CL:0000623&#34;,
+    &#34;confidence&#34;: 0.714,
+    &#34;status&#34;: &#34;consensus&#34;,
+    &#34;votes&#34;: {
+     &#34;broad_scores&#34;: {
+      &#34;NK cell&#34;: 1.0,
+      &#34;T cell&#34;: 0.572,
+      &#34;dendritic cell&#34;: 0.0645,
+      &#34;hematopoietic stem cell&#34;: 0.0698,
+      &#34;monocyte&#34;: 0.15
+     },
+     &#34;celltypist&#34;: {},
+     &#34;celltypist_unmapped&#34;: {},
+     &#34;fine_scores&#34;: {
+      &#34;NK cell&#34;: 1.0
+     },
+     &#34;markers&#34;: {
+      &#34;NK cell&#34;: 1.0,
+      &#34;T cell&#34;: 0.8,
+      &#34;epithelial cell&#34;: 0.1,
+      &#34;hematopoietic stem cell&#34;: 0.1,
+      &#34;monocyte&#34;: 0.3
+     },
+     &#34;signature&#34;: {
+      &#34;NK cell&#34;: 1.0,
+      &#34;T cell&#34;: 0.344,
+      &#34;dendritic cell&#34;: 0.1291,
+      &#34;hematopoietic stem cell&#34;: 0.0396,
+      &#34;plasma cell&#34;: 0.0313
+     },
+     &#34;source_top&#34;: {
+      &#34;markers&#34;: &#34;NK cell&#34;,
+      &#34;signature&#34;: &#34;NK cell&#34;
+     },
+     &#34;sources&#34;: [
+      &#34;signature&#34;,
+      &#34;markers&#34;
+     ],
+     &#34;weights&#34;: {
+      &#34;markers&#34;: 0.35,
+      &#34;signature&#34;: 0.35
+     }
+    }
+   }
+  },
+  {
+   &#34;cluster&#34;: &#34;7&#34;,
+   &#34;n_cells&#34;: 18,
+   &#34;pct_cells&#34;: 0.7407,
+   &#34;n_samples_present&#34;: 1,
+   &#34;median_genes&#34;: 1588,
+   &#34;median_umis&#34;: 5297,
+   &#34;median_pct_mito&#34;: 2.301,
+   &#34;top_markers&#34;: [
+    &#34;CST3&#34;,
+    &#34;HLA-DRA&#34;,
+    &#34;HLA-DPB1&#34;,
+    &#34;HLA-DRB1&#34;,
+    &#34;LYZ&#34;,
+    &#34;HLA-DPA1&#34;,
+    &#34;HLA-DQA1&#34;,
+    &#34;HLA-DRB5&#34;,
+    &#34;FCER1A&#34;,
+    &#34;CD74&#34;,
+    &#34;HLA-DQB1&#34;,
+    &#34;LGALS1&#34;,
+    &#34;HLA-DQA2&#34;,
+    &#34;TYROBP&#34;,
+    &#34;CLEC10A&#34;,
+    &#34;LGALS2&#34;,
+    &#34;HLA-DMA&#34;,
+    &#34;AP1S2&#34;,
+    &#34;ANXA2&#34;,
+    &#34;GPX1&#34;
+   ],
+   &#34;signatures&#34;: {
+    &#34;interferon&#34;: -0.007504,
+    &#34;inflammation&#34;: 0.0097,
+    &#34;proliferation&#34;: 0.045279,
+    &#34;hypoxia&#34;: 0.152462,
+    &#34;stress&#34;: 0.663122,
+    &#34;platelet&#34;: -0.008784,
+    &#34;erythrocyte&#34;: -0.003992,
+    &#34;T&#34;: -0.69518,
+    &#34;CD4_T&#34;: -0.564149,
+    &#34;CD8_T&#34;: -0.632932,
+    &#34;NK&#34;: -0.105741,
+    &#34;B&#34;: 0.21012,
+    &#34;plasma&#34;: -0.013007,
+    &#34;mono_CD14&#34;: 1.026671,
+    &#34;mono_CD16&#34;: 0.251036,
+    &#34;macrophage&#34;: -0.056149,
+    &#34;cDC&#34;: 1.269662,
+    &#34;pDC&#34;: -0.057995,
+    &#34;neutrophil&#34;: 0.225096,
+    &#34;mast&#34;: 0.251695,
+    &#34;HSPC&#34;: -0.091545,
+    &#34;epithelial&#34;: 0.001871,
+    &#34;endothelial&#34;: -0.005906,
+    &#34;fibroblast&#34;: -0.000218,
+    &#34;smooth_muscle&#34;: 0.004115,
+    &#34;hepatocyte&#34;: -0.053019,
+    &#34;neuron&#34;: 0.004228,
+    &#34;glia&#34;: -0.011686,
+    &#34;microglia&#34;: 0.208506
+   },
+   &#34;celltypist&#34;: {},
+   &#34;consensus&#34;: {
+    &#34;label_broad&#34;: &#34;dendritic cell&#34;,
+    &#34;label_fine&#34;: &#34;conventional dendritic cell&#34;,
+    &#34;cl_id&#34;: &#34;CL:0000990&#34;,
+    &#34;confidence&#34;: 0.639,
+    &#34;status&#34;: &#34;consensus&#34;,
+    &#34;votes&#34;: {
+     &#34;broad_scores&#34;: {
+      &#34;B cell&#34;: 0.2132,
+      &#34;NK cell&#34;: 0.1,
+      &#34;dendritic cell&#34;: 0.9,
+      &#34;epithelial cell&#34;: 0.1003,
+      &#34;monocyte&#34;: 0.522
+     },
+     &#34;celltypist&#34;: {},
+     &#34;celltypist_unmapped&#34;: {},
+     &#34;fine_scores&#34;: {
+      &#34;conventional dendritic cell&#34;: 0.9,
+      &#34;plasmacytoid dendritic cell&#34;: 0.0
+     },
+     &#34;markers&#34;: {
+      &#34;B cell&#34;: 0.4,
+      &#34;NK cell&#34;: 0.2,
+      &#34;dendritic cell&#34;: 0.8,
+      &#34;epithelial cell&#34;: 0.2,
+      &#34;monocyte&#34;: 0.7
+     },
+     &#34;signature&#34;: {
+      &#34;dendritic cell&#34;: 1.0,
+      &#34;granulocyte&#34;: 0.0322,
+      &#34;macrophage&#34;: 0.0659,
+      &#34;mast cell&#34;: 0.1982,
+      &#34;monocyte&#34;: 0.344
+     },
+     &#34;source_top&#34;: {
+      &#34;markers&#34;: &#34;dendritic cell&#34;,
+      &#34;signature&#34;: &#34;dendritic cell&#34;
+     },
+     &#34;sources&#34;: [
+      &#34;signature&#34;,
+      &#34;markers&#34;
+     ],
+     &#34;weights&#34;: {
+      &#34;markers&#34;: 0.35,
+      &#34;signature&#34;: 0.35
+     }
+    }
+   }
+  },
+  {
+   &#34;cluster&#34;: &#34;8&#34;,
+   &#34;n_cells&#34;: 13,
+   &#34;pct_cells&#34;: 0.535,
+   &#34;n_samples_present&#34;: 1,
+   &#34;median_genes&#34;: 350,
+   &#34;median_umis&#34;: 917,
+   &#34;median_pct_mito&#34;: 1.5676,
+   &#34;top_markers&#34;: [
+    &#34;PPBP&#34;,
+    &#34;PF4&#34;,
+    &#34;GNG11&#34;,
+    &#34;SDPR&#34;,
+    &#34;GPX1&#34;,
+    &#34;HIST1H2AC&#34;,
+    &#34;CLU&#34;,
+    &#34;CD9&#34;,
+    &#34;CCL5&#34;,
+    &#34;TUBB1&#34;,
+    &#34;SPARC&#34;,
+    &#34;NRGN&#34;,
+    &#34;TPM4&#34;,
+    &#34;GP9&#34;,
+    &#34;TAGLN2&#34;,
+    &#34;RGS18&#34;,
+    &#34;RGS10&#34;,
+    &#34;NCOA4&#34;,
+    &#34;CALM3&#34;,
+    &#34;RUFY1&#34;
+   ],
+   &#34;signatures&#34;: {
+    &#34;interferon&#34;: -0.129896,
+    &#34;inflammation&#34;: -0.012832,
+    &#34;proliferation&#34;: 0.095222,
+    &#34;hypoxia&#34;: 0.202704,
+    &#34;stress&#34;: 0.04651,
+    &#34;platelet&#34;: 3.594378,
+    &#34;erythrocyte&#34;: -0.002512,
+    &#34;T&#34;: -0.33587,
+    &#34;CD4_T&#34;: -0.291851,
+    &#34;CD8_T&#34;: 0.110816,
+    &#34;NK&#34;: -0.148494,
+    &#34;B&#34;: -0.049666,
+    &#34;plasma&#34;: 0.073256,
+    &#34;mono_CD14&#34;: 0.073039,
+    &#34;mono_CD16&#34;: -0.051211,
+    &#34;macrophage&#34;: 0.022848,
+    &#34;cDC&#34;: 0.083921,
+    &#34;pDC&#34;: 0.158176,
+    &#34;neutrophil&#34;: -0.030915,
+    &#34;mast&#34;: 0.038241,
+    &#34;HSPC&#34;: -0.041967,
+    &#34;epithelial&#34;: -0.014203,
+    &#34;endothelial&#34;: 0.226479,
+    &#34;fibroblast&#34;: 0.00607,
+    &#34;smooth_muscle&#34;: 0.201038,
+    &#34;hepatocyte&#34;: -0.022769,
+    &#34;neuron&#34;: 0.017406,
+    &#34;glia&#34;: -0.001692,
+    &#34;microglia&#34;: -0.010337
+   },
+   &#34;celltypist&#34;: {},
+   &#34;consensus&#34;: {
+    &#34;label_broad&#34;: &#34;platelet&#34;,
+    &#34;label_fine&#34;: &#34;platelet&#34;,
+    &#34;cl_id&#34;: &#34;CL:0000233&#34;,
+    &#34;confidence&#34;: 0.9492,
+    &#34;status&#34;: &#34;consensus&#34;,
+    &#34;votes&#34;: {
+     &#34;broad_scores&#34;: {
+      &#34;T cell&#34;: 0.1016,
+      &#34;dendritic cell&#34;: 0.0649,
+      &#34;neuron&#34;: 0.0524,
+      &#34;platelet&#34;: 1.0,
+      &#34;smooth muscle cell&#34;: 0.0779
+     },
+     &#34;celltypist&#34;: {},
+     &#34;celltypist_unmapped&#34;: {},
+     &#34;fine_scores&#34;: {
+      &#34;megakaryocyte&#34;: 0.95,
+      &#34;platelet&#34;: 1.0
+     },
+     &#34;m</pre></details></div></section>
+<section id="howto">
+<h2>Approving or editing this decision</h2>
+<p>If the run stopped here, review the decision above, optionally edit a copy of <code>decision.json</code>, then:</p>
+<pre>cellwarden approve --run-dir pbmc3k --stage annotation-review [--from-file edited.json] [--by YOUR_NAME]
+cellwarden resume  --run-dir pbmc3k</pre>
+<p class="muted">Rules decide, agents advise, reviewers check, humans approve, everything is logged (docs/agents-spec.md).</p>
+</section>
+<section id="llm"><h2>LLM cost so far</h2>
+<p>GBP 0.2014 over 21 call(s).</p>
+</section>
+<section><h2>Annotation (consensus vs proposal)</h2><table><thead><tr><th>cluster</th><th>n_cells</th><th>consensus fine</th><th>consensus conf</th><th>consensus status</th><th>proposed broad</th><th>proposed fine</th><th>cl_id</th><th>proposed conf</th><th>status</th><th>changed</th><th>top_markers</th></tr></thead><tbody><tr><td>0</td><td>570</td><td>T cell</td><td>0.6964</td><td>consensus</td><td>T cell</td><td>T cell</td><td>CL:0000084</td><td>0.6964</td><td>consensus</td><td></td><td>LDHB, CD3D, CCR7, CD3E, RPS27A, RPS3A, NOSIP, NPM1</td></tr><tr><td>1</td><td>556</td><td>T cell</td><td>0.8178</td><td>consensus</td><td>T cell</td><td>T cell</td><td>CL:0000084</td><td>0.8178</td><td>consensus</td><td></td><td>LTB, IL32, CD3D, LDHB, IL7R, CD3E, CD2, JUN</td></tr><tr><td>2</td><td>461</td><td>CD14 monocyte</td><td>0.8027</td><td>consensus</td><td>monocyte</td><td>CD14 monocyte</td><td>CL:0000860</td><td>0.8027</td><td>consensus</td><td></td><td>S100A9, LYZ, S100A8, CST3, TYROBP, FCN1, LGALS1, AIF1</td></tr><tr><td>3</td><td>297</td><td>B cell</td><td>0.8898</td><td>consensus</td><td>B cell</td><td>B cell</td><td>CL:0000236</td><td>0.8898</td><td>consensus</td><td></td><td>HLA-DRA, CD74, CD79A, HLA-DPB1, CD79B, HLA-DRB1, HLA-DQA1, HLA-DPA1</td></tr><tr><td>4</td><td>271</td><td>CD8 T cell</td><td>0.7979</td><td>consensus</td><td>T cell</td><td>CD8 T cell</td><td>CL:0000625</td><td>0.7979</td><td>consensus</td><td></td><td>CCL5, NKG7, GZMA, CST7, GZMK, CTSW, IL32, CD3D</td></tr><tr><td>5</td><td>136</td><td>CD16 monocyte</td><td>0.845</td><td>consensus</td><td>monocyte</td><td>CD16 monocyte</td><td>CL:0000875</td><td>0.845</td><td>consensus</td><td></td><td>LST1, FCER1G, AIF1, FCGR3A, CST3, TYROBP, IFITM3, COTL1</td></tr><tr><td>6</td><td>108</td><td>NK cell</td><td>0.714</td><td>consensus</td><td>NK cell</td><td>NK cell</td><td>CL:0000623</td><td>0.714</td><td>consensus</td><td></td><td>NKG7, GNLY, GZMB, PRF1, FGFBP2, CST7, GZMA, CTSW</td></tr><tr><td>7</td><td>18</td><td>conventional dendritic cell</td><td>0.639</td><td>consensus</td><td>dendritic cell</td><td>conventional dendritic cell</td><td>CL:0000990</td><td>0.639</td><td>consensus</td><td></td><td>CST3, HLA-DRA, HLA-DPB1, HLA-DRB1, LYZ, HLA-DPA1, HLA-DQA1, HLA-DRB5</td></tr><tr><td>8</td><td>13</td><td>platelet</td><td>0.9492</td><td>consensus</td><td>platelet</td><td>platelet</td><td>CL:0000233</td><td>0.9492</td><td>consensus</td><td></td><td>PPBP, PF4, GNG11, SDPR, GPX1, HIST1H2AC, CLU, CD9</td></tr></tbody></table></section>
+<section><h2>Unresolved clusters the agent may relabel</h2><p><em>none</em></p></section>
+<footer>Generated 2026-10-24T20:27:02Z by CellWarden.</footer>
+</main>
+</body>
+</html>

@@ -1,0 +1,26 @@
+# Site file for the Iridis X L4 login node (docs/DESIGN.md 2.1 and 7.2).
+# Point config.yaml at it with `site: iridisx` (or a path). config.yaml
+# values override anything here. Limits to be agreed with the Iridis team
+# (hpc@soton.ac.uk); see DESIGN.md section 10.
+site: iridisx
+execution: direct              # direct | slurm | pbs | lsf | sge | split
+resources:
+  threads: 8                   # cap for the shared login node
+  max_memory_gb: 64
+  gpu_mem_cap_gb: 20           # leave headroom on the shared 24 GB L4
+  nice: 10
+scratch: /scratch/$USER/cellwarden
+container:
+  runtime: apptainer           # apptainer | singularity | docker | none
+  image: null                  # e.g. /scratch/$USER/cellwarden/cellwarden.sif; null = use the host environment
+  options: ["--nv"]            # add --bind /iridisfs:/iridisfs via container.options if needed
+# Used only when execution is slurm or split (offline GPU partition for the
+# heavy stages; gates and Open Targets stay on the login node).
+scheduler:
+  partition: gpu
+  account: null
+  time: "24:00:00"
+  cpus: 8
+  mem_gb: 64
+  gpus: 1
+  extra: []

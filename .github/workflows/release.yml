@@ -1,0 +1,208 @@
+name: release
+
+# Prebuilt artifacts for the one-line installs (docs/GETTING_STARTED.md):
+#   docker pull ghcr.io/cellwarden/cellwarden:latest
+#   apptainer pull cellwarden.sif docker://ghcr.io/cellwarden/cellwarden:latest   # Docker Hub copy: docker://ad2n15/cellwarden
+# A tag v* builds the scfast wheels, the cellwarden wheel and the container, smoke-tests them, pushes
+# the image to GHCR (ghcr.io/<owner>/cellwarden) and Docker Hub (<user>/cellwarden; secrets DOCKERHUB_USERNAME, DOCKERHUB_TOKEN) and creates the
+# GitHub Release with the wheels attached. workflow_dispatch builds and tests everything without
+# publishing.
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  scfast-wheels:
+    name: scfast wheel (${{ matrix.target }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # CUDA and cuGraph are dlopen'ed at run time (cudarc dynamic-loading, libloading), so
+          # the x86_64 wheel builds without a toolkit and still imports on CPU-only machines.
+          - { os: ubuntu-latest, target: x86_64, manylinux: "2_28", features: "cuda,cugraph" }
+          - { os: ubuntu-24.04-arm, target: aarch64, manylinux: "2_28", features: "" }
+          - { os: macos-14, target: aarch64-apple-darwin, manylinux: "", features: "" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: PyO3/maturin-action@v1
+        with:
+          working-directory: rust/scfast-py
+          target: ${{ matrix.target }}
+          manylinux: ${{ matrix.manylinux || 'auto' }}
+          args: --release --locked --out dist ${{ matrix.features && format('--features {0}', matrix.features) || '' }}
+      - name: Import test
+        if: matrix.target != 'aarch64' || runner.arch == 'ARM64'
+        run: |
+          python3 -m venv /tmp/t && /tmp/t/bin/pip install -q rust/scfast-py/dist/*.whl
+          /tmp/t/bin/python -c "import scfast; print(scfast.__version__, scfast.device_info())"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-scfast-${{ matrix.target }}
+          path: rust/scfast-py/dist/*.whl
+
+  cellwarden-wheel:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python -m pip install build && python -m build --wheel --outdir dist python
+      - uses: actions/upload-artifact@v4
+        with:
+          name: wheel-cellwarden
+          path: dist/*.whl
+
+  pip-smoke:
+    # The pip one-liner against the freshly built wheels (no index needed yet).
+    needs: [scfast-wheels, cellwarden-wheel]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { pattern: wheel-*, merge-multiple: true, path: wheels }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: |
+          python -m pip install --find-links wheels "cellwarden[harmony,report,llm]"
+          cellwarden --help
+          python -c "import scfast, cellwarden; print(scfast.device_info())"
+
+  container:
+    # Builds its own scfast (builder stage of containers/Dockerfile), so it runs alongside the wheels.
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: read
+      packages: write
+    env:
+      # the Docker Hub user may be a repository variable (not secret); the token must be a secret
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME || vars.DOCKERHUB_USERNAME }}
+      # where the image goes on Docker Hub: the DOCKERHUB_NAMESPACE variable (e.g. a paid organisation),
+      # else the Docker Hub user's own namespace (free); the user above must be allowed to push there
+      DOCKERHUB_NAMESPACE: ${{ vars.DOCKERHUB_NAMESPACE || vars.DOCKERHUB_USERNAME || secrets.DOCKERHUB_USERNAME || github.repository_owner }}
+    steps:
+      - name: Check the Docker Hub credentials (before the 45-minute build)
+        if: startsWith(github.ref, 'refs/tags/v')
+        env:
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          TOKEN_IS_VARIABLE: ${{ vars.DOCKERHUB_TOKEN != '' }}
+        run: |
+          where="Settings > Secrets and variables > Actions > Repository secrets"
+          ok=1
+          [ -n "$DOCKERHUB_USERNAME" ] || { echo "::error::DOCKERHUB_USERNAME is not visible to this run: add it under $where"; ok=0; }
+          if [ -z "$DOCKERHUB_TOKEN" ]; then
+            if [ "$TOKEN_IS_VARIABLE" = "true" ]; then
+              echo "::error::DOCKERHUB_TOKEN is a Variable, not a Secret: delete the variable and add it under $where"
+            else
+              echo "::error::DOCKERHUB_TOKEN is not visible to this run: add it under $where"
+            fi
+            ok=0
+          fi
+          [ "$ok" = 1 ] || exit 1
+          echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin \
+            || { echo "::error::Docker Hub refused ${DOCKERHUB_USERNAME} with this token: it needs Read & Write access"; exit 1; }
+          docker logout
+          echo "Docker Hub credentials work for ${DOCKERHUB_USERNAME}"
+      - name: Free disk (the RAPIDS base image plus R is ~10 GB unpacked, built twice by buildx + load)
+        run: |
+          df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache \
+            /usr/local/share/boost /usr/local/lib/node_modules /usr/share/swift /usr/local/.ghcup
+          sudo swapoff -a && sudo rm -f /mnt/swapfile /swapfile || true
+          docker system prune -af
+          df -h /
+      - uses: actions/checkout@v4
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: |
+            ${{ env.DOCKERHUB_USERNAME && format('docker.io/{0}/cellwarden', env.DOCKERHUB_NAMESPACE) || '' }}
+            ghcr.io/${{ github.repository_owner }}/cellwarden
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=raw,value=latest,enable=${{ startsWith(github.ref, 'refs/tags/v') }}
+            type=sha
+      - uses: docker/setup-buildx-action@v3
+      - name: Build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: containers/Dockerfile
+          load: true
+          tags: cellwarden:test
+          cache-from: type=gha
+          # mode=min: the layers of a ~10 GB image do not fit the 10 GB Actions cache
+          cache-to: type=gha,mode=min
+      - name: Smoke test (CPU runner)
+        run: |
+          docker run --rm cellwarden:test doctor
+          docker run --rm --entrypoint python cellwarden:test -c "import scfast; i = scfast.device_info(); assert i['cuda_built'], i"
+          docker run --rm --entrypoint bash cellwarden:test /opt/cellwarden/containers/smoke_test.sh
+      - name: Log in to Docker Hub
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: docker/login-action@v3
+        with:
+          username: ${{ env.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Log in to GHCR
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Push
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          for t in $(echo "${{ steps.meta.outputs.tags }}"); do
+            docker tag cellwarden:test "$t" && docker push "$t"
+          done
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [pip-smoke, container]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { pattern: wheel-*, merge-multiple: true, path: wheels }
+      - name: Create the release and attach the wheels
+        env:
+          GH_TOKEN: "${{ github.token }}"
+          DOCKERHUB_NAMESPACE: "${{ vars.DOCKERHUB_NAMESPACE || vars.DOCKERHUB_USERNAME || secrets.DOCKERHUB_USERNAME || github.repository_owner }}"
+        run: |
+          v="${GITHUB_REF_NAME#v}"
+          hub="${DOCKERHUB_NAMESPACE}"
+          cat > notes.md <<EOF
+          ## Install
+
+          \`\`\`bash
+          docker pull ghcr.io/${GITHUB_REPOSITORY_OWNER}/cellwarden:${v}
+          apptainer pull cellwarden.sif docker://ghcr.io/${GITHUB_REPOSITORY_OWNER}/cellwarden:${v}
+          \`\`\`
+
+          Also on Docker Hub: \`${hub}/cellwarden:${v}\`.
+          Then: \`docker run --rm ghcr.io/${GITHUB_REPOSITORY_OWNER}/cellwarden:${v} doctor\` or \`apptainer exec cellwarden.sif cellwarden doctor\`.
+          Getting started: docs/GETTING_STARTED.md. The wheels below are \`scfast\` (Linux x86_64 with
+          CUDA/cuGraph loaded at run time, Linux and macOS arm64) and \`cellwarden\`; the R stages need the image.
+          EOF
+          gh release view "${GITHUB_REF_NAME}" >/dev/null 2>&1 \
+            || gh release create "${GITHUB_REF_NAME}" --title "cellwarden ${v}" --notes-file notes.md --generate-notes
+          gh release upload "${GITHUB_REF_NAME}" wheels/*.whl --clobber

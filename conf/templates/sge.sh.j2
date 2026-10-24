@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+#$ -N {{ job_name }}
+#$ -o {{ log_path }}
+#$ -j y
+#$ -l h_rt={{ time }}
+{% if queue or partition %}#$ -q {{ queue or partition }}
+{% endif %}{% if account %}#$ -P {{ account }}
+{% endif %}{% if cpus %}#$ -pe smp {{ cpus }}
+{% endif %}{% if mem_gb %}#$ -l h_vmem={{ mem_gb }}G
+{% endif %}{% if gpus %}#$ -l gpu={{ gpus }}
+{% endif %}{% for line in extra %}#$ {{ line }}
+{% endfor %}#$ -V
+#$ -S /bin/bash
+{% include "_body.sh.j2" %}

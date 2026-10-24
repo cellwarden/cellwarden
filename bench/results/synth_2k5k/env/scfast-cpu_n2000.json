@@ -1,0 +1,43 @@
+{
+  "node": "vm",
+  "platform": "Linux-6.18.44-fc-v139-x86_64-with-glibc2.39",
+  "python": "3.13.16",
+  "cpu_model": "Intel(R) Xeon(R) Processor @ 2.80GHz",
+  "logical_cpus": 2,
+  "mem_total_bytes": 8419655680,
+  "loadavg": [
+    1.3232421875,
+    1.13037109375,
+    1.37158203125
+  ],
+  "threads_env": {
+    "OMP_NUM_THREADS": "2",
+    "OPENBLAS_NUM_THREADS": "2",
+    "MKL_NUM_THREADS": "2",
+    "NUMBA_NUM_THREADS": "2",
+    "VECLIB_MAXIMUM_THREADS": "2",
+    "RAYON_NUM_THREADS": "2"
+  },
+  "gpus": [],
+  "commit": "a80cf3c",
+  "packages": {
+    "scanpy": "1.12.4",
+    "anndata": "0.13.4",
+    "scfast": "0.1.0"
+  },
+  "time_utc": "2026-10-17T15:33:54Z",
+  "config": {
+    "engine": "scfast-cpu",
+    "data": "/home/claude/singlecell/bench/results/synth_2k5k/data/n2000",
+    "out": "/home/claude/singlecell/bench/results/synth_2k5k",
+    "reps": 3,
+    "threads": 2,
+    "n_hvg": 2000,
+    "n_pcs": 30,
+    "dims": 10,
+    "k": 20,
+    "resolution": 0.5,
+    "seed": 0,
+    "skip_umap": false
+  }
+}

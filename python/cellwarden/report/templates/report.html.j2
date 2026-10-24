@@ -1,0 +1,205 @@
+{% extends "base.html.j2" %}
+{% block title %}CellWarden report — {{ run.run_id }}{% endblock %}
+{% block body %}
+<header class="top">
+  <h1>CellWarden report</h1><span class="muted">{{ run.project }} · {{ run.run_id }}</span>
+  <nav>
+    <a href="#summary">Summary</a><a href="#resources">Resources</a><a href="#qc">QC</a><a href="#clusters">Clusters</a>
+    <a href="#markers">Markers</a><a href="#dge">DGE</a><a href="#opentargets">Open Targets</a><a href="#gates">Gates</a>
+    <a href="#llm">LLM cost</a><a href="#software">Software</a><a href="explorer.html">Explorer ↗</a>
+  </nav>
+</header>
+<main>
+
+<section id="summary">
+<h2>Run summary</h2>
+<div class="grid">
+<dl class="kv">
+  <dt>project</dt><dd>{{ run.project or "—" }}</dd>
+  <dt>run id</dt><dd>{{ run.run_id }}</dd>
+  <dt>run directory</dt><dd>{{ run.run_dir }}</dd>
+  <dt>config hash</dt><dd>{{ run.config_hash or "—" }}</dd>
+  <dt>samples</dt><dd>{{ run.samples | join(", ") if run.samples else "—" }}</dd>
+  <dt>execution</dt><dd>{{ run.execution }}{% if run.site %} (site {{ run.site }}){% endif %}</dd>
+  <dt>CellWarden</dt><dd>{{ run.cellwarden_version or "—" }}</dd>
+  <dt>generated</dt><dd>{{ generated_utc }}</dd>
+</dl>
+<div>
+{% if ingest %}
+<table><thead><tr><th>sample</th><th>format</th><th class="num">cells</th><th class="num">genes</th><th class="num">UMIs</th><th>notes</th></tr></thead><tbody>
+{% for s in ingest.samples %}
+<tr><td>{{ s.sample_id }}</td><td>{{ s.format }}{% if s.format_detected %} <span class="muted">(auto)</span>{% endif %}</td>
+<td class="num">{{ s.cells | num }}</td><td class="num">{{ s.genes | num }}</td><td class="num">{{ s.total_umis | num }}</td>
+<td class="muted">{{ (s.notes + s.warnings) | join("; ") }}</td></tr>
+{% endfor %}
+<tr><th>total</th><th></th><th class="num">{{ ingest.totals.cells | num }}</th><th class="num">{{ ingest.totals.genes | num }}</th><th class="num">{{ ingest.totals.total_umis | num }}</th><th class="muted">gene key: {{ ingest.gene_key }}</th></tr>
+</tbody></table>
+{% else %}<p class="notrun">S0 ingest report: not run.</p>{% endif %}
+</div>
+</div>
+{% if missing %}<p class="muted">Not available in this run: {{ missing | join(", ") }}.</p>{% endif %}
+<h3>Stages</h3>
+<table><thead><tr><th>stage</th><th>lang</th><th>status</th><th>started (UTC)</th><th class="num">wall</th><th class="num">peak RSS</th><th class="num">exit</th><th>note</th></tr></thead><tbody>
+{% for s in stages %}
+<tr><td>{{ s.id }}</td><td>{{ s.lang }}</td><td><span class="pill {{ s.status }}">{{ s.status }}</span></td><td>{{ s.started }}</td>
+<td class="num">{{ s.wall }}</td><td class="num">{{ s.peak }}</td><td class="num">{{ s.exit }}</td><td class="muted">{{ s.note }}</td></tr>
+{% else %}<tr><td colspan="8" class="muted">no state.json</td></tr>{% endfor %}
+</tbody></table>
+</section>
+
+<section id="resources">
+<h2>Resources</h2>
+<div class="grid">
+<dl class="kv">
+  <dt>threads</dt><dd>{{ resources.caps.threads }}</dd>
+  <dt>RAM cap</dt><dd>{{ resources.caps.max_memory_gb }} GB</dd>
+  <dt>GPU memory cap</dt><dd>{{ resources.caps.gpu_mem_cap_gb }} GB</dd>
+  <dt>nice</dt><dd>{{ resources.caps.nice }}</dd>
+  <dt>host</dt><dd>{{ resources.runner_host or "—" }}</dd>
+  <dt>container</dt><dd>{{ resources.container.runtime if resources.container else "none" }}{% if resources.container and resources.container.image %} ({{ resources.container.image }}){% endif %}</dd>
+</dl>
+<dl class="kv">
+  <dt>S2 device</dt><dd>{{ resources.device or "not run" }}{% if resources.plan %} / plan {{ resources.plan }}{% endif %}</dd>
+  <dt>reason</dt><dd>{{ resources.reason or "—" }}</dd>
+  <dt>path</dt><dd>{{ resources.path or "—" }}</dd>
+  <dt>peak RSS (all stages)</dt><dd>{{ resources.max_peak_rss }}</dd>
+  <dt>total wall (done)</dt><dd>{{ resources.total_wall }}</dd>
+  {% if resources.peak_memory %}<dt>S2 peak memory</dt><dd>{{ resources.peak_memory | tojson }}</dd>{% endif %}
+</dl>
+</div>
+</section>
+
+<section id="qc">
+<h2>Quality control</h2>
+{% if qc %}
+<p>Decided by <b>{{ qc.decided_by }}</b>; policy hash <code>{{ qc.policy_hash }}</code>.
+Hard limits: min genes {{ qc.hard_limits.min_genes }}, min UMIs {{ qc.hard_limits.min_umis }}, max mito {{ qc.hard_limits.max_mito_pct }}%.</p>
+<table><thead><tr><th>sample</th><th class="num">cells</th><th class="num">keep</th><th class="num">review</th><th class="num">exclude</th><th class="num">% excluded</th>
+<th class="num">genes min–max</th><th class="num">UMIs min–max</th><th class="num">mito max</th><th>adaptive</th></tr></thead><tbody>
+{% for r in qc.rows %}
+<tr><td>{{ r.sample }}</td><td class="num">{{ r.cells | num }}</td><td class="num">{{ r.keep | num }}</td><td class="num">{{ r.review | num }}</td><td class="num">{{ r.exclude | num }}</td>
+<td class="num">{{ r.pct_removed | pct }}</td><td class="num">{{ r.min_genes | num }}–{{ r.max_genes | num }}</td><td class="num">{{ r.min_umis | num }}–{{ r.max_umis | num }}</td>
+<td class="num">{{ r.max_mito | f2 }}</td><td>{{ "yes" if r.adaptive else "no" }} <span class="muted">{{ r.note }}</span></td></tr>
+{% endfor %}
+</tbody></table>
+<div class="grid"><div>{{ qc.decisions_plot | safe }}</div><div>{{ qc.reasons_plot | safe }}</div></div>
+{% if qc.protected %}<h3>Protected populations</h3><pre>{{ qc.protected | tojson(indent=1) }}</pre>{% endif %}
+{% if qc.triggered %}<h3>Review triggers</h3><pre>{{ qc.triggered | tojson(indent=1) }}</pre>{% endif %}
+{% for h in qc.histograms %}
+<h3>{{ h.sample }} <span class="muted">({{ h.n | num }} cells; dashed lines = thresholds)</span></h3>
+<div class="grid"><div>{{ h.genes | safe }}</div><div>{{ h.umis | safe }}</div><div>{{ h.mito | safe }}</div></div>
+{% endfor %}
+{% if gates[0].present %}<p>Gate G1 (QC agent): see <a href="#gate-G1">gates</a>.</p>{% endif %}
+{% else %}<p class="notrun">S1 QC: not run.</p>{% endif %}
+</section>
+
+<section id="clusters">
+<h2>Clusters and annotation</h2>
+{% if clusters %}
+<p>{{ clusters.n_cells | num }} cells after QC, {{ clusters.sizes | length }} clusters
+{% if clusters.summary.resolution %}(Leiden resolution {{ clusters.summary.resolution }}, {{ clusters.summary.pcs }} PCs, {{ clusters.summary.n_neighbors }} neighbours, integration {{ clusters.summary.integration.method if clusters.summary.integration else "none" }}){% endif %}.
+{% if not clusters.has_annotation %}<span class="muted">Cell-type labels: not available (G3 not run).</span>{% endif %}
+{% if clusters.celltypist %}<span class="muted">CellTypist predictions present in S3.</span>{% endif %}</p>
+<div class="grid">
+{% for u in clusters.umaps %}<div>{{ u | safe }}</div>{% else %}<p class="notrun">No UMAP export (S5/umap.tsv.gz missing).</p>{% endfor %}
+</div>
+<div class="grid"><div>{{ clusters.sizes_plot | safe }}</div></div>
+<table><thead><tr><th>cluster</th><th class="num">cells</th><th class="num">%</th><th class="num">median genes</th><th class="num">median UMIs</th><th class="num">median % mito</th>
+<th>broad label</th><th>fine label</th><th>CL id</th><th class="num">conf.</th><th>status</th><th>top markers</th></tr></thead><tbody>
+{% for r in clusters.rows %}
+<tr><td>{{ r.cluster }}</td><td class="num">{{ r.n_cells | num }}</td><td class="num">{{ r.pct | pct if r.pct is not none else "-" }}</td>
+<td class="num">{{ r.median_genes | num }}</td><td class="num">{{ r.median_umis | num }}</td><td class="num">{{ r.median_pct_mito | f2 }}</td>
+<td>{{ r.label_broad or "—" }}</td><td>{{ r.label_fine or "—" }}</td><td>{{ r.cl_id }}</td><td class="num">{{ r.confidence }}</td>
+<td>{% if r.status %}<span class="pill {{ r.status }}">{{ r.status }}</span>{% endif %}</td><td class="genes">{{ r.top_markers }}</td></tr>
+{% endfor %}
+</tbody></table>
+{% if not clusters.has_s3 %}<p class="muted">Per-cluster medians and top markers come from S3 (not run).</p>{% endif %}
+{% else %}<p class="notrun">S2 clustering: not run.</p>{% endif %}
+</section>
+
+<section id="markers">
+<h2>Markers</h2>
+{% if markers %}
+<p>Top {{ markers.top }} per cluster from S3/markers.tsv.gz ({{ markers.n_rows | num }} rows).</p>
+<div class="grid">
+{% for c in markers.clusters %}
+<div><h3>Cluster {{ c.cluster }}</h3>
+<table><thead><tr><th>gene</th><th class="num">log2FC</th><th class="num">% in</th><th class="num">% out</th><th class="num">p adj</th></tr></thead><tbody>
+{% for g in c.genes %}<tr><td class="genes">{{ g.gene }}</td><td class="num">{{ g.avg_log2fc | f2 }}</td><td class="num">{{ g.pct_in | f2 }}</td><td class="num">{{ g.pct_out | f2 }}</td><td class="num">{{ g.p_adj | sci }}</td></tr>{% endfor %}
+</tbody></table></div>
+{% endfor %}
+</div>
+{% else %}<p class="notrun">S3 markers: not run.</p>{% endif %}
+</section>
+
+<section id="dge">
+<h2>Differential expression (pseudobulk)</h2>
+{% if dge %}
+<p>Method requested {{ dge.method.requested if dge.method else "—" }}{% if dge.method and dge.method.used %}, used {{ dge.method.used | join(", ") }}{% endif %};
+grouped by {{ dge.group_by.used if dge.group_by else "—" }}{% if dge.group_by and dge.group_by.note %} <span class="muted">({{ dge.group_by.note }})</span>{% endif %};
+padj ≤ {{ dge.thresholds.padj }}, |log2FC| ≥ {{ dge.thresholds.lfc }}, ≥ {{ dge.thresholds.min_cells_per_sample }} cells per pseudobulk sample, ≥ {{ dge.thresholds.min_replicates }} replicates per side.</p>
+{% if dge.notes %}<ul class="muted">{% for n in dge.notes %}<li>{{ n }}</li>{% endfor %}</ul>{% endif %}
+{% for c in dge.contrasts %}
+<h3>{{ c.name }}: {{ c.numerator }} vs {{ c.denominator }}{% if c.covariates %} <span class="muted">(covariates {{ c.covariates | join(", ") }})</span>{% endif %}</h3>
+<div class="grid"><div>
+<table><thead><tr><th>group</th><th>method</th><th class="num">samples (num/den)</th><th class="num">tested</th><th class="num">up</th><th class="num">down</th><th>top up</th><th>top down</th><th>skipped</th></tr></thead><tbody>
+{% for g in c.groups %}
+<tr><td>{{ g.group }}</td><td>{{ g.method or "—" }}</td><td class="num">{{ g.n_samples.numerator }}/{{ g.n_samples.denominator }}</td>
+<td class="num">{{ g.n_tested | num }}</td><td class="num">{{ g.n_up | num }}</td><td class="num">{{ g.n_down | num }}</td>
+<td class="genes">{{ g.top_up | map(attribute="gene") | join(", ") }}</td><td class="genes">{{ g.top_down | map(attribute="gene") | join(", ") }}</td>
+<td class="muted">{{ g.skipped or "" }}</td></tr>
+{% endfor %}
+</tbody></table></div><div>{{ c.plot | safe }}</div></div>
+{% else %}<p class="muted">No contrasts configured (dge.contrasts is empty).</p>{% endfor %}
+{% else %}<p class="notrun">S4 DGE: not run.</p>{% endif %}
+</section>
+
+<section id="opentargets">
+<h2>Open Targets evidence</h2>
+{% if opentargets %}
+<p>{{ opentargets.counts | tojson }}{% if opentargets.offline %} <span class="pill warn">offline (cache only)</span>{% endif %}
+<span class="muted">Direction always comes from this run's data; the evidence is association and drug knowledge from Open Targets.</span></p>
+{% for c in opentargets.contrasts %}
+{% for g in c.groups %}{% for d in g.directions %}
+<h3>{{ c.name }} · {{ g.group }} · {{ d.direction }} <span class="muted">({{ d.n_listed }} of {{ d.n_de }} DE genes listed)</span></h3>
+{% if d.genes %}
+<table><thead><tr><th>gene</th><th>Ensembl</th><th>status</th><th>known drugs</th><th>top associated diseases</th></tr></thead><tbody>
+{% for ge in d.genes %}<tr><td class="genes">{{ ge.gene }}</td><td>{{ ge.ensembl or "—" }}</td><td>{{ ge.status or "" }}</td><td>{{ ge.drugs | join("; ") }}</td><td>{{ ge.diseases | join("; ") }}</td></tr>{% endfor %}
+</tbody></table>
+{% else %}<p class="muted">no genes</p>{% endif %}
+{% endfor %}{% endfor %}
+{% endfor %}
+{% if opentargets.without_record %}<p class="muted">No Open Targets record: {{ opentargets.without_record | join(", ") }}</p>{% endif %}
+{% if opentargets.errors %}<details><summary>{{ opentargets.errors | length }} lookup error(s)</summary><pre>{{ opentargets.errors | tojson(indent=1) }}</pre></details>{% endif %}
+{% else %}<p class="notrun">S4 Open Targets: not run.</p>{% endif %}
+</section>
+
+<section id="gates">
+<h2>Gate decisions</h2>
+<p class="muted">Rules decide, agents advise, reviewers check, humans approve, everything is logged.</p>
+{% for g in gates %}{% set full = false %}{% include "_gate_card.html.j2" %}{% endfor %}
+</section>
+
+<section id="llm">
+<h2>LLM cost</h2>
+{% if llm %}
+<p>Provider <b>{{ llm.provider or "—" }}</b>: {{ llm.n_calls }} call(s){% if llm.replay %} ({{ llm.replay }} replayed from the log){% endif %}, total <b>GBP {{ "%.4f" | format(llm.total_gbp) }}</b>
+{% if llm.per_run_limit %}of the per-run limit GBP {{ llm.per_run_limit }}{% endif %}{% if llm.total_limit %} (total budget GBP {{ llm.total_limit }}){% endif %}.</p>
+<table><thead><tr><th>gate/role</th><th>model</th><th class="num">calls</th><th class="num">input tokens</th><th class="num">output tokens</th><th class="num">cached</th><th class="num">GBP</th></tr></thead><tbody>
+{% for r in llm.rows %}<tr><td>{{ r.key }}</td><td>{{ r.model }}</td><td class="num">{{ r.calls }}</td><td class="num">{{ r.input | num }}</td><td class="num">{{ r.output | num }}</td><td class="num">{{ r.cached | num }}</td><td class="num">{{ "%.4f" | format(r.cost) }}</td></tr>{% endfor %}
+</tbody></table>
+{% else %}<p class="notrun">No LLM calls recorded (llm/ledger.json absent): gates not run, or rules-only.</p>{% endif %}
+</section>
+
+<section id="software">
+<h2>Software</h2>
+<dl class="kv">
+  <dt>CellWarden</dt><dd>{{ software.cellwarden or "—" }}</dd>
+  <dt>Python</dt><dd>{{ software.python }}</dd>
+  {% for k, v in software.r.items() %}<dt>{{ k }}</dt><dd>{{ v }}</dd>{% endfor %}
+</dl>
+</section>
+
+<footer>Generated {{ generated_utc }} by CellWarden from {{ run.run_dir }}. Self-contained file: no external resources.</footer>
+</main>
+{% endblock %}

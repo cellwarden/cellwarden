@@ -1,0 +1,231 @@
+{
+ "data": {
+  "target": {
+   "id": "ENSG00000090382",
+   "approvedSymbol": "LYZ",
+   "approvedName": "lysozyme",
+   "biotype": "protein_coding",
+   "tractability": [
+    {
+     "modality": "SM",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Structure with Ligand",
+     "value": true
+    },
+    {
+     "modality": "SM",
+     "id": "High-Quality Ligand",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "High-Quality Pocket",
+     "value": true
+    },
+    {
+     "modality": "SM",
+     "id": "Med-Quality Pocket",
+     "value": true
+    },
+    {
+     "modality": "SM",
+     "id": "Druggable Family",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt loc high conf",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "GO CC high conf",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt loc med conf",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt SigP or TMHMM",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "GO CC med conf",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Human Protein Atlas loc",
+     "value": true
+    },
+    {
+     "modality": "PR",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Literature",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "UniProt Ubiquitination",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Database Ubiquitination",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Half-life Data",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Small Molecule Binder",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Phase 1 Clinical",
+     "value": false
+    }
+   ],
+   "knownDrugs": {
+    "count": 0,
+    "rows": []
+   },
+   "associatedDiseases": {
+    "count": 601,
+    "rows": [
+     {
+      "score": 0.794,
+      "disease": {
+       "id": "MONDO_0007887",
+       "name": "hereditary amyloidosis"
+      }
+     },
+     {
+      "score": 0.512,
+      "disease": {
+       "id": "EFO_0000384",
+       "name": "Crohn's disease"
+      }
+     },
+     {
+      "score": 0.488,
+      "disease": {
+       "id": "EFO_0003767",
+       "name": "inflammatory bowel disease"
+      }
+     },
+     {
+      "score": 0.433,
+      "disease": {
+       "id": "EFO_0000729",
+       "name": "ulcerative colitis"
+      }
+     },
+     {
+      "score": 0.302,
+      "disease": {
+       "id": "EFO_0004611",
+       "name": "low density lipoprotein cholesterol measurement"
+      }
+     },
+     {
+      "score": 0.281,
+      "disease": {
+       "id": "EFO_0000685",
+       "name": "rheumatoid arthritis"
+      }
+     },
+     {
+      "score": 0.264,
+      "disease": {
+       "id": "EFO_0003869",
+       "name": "chronic obstructive pulmonary disease"
+      }
+     },
+     {
+      "score": 0.247,
+      "disease": {
+       "id": "EFO_0000270",
+       "name": "asthma"
+      }
+     },
+     {
+      "score": 0.233,
+      "disease": {
+       "id": "EFO_0002690",
+       "name": "systemic lupus erythematosus"
+      }
+     },
+     {
+      "score": 0.201,
+      "disease": {
+       "id": "MONDO_0005015",
+       "name": "diabetes mellitus"
+      }
+     }
+    ]
+   }
+  }
+ }
+}

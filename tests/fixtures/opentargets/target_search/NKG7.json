@@ -1,0 +1,20 @@
+{
+ "data": {
+  "search": {
+   "total": 4,
+   "hits": [
+    {
+     "id": "ENSG00000105374",
+     "name": "NKG7",
+     "entity": "target",
+     "score": 65.2,
+     "object": {
+      "id": "ENSG00000105374",
+      "approvedSymbol": "NKG7",
+      "approvedName": "natural killer cell granule protein 7"
+     }
+    }
+   ]
+  }
+ }
+}

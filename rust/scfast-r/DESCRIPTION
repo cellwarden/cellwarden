@@ -1,0 +1,29 @@
+Package: scfastR
+Type: Package
+Title: Fast PCA, Neighbours and Leiden Clustering for Seurat via the 'scfast' Rust Engine
+Version: 0.3.0
+Authors@R: person("Mukesh", role = c("aut", "cre"), email = "mukeshkbj@gmail.com")
+Description: Drop-in replacements for the numerical core of the 'Seurat' workflow,
+    backed by the 'scfast' Rust library (docs/RUST_ENGINE.md in the singlecell
+    repository). RunPCAFast() runs an implicitly scaled PCA on the log-normalised
+    data (no ScaleData() and no dense cells x genes matrix), FindNeighborsFast()
+    builds the kNN and shared-nearest-neighbour graphs, FindClustersFast() runs
+    Leiden clustering (RB objective) and RunHarmonyFast() integrates batches with
+    Harmony (the algorithm of the 'harmony' package 2.x). Results are standard
+    'DimReduc' and 'Graph' objects and meta data columns, so everything downstream
+    in 'Seurat' works unchanged.
+License: Apache License (== 2.0)
+URL: https://github.com/mukeshkbj/singlecell
+Encoding: UTF-8
+Depends:
+    R (>= 4.1)
+Imports:
+    methods,
+    Matrix,
+    SeuratObject (>= 5.0.0)
+Suggests:
+    Seurat (>= 5.0.0),
+    testthat (>= 3.0.0),
+    reticulate
+SystemRequirements: Cargo (Rust's package manager), rustc >= 1.80
+Config/testthat/edition: 3

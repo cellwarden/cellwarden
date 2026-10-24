@@ -1,0 +1,323 @@
+{
+ "data": {
+  "target": {
+   "id": "ENSG00000198851",
+   "approvedSymbol": "CD3E",
+   "approvedName": "CD3 epsilon subunit of T-cell receptor complex",
+   "biotype": "protein_coding",
+   "tractability": [
+    {
+     "modality": "SM",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Structure with Ligand",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "High-Quality Ligand",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "High-Quality Pocket",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Med-Quality Pocket",
+     "value": false
+    },
+    {
+     "modality": "SM",
+     "id": "Druggable Family",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Approved Drug",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "Advanced Clinical",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "Phase 1 Clinical",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt loc high conf",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "GO CC high conf",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt loc med conf",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "UniProt SigP or TMHMM",
+     "value": true
+    },
+    {
+     "modality": "AB",
+     "id": "GO CC med conf",
+     "value": false
+    },
+    {
+     "modality": "AB",
+     "id": "Human Protein Atlas loc",
+     "value": true
+    },
+    {
+     "modality": "PR",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Phase 1 Clinical",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Literature",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "UniProt Ubiquitination",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Database Ubiquitination",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Half-life Data",
+     "value": false
+    },
+    {
+     "modality": "PR",
+     "id": "Small Molecule Binder",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Approved Drug",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Advanced Clinical",
+     "value": false
+    },
+    {
+     "modality": "OC",
+     "id": "Phase 1 Clinical",
+     "value": false
+    }
+   ],
+   "knownDrugs": {
+    "count": 7,
+    "rows": [
+     {
+      "drug": {
+       "id": "CHEMBL1743059",
+       "name": "TEPLIZUMAB"
+      },
+      "phase": 4,
+      "status": "Completed",
+      "mechanismOfAction": "T-cell surface glycoprotein CD3 epsilon chain inhibitor",
+      "disease": {
+       "id": "MONDO_0005147",
+       "name": "type 1 diabetes mellitus"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL1201608",
+       "name": "MUROMONAB-CD3"
+      },
+      "phase": 4,
+      "status": "Completed",
+      "mechanismOfAction": "T-cell surface glycoprotein CD3 epsilon chain inhibitor",
+      "disease": {
+       "id": "EFO_0009374",
+       "name": "allograft rejection"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL2109506",
+       "name": "OTELIXIZUMAB"
+      },
+      "phase": 3,
+      "status": "Completed",
+      "mechanismOfAction": "T-cell surface glycoprotein CD3 epsilon chain inhibitor",
+      "disease": {
+       "id": "MONDO_0005147",
+       "name": "type 1 diabetes mellitus"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL1743059",
+       "name": "TEPLIZUMAB"
+      },
+      "phase": 2,
+      "status": "Terminated",
+      "mechanismOfAction": "T-cell surface glycoprotein CD3 epsilon chain inhibitor",
+      "disease": {
+       "id": "EFO_0003778",
+       "name": "psoriatic arthritis"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL3137343",
+       "name": "BLINATUMOMAB"
+      },
+      "phase": 4,
+      "status": "Completed",
+      "mechanismOfAction": "T-cell surface glycoprotein CD3 epsilon chain modulator",
+      "disease": {
+       "id": "EFO_0000220",
+       "name": "acute lymphoblastic leukemia"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL4297791",
+       "name": "TEBENTAFUSP"
+      },
+      "phase": 4,
+      "status": "Completed",
+      "mechanismOfAction": "T-cell surface glycoprotein CD3 epsilon chain modulator",
+      "disease": {
+       "id": "EFO_0004993",
+       "name": "uveal melanoma"
+      }
+     },
+     {
+      "drug": {
+       "id": "CHEMBL4594261",
+       "name": "GLOFITAMAB"
+      },
+      "phase": 3,
+      "status": "Recruiting",
+      "mechanismOfAction": "T-cell surface glycoprotein CD3 epsilon chain modulator",
+      "disease": {
+       "id": "EFO_0000403",
+       "name": "diffuse large B-cell lymphoma"
+      }
+     }
+    ]
+   },
+   "associatedDiseases": {
+    "count": 905,
+    "rows": [
+     {
+      "score": 0.823,
+      "disease": {
+       "id": "MONDO_0005147",
+       "name": "type 1 diabetes mellitus"
+      }
+     },
+     {
+      "score": 0.801,
+      "disease": {
+       "id": "MONDO_0010138",
+       "name": "immunodeficiency 18"
+      }
+     },
+     {
+      "score": 0.744,
+      "disease": {
+       "id": "EFO_0000220",
+       "name": "acute lymphoblastic leukemia"
+      }
+     },
+     {
+      "score": 0.612,
+      "disease": {
+       "id": "EFO_0000403",
+       "name": "diffuse large B-cell lymphoma"
+      }
+     },
+     {
+      "score": 0.598,
+      "disease": {
+       "id": "EFO_0009374",
+       "name": "allograft rejection"
+      }
+     },
+     {
+      "score": 0.552,
+      "disease": {
+       "id": "EFO_0004993",
+       "name": "uveal melanoma"
+      }
+     },
+     {
+      "score": 0.421,
+      "disease": {
+       "id": "EFO_0003778",
+       "name": "psoriatic arthritis"
+      }
+     },
+     {
+      "score": 0.388,
+      "disease": {
+       "id": "EFO_0002690",
+       "name": "systemic lupus erythematosus"
+      }
+     },
+     {
+      "score": 0.371,
+      "disease": {
+       "id": "EFO_0000685",
+       "name": "rheumatoid arthritis"
+      }
+     },
+     {
+      "score": 0.344,
+      "disease": {
+       "id": "EFO_0003885",
+       "name": "multiple sclerosis"
+      }
+     }
+    ]
+   }
+  }
+ }
+}

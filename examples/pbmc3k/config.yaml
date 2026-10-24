@@ -1,0 +1,15 @@
+# The PBMC 3k example in examples/pbmc3k/ was produced with:
+#   examples/pbmc3k/get_data.sh
+#   cellwarden run filtered_gene_bc_matrices/hg19 --config examples/pbmc3k/config.yaml --name pbmc3k --out pbmc3k
+# with NVIDIA_API_KEY set (any provider works; without a key the gates use rules and stop for you).
+project: pbmc3k
+gates:
+  qc-review: auto
+  context-review: auto
+  annotation-review: auto
+  interpretation-review: auto
+llm:
+  default:
+    provider: nvidia
+# Differential expression: the defaults (FindMarkers with MAST; one sample, so the markers of
+# each cell type against the other cells).

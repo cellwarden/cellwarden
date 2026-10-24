@@ -1,0 +1,7 @@
+cluster	label_broad	label_fine	cl_id	confidence	votes_json	status
+0	T cell	CD4 T cell	CL:0000624	0.91	{"signature":"CD4 T cell","celltypist":"CD4 T cell","markers":"CD4 T cell"}	consensus
+1	T cell	CD8 T cell	CL:0000625	0.52	{"signature":"CD8 T cell","celltypist":"CD8 T cell","markers":"NK cell"}	low_confidence
+2	B cell	naive B cell	CL:0000788	0.9	{"signature":"B cell","celltypist":"naive B cell","markers":"B cell"}	consensus
+3	monocyte	CD14 monocyte	CL:0002057	0.95	{"signature":"CD14 monocyte","celltypist":"CD14 monocyte","markers":"CD14 monocyte"}	consensus
+4	NK cell	NK cell	CL:0000623	0.49	{"signature":"NK cell","celltypist":"CD8 T cell","markers":"NK cell"}	conflict
+5	platelet	platelet	CL:0000233	0.97	{"signature":"platelet","celltypist":"platelet","markers":"platelet"}	consensus

@@ -1,0 +1,18 @@
+.git
+**/target
+bench/results
+data
+**/__pycache__
+**/.pytest_cache
+**/*.egg-info
+**/*.so
+**/*.o
+**/*.dylib
+# data and outputs kept in the working tree
+*.h5
+*.h5ad
+*.rds
+filtered_gene_bc_matrices
+plots*
+nohup.out
+**/node_modules

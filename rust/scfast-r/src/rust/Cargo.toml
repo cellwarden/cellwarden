@@ -1,0 +1,37 @@
+[package]
+name = "scfastr"
+description = "extendr bindings for scfast-core (R package scfastR)"
+version = "0.3.0"
+edition = "2021"
+license = "Apache-2.0"
+publish = false
+
+[lib]
+crate-type = ["staticlib"]
+name = "scfastr"
+
+[dependencies]
+extendr-api = "0.9"
+scfast-core = { path = "../../../scfast-core" }
+# Only for rs_info() (thread count); same version as scfast-core uses.
+rayon = "1.10"
+
+[features]
+# GPU Leiden via cuGraph's C API (Phase 7): libcugraph_c.so is dlopen'ed at run time, so the
+# package still builds and loads without it. Build with
+#   SCFASTR_CARGO_FEATURES=cugraph R CMD INSTALL rust/scfast-r   (see src/Makevars)
+cugraph = ["scfast-core/cugraph"]
+# CUDA PCA and kNN (Phase 6): cudarc with dynamic loading, so libcuda / libnvrtc / libcublas
+# are dlopen'ed at run time and the package builds and loads without them. Build with
+#   SCFASTR_CARGO_FEATURES=cuda R CMD INSTALL rust/scfast-r      (or "cuda,cugraph")
+cuda = ["scfast-core/cuda"]
+
+# Standalone crate: rust/Cargo.toml excludes scfast-r from the workspace, so this table
+# stops cargo from searching upwards and adopting rust/ as its workspace root.
+[workspace]
+
+[profile.release]
+codegen-units = 1
+lto = "thin"
+# Panics must unwind so extendr can turn them into R errors (never abort the R session).
+panic = "unwind"
