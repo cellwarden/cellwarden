@@ -2,7 +2,7 @@
 {% block title %}CellWarden report — {{ run.run_id }}{% endblock %}
 {% block body %}
 <header class="top">
-  <h1>CellWarden report</h1><span class="muted">{{ run.project }} · {{ run.run_id }}</span>
+  {{ logo }}<h1>CellWarden report</h1><span class="muted">{{ run.project }} · {{ run.run_id }}</span>
   <nav>
     <a href="#summary">Summary</a><a href="#resources">Resources</a><a href="#qc">QC</a><a href="#clusters">Clusters</a>
     <a href="#markers">Markers</a><a href="#dge">DGE</a><a href="#opentargets">Open Targets</a><a href="#gates">Gates</a>

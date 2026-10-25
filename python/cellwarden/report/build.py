@@ -442,6 +442,12 @@ def _env():
 
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(str(TEMPLATES)), autoescape=jinja2.select_autoescape(["html", "j2"]),
                              trim_blocks=True, lstrip_blocks=True)
+    from markupsafe import Markup
+
+    from .brand import favicon_link, mark_svg
+
+    env.globals["logo"] = Markup(mark_svg(22))
+    env.globals["favicon_link"] = Markup(favicon_link())
     env.filters["num"] = _num
     env.filters["pct"] = lambda v: "-" if v is None or (isinstance(v, float) and math.isnan(v)) else f"{float(v):.1f}%"
     env.filters["sci"] = lambda v: "-" if v is None or (isinstance(v, float) and math.isnan(v)) else f"{float(v):.2e}"

@@ -31,6 +31,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from .report.brand import ACCENT_DARK, favicon_link, mark_svg
 from .stage_names import title as stage_title
 
 DEFAULT_ORDER = ["S0", "S1a", "S1b", "S1c", "G1", "S2", "S3", "G2", "G3", "S4", "G4", "S5"]
@@ -246,7 +247,7 @@ def _stage_facts(rd: Path, row: dict[str, Any]) -> None:
 
 CSS = """
 body{font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;margin:0;background:#f6f7f9;color:#222}
-header{background:#1b2a41;color:#fff;padding:14px 22px}header h1{margin:0;font-size:18px;font-weight:600}
+header{background:#1b2a41;color:#fff;padding:14px 22px}header h1{margin:0;font-size:18px;font-weight:600;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 header .meta{opacity:.85;font-size:12.5px;margin-top:4px}
 .badge{display:inline-block;padding:2px 9px;border-radius:10px;color:#fff;font-size:12px;font-weight:600;vertical-align:middle}
 main{padding:16px 22px;max-width:1400px;margin:0 auto}
@@ -276,8 +277,8 @@ footer{color:#777;font-size:11.5px;padding:18px 22px}
 def render(d: dict[str, Any], watch: int | None) -> str:
     o = d["overall"]
     refresh = f'<meta http-equiv="refresh" content="{watch}">' if watch and o in ("running", "waiting", "pending") else ""
-    parts = [f"<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><title>CellWarden run {_esc(d['run_id'])}</title>{refresh}<style>{CSS}</style></head><body>"]
-    parts.append(f"<header><h1>CellWarden run dashboard <span class='badge' style='background:{COLORS.get(o, '#888')}'>{_esc(o.upper())}</span></h1>"
+    parts = [f"<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><title>CellWarden run {_esc(d['run_id'])}</title>{favicon_link()}{refresh}<style>{CSS}</style></head><body>"]
+    parts.append(f"<header><h1>{mark_svg(24, ACCENT_DARK)}CellWarden run dashboard <span class='badge' style='background:{COLORS.get(o, '#888')}'>{_esc(o.upper())}</span></h1>"
                  f"<div class='meta'>run <code>{_esc(d['run_id'])}</code> · project {_esc(d['project'])} · {_esc(d['run_dir'])}<br>"
                  f"state updated {_esc(d['updated'])} · page generated {_esc(d['generated'])}{' · auto-refresh every %ds' % watch if refresh else ''}</div></header><main>")
     # strip

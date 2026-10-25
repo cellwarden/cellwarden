@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}CellWarden report{% endblock %}</title>
+{% block favicon %}{{ favicon_link }}{% endblock %}
 <style>
 :root { --fg:#1d1f21; --muted:#6b6f76; --bg:#ffffff; --panel:#f6f7f9; --line:#dfe2e6; --accent:#0072B2;
         --ok:#009E73; --warn:#E69F00; --bad:#D55E00; }
@@ -12,6 +13,7 @@ body { margin:0; font: 14px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, san
 header.top { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line); padding:10px 24px; z-index:5;
              display:flex; flex-wrap:wrap; gap:6px 18px; align-items:baseline; }
 header.top h1 { font-size:18px; margin:0; }
+header.top .logo { align-self:center; flex:none; margin-right:-8px; }
 header.top nav a { color:var(--accent); text-decoration:none; margin-right:10px; font-size:13px; }
 main { max-width: 1200px; margin: 0 auto; padding: 16px 24px 60px; }
 section { margin: 28px 0; }

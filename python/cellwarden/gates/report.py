@@ -13,11 +13,13 @@ import json
 from pathlib import Path
 from typing import Any, Mapping, Sequence
 
+from ..report.brand import favicon_link, mark_svg
+
 __all__ = ["render_report", "esc", "table", "pre"]
 
 CSS = """
 body{font:14px/1.45 system-ui,sans-serif;margin:2em auto;max-width:1100px;color:#222;padding:0 1em}
-h1{font-size:1.5em;margin-bottom:.2em} h2{font-size:1.15em;margin-top:1.6em;border-bottom:1px solid #ddd}
+h1{font-size:1.5em;margin-bottom:.2em;display:flex;align-items:center;gap:10px;flex-wrap:wrap} h2{font-size:1.15em;margin-top:1.6em;border-bottom:1px solid #ddd}
 table{border-collapse:collapse;margin:.5em 0} th,td{border:1px solid #ccc;padding:3px 8px;text-align:right}
 th:first-child,td:first-child{text-align:left} th{background:#f3f3f3}
 pre{background:#f7f7f7;padding:.6em;overflow:auto;font-size:12px}
@@ -56,7 +58,7 @@ def render_report(gate_id: str, run_dir: Path, bundle: Mapping[str, Any], propos
                   sections: Sequence[tuple[str, str]] = ()) -> str:
     parts: list[str] = []
     badge = "waiting for a human" if status == "wait" else f"decided by {decision.get('decided_by') if decision else '?'}"
-    parts.append(f"<h1>Gate {esc(gate_id)} <span class='badge {esc(status)}'>{esc(badge)}</span></h1>")
+    parts.append(f"<h1>{mark_svg(26)}Gate {esc(gate_id)} <span class='badge {esc(status)}'>{esc(badge)}</span></h1>")
     parts.append(f"<p>run <code>{esc(run_dir)}</code>; mode <b>{esc((decision or {}).get('mode') or '')}</b>"
                  f"{'; rules fallback' if proposal.get('fallback') else ''}</p>")
     if status == "wait":
@@ -104,4 +106,4 @@ def render_report(gate_id: str, run_dir: Path, bundle: Mapping[str, Any], propos
         parts.append("<p>no LLM calls (agents not configured)</p>")
     parts.append("<details><summary>bundle.json</summary>" + pre(bundle) + "</details>")
     return ("<!doctype html><html><head><meta charset='utf-8'><title>" + esc(f"CellWarden gate {gate_id}")
-            + "</title><style>" + CSS + "</style></head><body>" + "\n".join(parts) + "</body></html>\n")
+            + "</title>" + favicon_link() + "<style>" + CSS + "</style></head><body>" + "\n".join(parts) + "</body></html>\n")

@@ -1,4 +1,9 @@
-# CellWarden
+<h1>
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/logo/lockup-dark.svg">
+    <img src="docs/logo/lockup.svg" alt="CellWarden" height="60">
+  </picture>
+</h1>
 
 **A single-cell RNA-seq pipeline whose decisions are guarded: rules decide, LLM agents advise,
 a reviewer agent checks, and you approve. Everything is logged.**

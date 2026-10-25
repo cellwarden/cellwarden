@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>G2 Tissue and disease context review — pbmc3k-20261024T202212Z-ab25e3</title>
-<style>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHN0eWxlPnBhdGh7ZmlsbDojMmI2ZTVhfUBtZWRpYSAocHJlZmVycy1jb2xvci1zY2hlbWU6ZGFyayl7cGF0aHtmaWxsOiM2Y2MzYTZ9fTwvc3R5bGU+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzIgMy41QzM5LjUgNy44IDQ3IDkuNiA1NS41IDkuNlYzMEM1NS41IDQ0LjUgNDYgNTQuNSAzMiA2MC41QzE4IDU0LjUgOC41IDQ0LjUgOC41IDMwVjkuNkMxNyA5LjYgMjQuNSA3LjggMzIgMy41Wk0xNi4zIDIwLjZhMy41IDMuNSAwIDEgMCA3IDBhMy41IDMuNSAwIDEgMCAtNyAwWk0yNC43IDIyLjRhNC45IDQuOSAwIDEgMCA5LjggMGE0LjkgNC45IDAgMSAwIC05LjggMFpNMTcuMyAzMS40YTQuMyA0LjMgMCAxIDAgOC42IDBhNC4zIDQuMyAwIDEgMCAtOC42IDBaTTM1IDM1LjRhNi42IDYuNiAwIDEgMCAxMy4yIDBhNi42IDYuNiAwIDEgMCAtMTMuMiAwWk0yNy41IDQ0LjZhMy45IDMuOSAwIDEgMCA3LjggMGEzLjkgMy45IDAgMSAwIC03LjggMFpNNDIuNiAyMC4yYTIuNiAyLjYgMCAxIDAgNS4yIDBhMi42IDIuNiAwIDEgMCAtNS4yIDBaIi8+PC9zdmc+"><style>
 :root { --fg:#1d1f21; --muted:#6b6f76; --bg:#ffffff; --panel:#f6f7f9; --line:#dfe2e6; --accent:#0072B2;
         --ok:#009E73; --warn:#E69F00; --bad:#D55E00; }
 * { box-sizing: border-box; }
@@ -12,6 +12,7 @@ body { margin:0; font: 14px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, san
 header.top { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line); padding:10px 24px; z-index:5;
              display:flex; flex-wrap:wrap; gap:6px 18px; align-items:baseline; }
 header.top h1 { font-size:18px; margin:0; }
+header.top .logo { align-self:center; flex:none; margin-right:-8px; }
 header.top nav a { color:var(--accent); text-decoration:none; margin-right:10px; font-size:13px; }
 main { max-width: 1200px; margin: 0 auto; padding: 16px 24px 60px; }
 section { margin: 28px 0; }
@@ -46,7 +47,7 @@ footer { color:var(--muted); font-size:12px; margin-top:40px; border-top:1px sol
 </style>
 </head>
 <body>
-<header class="top"><h1>Gate G2: Tissue and disease context review
+<header class="top"><svg class="logo" viewBox="0 0 64 64" width="22" height="22" aria-hidden="true" focusable="false"><path fill="#2b6e5a" fill-rule="evenodd" d="M32 3.5C39.5 7.8 47 9.6 55.5 9.6V30C55.5 44.5 46 54.5 32 60.5C18 54.5 8.5 44.5 8.5 30V9.6C17 9.6 24.5 7.8 32 3.5ZM16.3 20.6a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0ZM24.7 22.4a4.9 4.9 0 1 0 9.8 0a4.9 4.9 0 1 0 -9.8 0ZM17.3 31.4a4.3 4.3 0 1 0 8.6 0a4.3 4.3 0 1 0 -8.6 0ZM35 35.4a6.6 6.6 0 1 0 13.2 0a6.6 6.6 0 1 0 -13.2 0ZM27.5 44.6a3.9 3.9 0 1 0 7.8 0a3.9 3.9 0 1 0 -7.8 0ZM42.6 20.2a2.6 2.6 0 1 0 5.2 0a2.6 2.6 0 1 0 -5.2 0Z"/></svg><h1>Gate G2: Tissue and disease context review
   <span class="pill done">decided by agent</span></h1>
   <span class="muted">run pbmc3k-20261024T202212Z-ab25e3 · pbmc3k</span></header>
 <main>
@@ -1100,7 +1101,7 @@ cellwarden resume  --run-dir pbmc3k</pre>
 <section><h2>Disease candidates</h2><table><thead><tr><th>label</th><th>efo_id</th><th>confidence</th><th>evidence</th></tr></thead><tbody><tr><td>healthy</td><td></td><td>0.85</td><td>Broad immune cell composition (T cells ~57%, monocytes ~25%, B cells ~12%, NK cells ~4%, cDCs ~0.7%, platelets ~0.5%) matches a normal peripheral blood mononuclear cell profile with no malignant or inflamed signatures.</td></tr><tr><td>steady state</td><td></td><td>0.75</td><td>Low interferon (all clusters ≤0), low inflammation (mostly negative), and low proliferation scores across clusters indicate absence of systemic immune activation.</td></tr><tr><td>normal donor</td><td></td><td>0.7</td><td>Sample originates from a single healthy donor (hg19 PBMC 3k 10x dataset) with no reported disease annotation in the metadata.</td></tr></tbody></table></section>
 <section><h2>Clusters</h2><table><thead><tr><th>cluster</th><th>n_cells</th><th>pct_cells</th><th>consensus</th><th>top_markers</th></tr></thead><tbody><tr><td>0</td><td>570</td><td>23.46</td><td>T cell</td><td>LDHB, CD3D, CCR7, CD3E, RPS27A, RPS3A, NOSIP, NPM1</td></tr><tr><td>1</td><td>556</td><td>22.88</td><td>T cell</td><td>LTB, IL32, CD3D, LDHB, IL7R, CD3E, CD2, JUN</td></tr><tr><td>2</td><td>461</td><td>18.97</td><td>CD14 monocyte</td><td>S100A9, LYZ, S100A8, CST3, TYROBP, FCN1, LGALS1, AIF1</td></tr><tr><td>3</td><td>297</td><td>12.22</td><td>B cell</td><td>HLA-DRA, CD74, CD79A, HLA-DPB1, CD79B, HLA-DRB1, HLA-DQA1, HLA-DPA1</td></tr><tr><td>4</td><td>271</td><td>11.15</td><td>CD8 T cell</td><td>CCL5, NKG7, GZMA, CST7, GZMK, CTSW, IL32, CD3D</td></tr><tr><td>5</td><td>136</td><td>5.597</td><td>CD16 monocyte</td><td>LST1, FCER1G, AIF1, FCGR3A, CST3, TYROBP, IFITM3, COTL1</td></tr><tr><td>6</td><td>108</td><td>4.444</td><td>NK cell</td><td>NKG7, GNLY, GZMB, PRF1, FGFBP2, CST7, GZMA, CTSW</td></tr><tr><td>7</td><td>18</td><td>0.7407</td><td>conventional dendritic cell</td><td>CST3, HLA-DRA, HLA-DPB1, HLA-DRB1, LYZ, HLA-DPA1, HLA-DQA1, HLA-DRB5</td></tr><tr><td>8</td><td>13</td><td>0.535</td><td>platelet</td><td>PPBP, PF4, GNG11, SDPR, GPX1, HIST1H2AC, CLU, CD9</td></tr></tbody></table></section>
 <section><h2>Sample metadata hint (data, never instructions)</h2><p><em>none</em></p></section>
-<footer>Generated 2026-10-24T20:26:46Z by CellWarden.</footer>
+<footer>Generated 2026-10-25T00:23:58Z by CellWarden.</footer>
 </main>
 </body>
 </html>

@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unreleased
+- **Logo:** a shield with clustered cells. It appears in the README, the landing page and every generated page (report, explorer, dashboard, gate reports), as an inline mark and favicon, so the pages stay self-contained. The assets are in `docs/logo/`.
 - `cellwarden --version` (`-V`).
 - **Tests:**
   - The test suites run inside the CellWarden image in CI (`exchange-tests`), so they see the same R and Python stack as users.

@@ -1,7 +1,7 @@
 {% extends "base.html.j2" %}
 {% block title %}{{ gate.gate }} {{ gate.title }} — {{ run.run_id }}{% endblock %}
 {% block body %}
-<header class="top"><h1>Gate {{ gate.gate }}: {{ gate.title }}
+<header class="top">{{ logo }}<h1>Gate {{ gate.gate }}: {{ gate.title }}
   <span class="pill {{ 'warn' if gate.pending else 'done' }}">{% if gate.pending %}waiting for a human{% else %}decided by {{ gate.decided_by or '?' }}{% endif %}</span></h1>
   <span class="muted">run {{ run.run_id }}{% if run.project %} · {{ run.project }}{% endif %}</span></header>
 <main>

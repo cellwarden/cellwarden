@@ -208,7 +208,10 @@ def test_full_report_has_every_section_and_is_self_contained(run_dir):
     for sec in SECTIONS:
         assert sec in p.ids, f"section #{sec} missing"
     assert not p.external, p.external            # no CDN, no external resources
-    assert "<script src" not in html and "<link" not in html
+    assert "<script src" not in html
+    # the only <link> is the inline favicon (a data: URI)
+    links = re.findall(r"<link\b[^>]*>", html)
+    assert all('rel="icon"' in l and 'href="data:' in l for l in links), links
     # plots are inline: SVG (always) and base64 PNG when matplotlib is installed
     assert "<svg" in html
     try:

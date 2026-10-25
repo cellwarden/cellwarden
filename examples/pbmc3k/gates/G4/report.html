@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>G4 DGE interpretation review — pbmc3k-20261024T202212Z-ab25e3</title>
-<style>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA2NCA2NCI+PHN0eWxlPnBhdGh7ZmlsbDojMmI2ZTVhfUBtZWRpYSAocHJlZmVycy1jb2xvci1zY2hlbWU6ZGFyayl7cGF0aHtmaWxsOiM2Y2MzYTZ9fTwvc3R5bGU+PHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBkPSJNMzIgMy41QzM5LjUgNy44IDQ3IDkuNiA1NS41IDkuNlYzMEM1NS41IDQ0LjUgNDYgNTQuNSAzMiA2MC41QzE4IDU0LjUgOC41IDQ0LjUgOC41IDMwVjkuNkMxNyA5LjYgMjQuNSA3LjggMzIgMy41Wk0xNi4zIDIwLjZhMy41IDMuNSAwIDEgMCA3IDBhMy41IDMuNSAwIDEgMCAtNyAwWk0yNC43IDIyLjRhNC45IDQuOSAwIDEgMCA5LjggMGE0LjkgNC45IDAgMSAwIC05LjggMFpNMTcuMyAzMS40YTQuMyA0LjMgMCAxIDAgOC42IDBhNC4zIDQuMyAwIDEgMCAtOC42IDBaTTM1IDM1LjRhNi42IDYuNiAwIDEgMCAxMy4yIDBhNi42IDYuNiAwIDEgMCAtMTMuMiAwWk0yNy41IDQ0LjZhMy45IDMuOSAwIDEgMCA3LjggMGEzLjkgMy45IDAgMSAwIC03LjggMFpNNDIuNiAyMC4yYTIuNiAyLjYgMCAxIDAgNS4yIDBhMi42IDIuNiAwIDEgMCAtNS4yIDBaIi8+PC9zdmc+"><style>
 :root { --fg:#1d1f21; --muted:#6b6f76; --bg:#ffffff; --panel:#f6f7f9; --line:#dfe2e6; --accent:#0072B2;
         --ok:#009E73; --warn:#E69F00; --bad:#D55E00; }
 * { box-sizing: border-box; }
@@ -12,6 +12,7 @@ body { margin:0; font: 14px/1.5 -apple-system, "Segoe UI", Helvetica, Arial, san
 header.top { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line); padding:10px 24px; z-index:5;
              display:flex; flex-wrap:wrap; gap:6px 18px; align-items:baseline; }
 header.top h1 { font-size:18px; margin:0; }
+header.top .logo { align-self:center; flex:none; margin-right:-8px; }
 header.top nav a { color:var(--accent); text-decoration:none; margin-right:10px; font-size:13px; }
 main { max-width: 1200px; margin: 0 auto; padding: 16px 24px 60px; }
 section { margin: 28px 0; }
@@ -46,7 +47,7 @@ footer { color:var(--muted); font-size:12px; margin-top:40px; border-top:1px sol
 </style>
 </head>
 <body>
-<header class="top"><h1>Gate G4: DGE interpretation review
+<header class="top"><svg class="logo" viewBox="0 0 64 64" width="22" height="22" aria-hidden="true" focusable="false"><path fill="#2b6e5a" fill-rule="evenodd" d="M32 3.5C39.5 7.8 47 9.6 55.5 9.6V30C55.5 44.5 46 54.5 32 60.5C18 54.5 8.5 44.5 8.5 30V9.6C17 9.6 24.5 7.8 32 3.5ZM16.3 20.6a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0 -7 0ZM24.7 22.4a4.9 4.9 0 1 0 9.8 0a4.9 4.9 0 1 0 -9.8 0ZM17.3 31.4a4.3 4.3 0 1 0 8.6 0a4.3 4.3 0 1 0 -8.6 0ZM35 35.4a6.6 6.6 0 1 0 13.2 0a6.6 6.6 0 1 0 -13.2 0ZM27.5 44.6a3.9 3.9 0 1 0 7.8 0a3.9 3.9 0 1 0 -7.8 0ZM42.6 20.2a2.6 2.6 0 1 0 5.2 0a2.6 2.6 0 1 0 -5.2 0Z"/></svg><h1>Gate G4: DGE interpretation review
   <span class="pill done">decided by agent</span></h1>
   <span class="muted">run pbmc3k-20261024T202212Z-ab25e3 · pbmc3k</span></header>
 <main>
@@ -839,7 +840,7 @@ cellwarden resume  --run-dir pbmc3k</pre>
 <section><h2>DGE per contrast x group</h2><table><thead><tr><th>contrast</th><th>group</th><th>n_up</th><th>n_down</th><th>n_tested</th><th>skipped_reason</th><th>genes with evidence</th></tr></thead><tbody><tr><td>markers</td><td>B cell</td><td>259</td><td>429</td><td>1626</td><td></td><td>40</td></tr><tr><td>markers</td><td>dendritic cell</td><td>256</td><td>17</td><td>3698</td><td></td><td>37</td></tr><tr><td>markers</td><td>monocyte</td><td>875</td><td>612</td><td>2130</td><td></td><td>40</td></tr><tr><td>markers</td><td>NK cell</td><td>301</td><td>161</td><td>2179</td><td></td><td>40</td></tr><tr><td>markers</td><td>platelet</td><td>205</td><td>100</td><td>2509</td><td></td><td>40</td></tr><tr><td>markers</td><td>T cell</td><td>296</td><td>642</td><td>1866</td><td></td><td>40</td></tr></tbody></table></section>
 <section><h2>Interpretation (every statement is a hypothesis)</h2><h3>markers / B cell</h3><p>B cells show strong upregulation of canonical B-cell markers (CD79A, CD79B, MS4A1/CD20, CD74, HLA class II) and downregulation of T/NK cell genes (CD3D, IL32, S100A4/6/10/11). Open Targets evidence links these B-cell markers to B-cell malignancies and approved drugs.</p><table><thead><tr><th>gene</th><th>direction</th><th>evidence_ids</th><th>text</th></tr></thead><tbody><tr><td>CD79A</td><td>up</td><td>OT:ENSG00000105369:disease:MONDO_0016462, OT:ENSG00000105369:disease:MONDO_0018905</td><td>Hypothesis: CD79A upregulation in B cells reflects its role in B-cell receptor signaling and is associated with isolated agammaglobulinemia (MONDO_0016462) and diffuse large B-cell lymphoma (MONDO_0018905) in Open Targets.</td></tr><tr><td>CD79B</td><td>up</td><td>OT:ENSG00000007312:disease:MONDO_0018905, OT:ENSG00000007312:drug:CHEMBL3301582:MONDO_0018905</td><td>Hypothesis: CD79B upregulation marks active B-cell receptor complexes; Open Targets links it to diffuse large B-cell lymphoma (MONDO_0018905) and the approved drug polatuzumab vedotin (CHEMBL3301582, phase 4) targeting CD79B in that disease.</td></tr><tr><td>MS4A1</td><td>up</td><td>OT:ENSG00000156738:disease:MONDO_0018905, OT:ENSG00000156738:drug:CHEMBL4298092:MONDO_0018905, OT:ENSG00000156738:drug:CHEMBL1743048:MONDO_0018906</td><td>Hypothesis: MS4A1 (CD20) upregulation identifies B cells and is the target of approved antibodies (glofitamab CHEMBL4298092, obinutuzumab CHEMBL1743048) for diffuse large B-cell lymphoma (MONDO_0018905) and follicular lymphoma (MONDO_0018906).</td></tr><tr><td>CD74</td><td>up</td><td>OT:ENSG00000019582:disease:MONDO_0005233, OT:ENSG00000019582:drug:CHEMBL1743040:MONDO_0018908</td><td>Hypothesis: CD74 (invariant chain) upregulation in B cells is associated with non-small cell lung carcinoma (MONDO_0005233) and is the target of milatuzumab (CHEMBL1743040, phase 1.5) for non-Hodgkin lymphoma (MONDO_0018908).</td></tr><tr><td>TCL1A</td><td>up</td><td>OT:ENSG00000100721:disease:MONDO_0004948, OT:ENSG00000100721:disease:EFO_0010819</td><td>Hypothesis: TCL1A upregulation in B cells is associated with B-cell chronic lymphocytic leukemia (MONDO_0004948) and clonal hematopoiesis (EFO_0010819) in Open Targets.</td></tr><tr><td>CD3D</td><td>down</td><td></td><td>Hypothesis: CD3D downregulation in B cells (log2FC -5.2) reflects the absence of T-cell lineage; no Open Targets drug or disease evidence was cited for this direction.</td></tr></tbody></table></section>
 <section><h2>Open Targets</h2><p>996 evidence record(s)</p></section>
-<footer>Generated 2026-10-24T20:37:18Z by CellWarden.</footer>
+<footer>Generated 2026-10-25T00:23:58Z by CellWarden.</footer>
 </main>
 </body>
 </html>

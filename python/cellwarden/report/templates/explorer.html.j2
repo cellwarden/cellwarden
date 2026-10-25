@@ -4,12 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CellWarden explorer — {{ run_id }}</title>
+{{ favicon_link }}
 <style>
 :root { --fg:#1d1f21; --muted:#6b6f76; --bg:#fff; --panel:#f6f7f9; --line:#dfe2e6; --accent:#0072B2; }
 * { box-sizing:border-box; }
 body { margin:0; font:14px/1.4 -apple-system,"Segoe UI",Helvetica,Arial,sans-serif; color:var(--fg); background:var(--bg); display:flex; flex-direction:column; height:100vh; }
 header { padding:8px 16px; border-bottom:1px solid var(--line); display:flex; gap:16px; align-items:center; flex-wrap:wrap; }
 header h1 { font-size:16px; margin:0; }
+header .logo { flex:none; margin-right:-8px; }
 header label { font-size:13px; color:var(--muted); }
 select, input { font:inherit; padding:3px 6px; border:1px solid var(--line); border-radius:4px; }
 button { font:inherit; padding:3px 10px; border:1px solid var(--line); border-radius:4px; background:var(--panel); cursor:pointer; }
@@ -28,7 +30,7 @@ canvas { position:absolute; inset:0; width:100%; height:100%; cursor:crosshair; 
 </head>
 <body>
 <header>
-  <h1>CellWarden explorer</h1>
+  {{ logo }}<h1>CellWarden explorer</h1>
   <label>colour by <select id="colour"></select></label>
   <label>gene <input id="gene" list="genes" placeholder="type a gene…" autocomplete="off" size="14"><datalist id="genes"></datalist></label>
   <label>point size <input id="size" type="range" min="1" max="8" value="3" style="width:80px"></label>
