@@ -31,4 +31,3 @@ bench/results/
 rust/target/
 .venv-bench/
 *.egg-info/
-launch/
