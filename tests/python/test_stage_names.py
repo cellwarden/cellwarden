@@ -34,3 +34,12 @@ def test_gate_names():
     assert N.gate_id("clustering") == "clustering"  # not a gate: unchanged, so the caller reports it
     with pytest.raises(GateError, match="interpretation-review"):
         load_gate("nope", ".", {})
+
+
+def test_version_flag(capsys):
+    from cellwarden import __version__
+
+    for flag in ("--version", "-V"):
+        with pytest.raises(SystemExit) as e:
+            R._parser().parse_args([flag])
+        assert e.value.code == 0 and capsys.readouterr().out.strip() == f"cellwarden {__version__}"

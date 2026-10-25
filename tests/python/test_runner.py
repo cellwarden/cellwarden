@@ -37,7 +37,7 @@ for i in ins:
 print(f"{sid}: working")
 if (rd / f"FAIL_{sid}").exists():
     for i in range(30):
-        print(f"{sid} boom line {i}", file=sys.stderr if i % 2 else sys.stdout)
+        print(f"{sid} boom line {i}", file=sys.stderr if i % 2 else sys.stdout, flush=True)  # keep the order in the log
     sys.exit(3)
 if (rd / f"NOOUT_{sid}").exists():
     sys.exit(0)

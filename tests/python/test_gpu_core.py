@@ -157,7 +157,7 @@ def test_cli(slim, tmp_path):
     proc = subprocess.run(
         [sys.executable, "-m", "cellwarden.gpu_core", "--in", str(slim[0]), "--out", str(out),
          "--n-pcs", "20", "--resolution", "0.3", "--device", "cpu", "--seed", "0"],
-        capture_output=True, text=True, env={"PYTHONPATH": env_path, "PATH": "/usr/bin:/bin"},
+        capture_output=True, text=True, env={"PYTHONPATH": env_path, "PATH": "/usr/bin:/bin", "PYTHONNOUSERSITE": "1"},
     )
     assert proc.returncode == 0, proc.stderr
     summary = json.loads(proc.stdout)
@@ -166,7 +166,7 @@ def test_cli(slim, tmp_path):
     if not gpu_core.gpu_available()[0]:
         proc = subprocess.run(
             [sys.executable, "-m", "cellwarden.gpu_core", "--in", str(slim[0]), "--out", str(out), "--device", "gpu"],
-            capture_output=True, text=True, env={"PYTHONPATH": env_path, "PATH": "/usr/bin:/bin"},
+            capture_output=True, text=True, env={"PYTHONPATH": env_path, "PATH": "/usr/bin:/bin", "PYTHONNOUSERSITE": "1"},
         )
         assert proc.returncode == 2
         assert "DeviceError" in proc.stderr

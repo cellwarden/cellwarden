@@ -107,8 +107,10 @@ PURE <- pure_clusters()
 test_that("S3 writes every output file", {
   for (f in c("markers.tsv.gz", "cluster_summary.json", "signatures.tsv.gz", "cell_clusters.tsv.gz", "s3_r_summary.json"))
     expect_true(file.exists(file.path(S3, f)), info = f)
-  expect_false(file.exists(file.path(S3, "exchange", "counts.h5ad")))   # celltypist is not importable here
-  expect_identical(S3_SUMMARY$celltypist_input$written, FALSE)
+  # the slim CellTypist input is written exactly when python can import celltypist (it can in the image)
+  ct <- s2_python_has(REPO, "celltypist")
+  expect_identical(file.exists(file.path(S3, "exchange", "counts.h5ad")), ct)
+  expect_identical(S3_SUMMARY$celltypist_input$written, ct)
 })
 
 test_that("markers.tsv.gz has the spec columns, top 50 per cluster, ranks 1..n by avg_log2fc", {

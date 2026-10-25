@@ -89,6 +89,7 @@ from typing import Any, Callable, Mapping, Sequence
 
 import yaml
 
+from . import __version__
 from . import config as cfgmod
 from . import dge_choice
 from . import progress as progmod
@@ -1189,6 +1190,7 @@ def _launch_detached(argv: list[str], run_dir: Path, run_id: str, out) -> int:
 
 def _parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="cellwarden", description="cellwarden single-cell pipeline")
+    p.add_argument("-V", "--version", action="version", version=f"cellwarden {__version__}")
     sub = p.add_subparsers(dest="cmd", required=True)
     r = sub.add_parser("run", help="validate the config and run the stages",
                        description="Run the pipeline on data files (cellwarden run a.h5 b.rds c.h5ad), a folder, a "

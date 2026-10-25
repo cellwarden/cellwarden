@@ -452,6 +452,7 @@ run_s2 <- function(cfg, repo) {
       cl <- obj$seurat_clusters
       leiden_impl <- paste0("scfastR::FindClustersFast (Leiden), scfastR ", scfast_ver)
     } else if (.s2_seurat_has_leidenbase_clusters()) {
+      t0 <- proc.time()[["elapsed"]]
       cl <- tryCatch({
         o2 <- Seurat::FindClusters(obj, graph.name = snn_name, algorithm = 4, resolution = cfg$clustering$resolution,
                                    random.seed = seed, verbose = FALSE)
@@ -459,6 +460,7 @@ run_s2 <- function(cfg, repo) {
         o2$seurat_clusters
       }, error = function(e) { scp_warn_log("FindClusters(algorithm = 4) failed: ", conditionMessage(e),
                                             "; using leidenbase directly"); NULL })
+      if (!is.null(cl)) timings[["leiden"]] <- round(proc.time()[["elapsed"]] - t0, 3)
     }
     if (is.null(cl)) {
       t0 <- proc.time()[["elapsed"]]
